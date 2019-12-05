@@ -1,0 +1,82 @@
+{
+  "name": "formik-inspired",
+  "version": "1.0.0",
+  "description": "Formik inspired code based in large parts on Formik",
+  "keywords": [
+    "formik",
+    "react",
+    "react-dom",
+    "form",
+    "validation",
+    "forms",
+    "higher order component",
+    "hoc"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": "^16.9.0"
+  },
+  "scripts": {
+    "test": "tsdx test --env=jsdom",
+    "test:watch": "npm run test -- --watchAll",
+    "start": "cross-env NODE_ENV=development tsdx watch",
+    "prebuild": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsdx build --format=cjs",
+    "prepublishOnly": "npm run build",
+    "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'",
+    "size": "size-limit"
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "resolutions": {
+    "@types/react": "16.9.11",
+    "@types/react-dom": "16.9.3"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
+    "prettier": "^1.18.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "rimraf": "^2.6.2",
+    "typescript": "^3.7.3",
+    "tslib": "^1.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wallymathieu/formik-inspired.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wallymathieu/formik-inspired/issues"
+  },
+  "homepage": "https://github.com/wallymathieu/formik-inspired#readme",
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "semi": true
+  },
+  "jest": {
+    "globals": {
+      "__DEV__": "boolean"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "setupFilesAfterEnv": [
+      "react-testing-library/cleanup-after-each.js",
+      "<rootDir>/test/setupTests.ts"
+    ]
+  },
+  "size-limit": [
+    {
+      "path": "./dist/index.js",
+      "limit": "14 kB"
+    }
+  ]
+}
