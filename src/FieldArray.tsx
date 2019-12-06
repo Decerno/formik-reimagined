@@ -86,44 +86,35 @@ const isEmptyChildren = (children: any): boolean =>
 /**
  * "Field array" implemented using state instead of React.useReducer 
  */
-export class FieldArray<P,Value> extends React.PureComponent<P & FieldArrayProps<Value>,{ value: ReadonlyArray<Value>}> {
-  constructor(props:P & FieldArrayProps<Value>) {
-    super(props);
-    if (props.value!=null){
-      this.state = { value: props.value};
-    }else{
-      this.state = { value: [] } 
-    }
-  }
-
-  render() {
-    const arrayHelpers: ArrayHelpers<Value>=new FieldArrayHelper<Value>(next=>{
-      this.setState({value:next});
-      if (this.props.onChange) {
-        this.props.onChange(next);
+export function FieldArray<P,Value>(props:(P & FieldArrayProps<Value>)) : React.FunctionComponentElement<P>{
+    const [state, setState] = React.useState((props.value != null?props.value: []) as ReadonlyArray<any>);
+    const onSetState = React.useCallback(next=>{
+      setState(next);
+      if (props.onChange) {
+        props.onChange(next);
       }
-    },this.state.value);
+    },[state])
+    const arrayHelpers: ArrayHelpers<any>=new FieldArrayHelper<any>(onSetState,state);
 
     const {
       component,
       render,
       children,
-    } = this.props;
+    } = props;
 
-    const props: FieldArrayRenderProps<Value> = {
+    const fprops: FieldArrayRenderProps<any> = {
       ...arrayHelpers
     };
 
     return component
-      ? React.createElement(component as any, props)
+      ? React.createElement(component as any, fprops)
       : render
-      ? (render as any)(props)
+      ? (render as any)(fprops)
       : children // children come last, always called
       ? typeof children === 'function'
-        ? (children as any)(props)
+        ? (children as any)(fprops)
         : !isEmptyChildren(children)
         ? React.Children.only(children)
         : null
       : null;
-  }
-}
+};
