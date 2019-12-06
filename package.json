@@ -1,7 +1,7 @@
 {
-  "name": "formik-inspired",
+  "name": "@wallymathieu/formik-reimagined",
   "version": "1.0.0",
-  "description": "Formik inspired code based in large parts on Formik",
+  "description": "Formik reimagined code based in large parts on Formik",
   "keywords": [
     "formik",
     "react",
@@ -20,12 +20,10 @@
   "scripts": {
     "test": "jest --env=jsdom",
     "test:watch": "npm run test -- --watchAll",
-    "start": "cross-env NODE_ENV=development tsdx watch",
     "prebuild": "rimraf dist",
-    "build": "cross-env NODE_ENV=production tsdx build --format=cjs",
+    "build": "tsc --format=cjs",
     "prepublishOnly": "npm run build",
-    "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'",
-    "size": "size-limit"
+    "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'"
   },
   "dependencies": {},
   "optionalDependencies": {},
@@ -50,23 +48,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wallymathieu/formik-inspired.git"
+    "url": "git+https://github.com/wallymathieu/formik-reimagined.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wallymathieu/formik-inspired/issues"
+    "url": "https://github.com/wallymathieu/formik-reimagined/issues"
   },
-  "homepage": "https://github.com/wallymathieu/formik-inspired#readme",
+  "homepage": "https://github.com/wallymathieu/formik-reimagined#readme",
   "prettier": {
     "trailingComma": "es5",
     "singleQuote": true,
     "semi": true
-  },
-  "size-limit": [
-    {
-      "path": "./dist/index.js",
-      "limit": "14 kB"
-    }
-  ]
+  }
 }

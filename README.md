@@ -1,2 +1,3 @@
-# formik-inspired
-Formik inspired source minus some things
+# Formik reimagined
+
+Formik inspired API
