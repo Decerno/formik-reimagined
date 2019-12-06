@@ -86,23 +86,23 @@ const isEmptyChildren = (children: any): boolean =>
 /**
  * "Field array" implemented using state instead of React.useReducer 
  */
-export class FieldArray<P,Value> extends React.PureComponent<P & FieldArrayProps<Value>,ReadonlyArray<Value>> {
+export class FieldArray<P,Value> extends React.PureComponent<P & FieldArrayProps<Value>,{ value: ReadonlyArray<Value>}> {
   constructor(props:P & FieldArrayProps<Value>) {
     super(props);
     if (props.value!=null){
-      this.state = props.value;
+      this.state = { value: props.value};
     }else{
-      this.state = []
+      this.state = { value: [] } 
     }
   }
 
   render() {
     const arrayHelpers: ArrayHelpers<Value>=new FieldArrayHelper<Value>(next=>{
-      this.setState(next);
+      this.setState({value:next});
       if (this.props.onChange) {
         this.props.onChange(next);
       }
-    },this.state);
+    },this.state.value);
 
     const {
       component,

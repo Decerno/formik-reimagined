@@ -107,7 +107,7 @@ describe('<FieldArray />', () => {
       expect(formikBag.values.friends).toEqual(expected);
     });
 
-    it('should push clone not actual referance', () => {
+    it('should push actual referance', () => {
       let personTemplate = { firstName: '', lastName: '' };
       let formikBag: any={values:{people:[]}};
       let arrayHelpers: any;
@@ -127,34 +127,7 @@ describe('<FieldArray />', () => {
       arrayHelpers.push(personTemplate);
       expect(
         formikBag.values.people[formikBag.values.people.length - 1]
-      ).not.toBe(personTemplate);
-      expect(
-        formikBag.values.people[formikBag.values.people.length - 1]
-      ).toMatchObject(personTemplate);
-    });
-  });
-
-  describe('props.pop()', () => {
-    it('should remove and return the last value from the field array', () => {
-      let formikBag: any={values:{friends:[]}};
-      let arrayHelpers: any;
-      ReactDOM.render(
-        <FieldArray
-          name="friends"
-          onChange={value=>formikBag.values.friends=value}
-          value={initialValues.friends}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
-          }}
-        />,
-        node
-      );
-
-      const el = arrayHelpers.pop();
-      const expected = ['jared', 'andrea'];
-      expect(formikBag.values.friends).toEqual(expected);
-      expect(el).toEqual('brent');
+      ).toBe(personTemplate);
     });
   });
 
@@ -274,36 +247,4 @@ describe('<FieldArray />', () => {
     });
   });
 
-  describe('given array-like object representing errors', () => {
-    it('should run arrayHelpers successfully', () => {
-      let formikBag: any={values:{friends:[]}};
-      let arrayHelpers: any;
-      ReactDOM.render(
-        <FieldArray
-          name="friends"
-          onChange={value=>formikBag.values.friends=value}
-          value={initialValues.friends}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
-          }}
-        />,
-        node
-      );
-
-      formikBag.setErrors({ friends: { 2: ['Field error'] } });
-
-      arrayHelpers.push('michael');
-      const el = arrayHelpers.pop();
-      arrayHelpers.swap(0, 2);
-      arrayHelpers.insert(1, 'michael');
-      arrayHelpers.replace(1, 'brian');
-      arrayHelpers.unshift('michael');
-      arrayHelpers.remove(1);
-
-      const expected = ['michael', 'brian', 'andrea', 'jared'];
-      expect(el).toEqual('michael');
-      expect(formikBag.values.friends).toEqual(expected);
-    });
-  });
 });
