@@ -1,3 +1,35 @@
+/**
+ * Dumbed down version of Formik state tree
+ */
+export interface FormState<Values> {
+    /** Form values */
+    values: Values;
+}
+
+/**
+ * Dumbed down version of Formik state helpers
+ */
+export interface FormHelpers {
+    /** Set value of form field directly */
+    setFieldValue(field: string, value: any, shouldValidate?: boolean): void;
+}
+
+/**
+ * Dumbed down version of Formik form event handlers
+ */
+export interface FormHandlers {
+    /** Classic React change handler, keyed by input name */
+    handleChange(e: React.ChangeEvent<any>): void;
+    /** Preact-like linkState. Will return a handleChange function.  */
+    handleChange<T = string | React.ChangeEvent<any>>(
+        field: T
+    ): T extends React.ChangeEvent<any>
+        ? void
+        : ((e: string | React.ChangeEvent<any>) => void);
+}
+
+/**
+ */
 export interface SharedProps<T, Value> {
 
     /**
@@ -42,3 +74,19 @@ export interface ArrayHelpers<Value> {
     /** Imperatively remove and element at an index of an array */
     remove(index: number): Value | undefined;
 }
+
+/**
+ * Values of fields in the form
+ */
+export interface FormValues {
+    [field: string]: any;
+}
+
+/**
+ * State, handlers, and helpers made available to form component or render prop
+ * of <Formik/>.
+ */
+export type FormProps<Values> =
+    FormState<Values> &
+    FormHelpers &
+    FormHandlers;
