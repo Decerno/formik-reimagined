@@ -3,9 +3,12 @@ import {
   FormHelpers,
   FormProps,
   FormValues,
+  FormHandlers,
 } from './types';
 import _ from 'lodash';
+import R from 'ramda';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import { executeChange } from './handleChange';
 
 /**
  * Formik actions + { props }
@@ -83,6 +86,8 @@ export function withFormik<
   OuterProps,
   OuterProps & FormProps<Values>
 > {
+  // Potential way of improving perf: https://github.com/avkonst/hookstate
+
   return function createFormik(
     Component: CompositeComponent<OuterProps & FormProps<Values>>
   ): React.ComponentClass<OuterProps> {
@@ -93,11 +98,21 @@ export function withFormik<
       'Component';
     class C extends React.Component<OuterProps, {}> {
       static displayName = `WithFormikReimagined(${componentDisplayName})`;
+
       render() {
         const { children, ...props } = this.props as any;
-        const formikProps={};
+        const setFieldValue = (field:string,value:any)=>{
+          this.setState(R.set(R.lensProp(field), value, this.state));
+          // 
+        };
+        const injectedformikProps: FormHelpers & FormHandlers={
+          setFieldValue: setFieldValue,
+          handleChange: (e1:React.ChangeEvent<any>)=>{
+            executeChange(this.state, setFieldValue, e1);
+          },
+        };
         return (
-            <Component {...props} {...formikProps} >
+            <Component {...props} {...injectedformikProps} >
                 {children}
             </Component>
         );
