@@ -1,26 +1,28 @@
 import * as React from 'react';
 import {
-  FormHelpers,
-  FormProps,
-  FormValues,
-  FormHandlers,
+  FormikReimaginedHelpers,
+  FormikReimaginedProps,
+  FormikReimaginedValues,
+  FormikReimaginedHandlers,
+  FormikReimaginedState,
 } from './types';
 import _ from 'lodash';
 import R from 'ramda';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import { executeChange } from './handleChange';
-
+import { useStateLink, StateLink, StateMemo } from '@hookstate/core';
+import { Initial } from '@hookstate/initial';
 /**
  * Formik actions + { props }
  */
-export type FormikBag<P> = { props: P } & FormHelpers;
+export type FormikBag<P> = { props: P } & FormikReimaginedHelpers;
 
 /**
  * withFormik() configuration options. Backwards compatible.
  */
 export interface WithFormikConfig<
   Props,
-  Values extends FormValues = FormValues
+  Values extends FormikReimaginedValues = FormikReimaginedValues
 > {
   /**
    * Set the display name of the component. Useful for React DevTools.
@@ -64,9 +66,9 @@ export interface InferableComponentDecorator<TOwnProps> {
 /**
  * A public higher-order component to access the imperative API
  */
-export function withFormik<
+export function withFormikReimagined<
   OuterProps extends object,
-  Values extends FormValues
+  Values extends FormikReimaginedValues
 >({
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
@@ -80,48 +82,34 @@ export function withFormik<
       }
     }
     return val as Values;
-  },
-  ...config
+  }
 }: WithFormikConfig<OuterProps, Values>): ComponentDecorator<
   OuterProps,
-  OuterProps & FormProps<Values>
+  OuterProps & FormikReimaginedProps<Values>
 > {
-  // Potential way of improving perf: https://github.com/avkonst/hookstate
 
   return function createFormik(
-    Component: CompositeComponent<OuterProps & FormProps<Values>>
-  ): React.ComponentClass<OuterProps> {
-    const componentDisplayName =
-      Component.displayName ||
-      Component.name ||
-      (Component.constructor && Component.constructor.name) ||
-      'Component';
-    class C extends React.Component<OuterProps, {}> {
-      static displayName = `WithFormikReimagined(${componentDisplayName})`;
-
-      render() {
-        const { children, ...props } = this.props as any;
+    Component: CompositeComponent<OuterProps & FormikReimaginedProps<Values>>
+  ): React.FunctionComponent<OuterProps> { //
+    return function C(props:(OuterProps)) : React.FunctionComponentElement<OuterProps>{
+        const [state,setState] = React.useState(mapPropsToValues(props));
+          //useStateLink(mapPropsToValues(this.props)).with(Initial);
+        const { children, ...oprops } = props as any;
         const setFieldValue = (field:string,value:any)=>{
-          this.setState(R.set(R.lensProp(field), value, this.state));
-          // 
+          setState(R.set(R.lensProp(field), value, state.get()));
         };
-        const injectedformikProps: FormHelpers & FormHandlers={
+        const injectedformikProps: FormikReimaginedHelpers & FormikReimaginedHandlers& FormikReimaginedState<any>={
           setFieldValue: setFieldValue,
           handleChange: (e1:React.ChangeEvent<any>)=>{
-            executeChange(this.state, setFieldValue, e1);
+            executeChange(state.get(), setFieldValue, e1);
           },
+          values:state
         };
         return (
-            <Component {...props} {...injectedformikProps} >
-                {children}
-            </Component>
+          <Component {...oprops} {...injectedformikProps} >
+              {children}
+          </Component>
         );
       }
     }
-
-    return hoistNonReactStatics(
-      C,
-      Component as React.ComponentClass<OuterProps & FormProps<Values>> // cast type to ComponentClass (even if SFC)
-    ) as React.ComponentClass<OuterProps>;
-  };
 }

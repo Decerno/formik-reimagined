@@ -1,7 +1,8 @@
+
 /**
  * Dumbed down version of Formik state tree
  */
-export interface FormState<Values> {
+export interface FormikReimaginedState<Values> {
     /** Form values */
     values: Values;
 }
@@ -9,28 +10,24 @@ export interface FormState<Values> {
 /**
  * Dumbed down version of Formik state helpers
  */
-export interface FormHelpers {
+export interface FormikReimaginedHelpers {
     /** Set value of form field directly */
-    setFieldValue(field: string, value: any, shouldValidate?: boolean): void;
+    setFieldValue(field: string, value: any): void;
 }
 
 /**
  * Dumbed down version of Formik form event handlers
  */
-export interface FormHandlers {
+export interface FormikReimaginedHandlers {
     /** Classic React change handler, keyed by input name */
     handleChange(e: React.ChangeEvent<any>): void;
     /** Preact-like linkState. Will return a handleChange function.  */
-    handleChange<T = string | React.ChangeEvent<any>>(
-        field: T
-    ): T extends React.ChangeEvent<any>
-        ? void
-        : ((e: string | React.ChangeEvent<any>) => void);
+    handleChange(field: React.ChangeEvent<any>): void;
 }
 
 /**
  */
-export interface SharedProps<T, Value> {
+export interface FormikReimaginedSharedProps<T, Value> {
 
     /**
      * Field component to render. Can either be a string like 'select' or a component.
@@ -59,7 +56,7 @@ export interface SharedProps<T, Value> {
 /**
  * 
  */
-export interface ArrayHelpers<Value> {
+export interface FormikReimaginedArrayHelpers<Value> {
     /** Imperatively add a value to the end of an array */
     push: (obj: Value) => void;
     /** Imperatively swap two values in an array */
@@ -78,7 +75,7 @@ export interface ArrayHelpers<Value> {
 /**
  * Values of fields in the form
  */
-export interface FormValues {
+export interface FormikReimaginedValues {
     [field: string]: any;
 }
 
@@ -86,7 +83,7 @@ export interface FormValues {
  * State, handlers, and helpers made available to form component or render prop
  * of <Formik/>.
  */
-export type FormProps<Values> =
-    FormState<Values> &
-    FormHelpers &
-    FormHandlers;
+export type FormikReimaginedProps<Values> =
+    FormikReimaginedState<Values> &
+    FormikReimaginedHelpers &
+    FormikReimaginedHandlers;

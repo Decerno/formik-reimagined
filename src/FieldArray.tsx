@@ -1,11 +1,11 @@
 import React from 'react';
-import { SharedProps, ArrayHelpers } from './types';
+import { FormikReimaginedSharedProps, FormikReimaginedArrayHelpers } from './types';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 
 /**
  * 
  */
-export class FieldArrayHelper<Value> implements ArrayHelpers<Value>{
+export class FieldArrayHelper<Value> implements FormikReimaginedArrayHelpers<Value>{
   /**
    *
    */
@@ -74,14 +74,15 @@ export class FieldArrayHelper<Value> implements ArrayHelpers<Value>{
   }
 
 }
-export interface FieldArrayRenderProps<Value> extends ArrayHelpers<Value>{
+export interface FieldArrayRenderProps<Value> extends FormikReimaginedArrayHelpers<Value>{
   
 }
-export type FieldArrayProps<Value>= SharedProps<FieldArrayRenderProps<Value>,ReadonlyArray<Value>>;
+export type FieldArrayProps<Value>= FormikReimaginedSharedProps<FieldArrayRenderProps<Value>,ReadonlyArray<Value>>;
 
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
+
 
 /**
  * "Field array" implemented using state instead of React.useReducer 
@@ -94,7 +95,7 @@ export function FieldArray<P,Value>(props:(P & FieldArrayProps<Value>)) : React.
         props.onChange(next);
       }
     },[state])
-    const arrayHelpers: ArrayHelpers<any>=new FieldArrayHelper<any>(onSetState,state);
+    const arrayHelpers: FormikReimaginedArrayHelpers<any>=new FieldArrayHelper<any>(onSetState,state);
 
     const {
       component,
