@@ -1,9 +1,11 @@
+import { StateLink } from '@hookstate/core';
+
 /**
  * Dumbed down version of Formik state tree
  */
 export interface FormikReimaginedState<Values> {
   /** Form values */
-  values: Values;
+  state: StateLink<Values>;
 }
 
 /**
@@ -42,13 +44,9 @@ export interface FormikReimaginedSharedProps<T, Value> {
    */
   children?: (props: T) => React.ReactNode;
   /**
-   * Receive changed value of a component
+   * State
    */
-  onChange?: (value: Value) => void;
-  /**
-   * Initial value or value
-   */
-  value?: Value;
+  state: StateLink<Value>;
 }
 /**
  * State, handlers, and helpers injected as props into the wrapped form component.

@@ -1,17 +1,18 @@
 import React from 'react';
 import { FormikReimaginedSharedProps, FormikReimaginedArrayHelpers } from './types';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
+import { useStateLink, StateLink } from '@hookstate/core';
 
 /**
- *
+ * this implementation is not lazy enough
  */
 export class FieldArrayHelper<Value> implements FormikReimaginedArrayHelpers<Value> {
   /**
    *
    */
-  constructor(private onChange: { (next: ReadonlyArray<Value>): void }, private state: ReadonlyArray<Value>) {}
+  constructor(private state: StateLink<ReadonlyArray<Value>>) {}
   private updateArrayField = (fn: { (s: ReadonlyArray<Value>): ReadonlyArray<Value> }) => {
-    this.onChange(fn(this.state));
+    this.state.set(fn(this.state.value));
   };
 
   push = (value: Value) => this.updateArrayField((arrayLike: ReadonlyArray<Value>) => [...arrayLike, value]);
@@ -63,17 +64,9 @@ const isEmptyChildren = (children: any): boolean => React.Children.count(childre
  * "Field array" implemented using state instead of React.useReducer
  */
 export function FieldArray<P, Value>(props: P & FieldArrayProps<Value>): React.FunctionComponentElement<P> {
-  const [state, setState] = React.useState((props.value != null ? props.value : []) as ReadonlyArray<any>);
-  const onSetState = React.useCallback(
-    next => {
-      setState(next);
-      if (props.onChange) {
-        props.onChange(next);
-      }
-    },
-    [state]
-  );
-  const arrayHelpers: FormikReimaginedArrayHelpers<any> = new FieldArrayHelper<any>(onSetState, state);
+  const state = useStateLink(props.state);
+  
+  const arrayHelpers: FormikReimaginedArrayHelpers<any> = new FieldArrayHelper<any>(state);
 
   const { component, render, children } = props;
 

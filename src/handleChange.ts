@@ -1,4 +1,5 @@
-import R from 'ramda';
+import * as R from 'ramda';
+
 /** Return multi select values based on an array of options */
 function getSelectedValues(options: any[]) {
   return Array.from(options)

@@ -6,8 +6,9 @@ import {
   FormikReimaginedHandlers,
   FormikReimaginedState,
 } from './types';
-import _ from 'lodash';
-import R from 'ramda';
+import * as R from 'ramda';
+import { useStateLink } from '@hookstate/core'
+import { Initial } from '@hookstate/initial'
 import { executeChange } from './handleChange';
 
 /**
@@ -66,22 +67,21 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
   ): React.FunctionComponent<OuterProps> {
     //
     return function CWrapped(props: OuterProps): React.FunctionComponentElement<OuterProps> {
-      const [state, setState] = React.useState(mapPropsToValues(props));
-      //useStateLink(mapPropsToValues(this.props)).with(Initial);
+      const state= useStateLink(mapPropsToValues(props)).with(Initial);
       const { children, ...oprops } = props as any;
-      const setFieldValue = (field: string, value: any) => {
-        const next = R.set(R.lensProp(field), value, state);
-        setState(next);
+      const setFieldValue = React.useCallback( (field: string, value: any) => {
+        const next = R.set(R.lensProp(field), value, state.value);
+        state.set(next);
         if (onChange) {
           onChange(next);
         }
-      };
+      },[state, onChange]);
       const injectedformikProps: FormikReimaginedHelpers & FormikReimaginedHandlers & FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
         handleChange: (e1: React.ChangeEvent<any>) => {
           executeChange(state, setFieldValue, e1);
         },
-        values: state,
+        state: state,
       };
       return (
         <Component {...oprops} {...injectedformikProps}>
