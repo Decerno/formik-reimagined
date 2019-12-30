@@ -87,7 +87,7 @@ export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
   FormikReimaginedHandlers;
 
-export type FormikReimaginedContextType<Values>={
+export interface FormikReimaginedContextType<Values>{
   /**
   * State
   */
