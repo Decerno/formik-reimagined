@@ -2,6 +2,7 @@ import React from 'react';
 import { FormikReimaginedSharedProps, FormikReimaginedArrayHelpers } from './types';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { useStateLink, StateLink } from '@hookstate/core';
+import { FormikReimaginedConsumer } from './FormikContext';
 
 /**
  * this implementation is not lazy enough
@@ -11,6 +12,7 @@ export class FieldArrayHelper<Value> implements FormikReimaginedArrayHelpers<Val
    *
    */
   constructor(private state: StateLink<ReadonlyArray<Value>>) {}
+
   private updateArrayField = (fn: { (s: ReadonlyArray<Value>): ReadonlyArray<Value> }) => {
     this.state.set(fn(this.state.value));
   };
@@ -63,7 +65,11 @@ const isEmptyChildren = (children: any): boolean => React.Children.count(childre
 /**
  * "Field array" implemented using state instead of React.useReducer
  */
-export function FieldArray<P, Value>(props: P & FieldArrayProps<Value>): React.FunctionComponentElement<P> {
+export function FieldArrayHookState<P, Value>(props: P & FieldArrayProps<Value> & {/**
+  * State
+  */
+ state: StateLink<readonly Value []>;
+}): React.FunctionComponentElement<P> {
   const state = useStateLink(props.state);
   
   const arrayHelpers: FormikReimaginedArrayHelpers<any> = new FieldArrayHelper<any>(state);
@@ -85,4 +91,29 @@ export function FieldArray<P, Value>(props: P & FieldArrayProps<Value>): React.F
       ? React.Children.only(children)
       : null
     : null;
+}
+export function FieldArray<P, Value>({children, name, ...props}: P & FieldArrayProps<Value> & { readonly name:string; }): React.FunctionComponentElement<P> {
+  return <FormikReimaginedConsumer>
+      {formik => 
+      {
+        if (!formik.state.nested){
+          throw new Error('Missing formik.state.nested');
+        }
+        if (!name){
+          throw new Error('Missing name');
+        }
+        if (!(name in formik.state.nested)){
+          throw new Error('Missing name');
+        }
+        // to get around the typescript compiler we upcast to any:
+        const state:StateLink<readonly Value[]> = (formik.state.nested as any)[name];
+        if (state===undefined){
+          throw new Error(`Missing state with name '${name}' in nested`);
+        }
+        if (state.value===undefined){
+          throw new Error(`Missing state value for state named '${name}' in nested '${JSON.stringify(formik.state.value)}'`);
+        }
+        return <FieldArrayHookState {...props} state={state} >{children}</FieldArrayHookState>;
+      }
+      }</FormikReimaginedConsumer>;
 }

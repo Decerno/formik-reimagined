@@ -10,6 +10,7 @@ import * as R from 'ramda';
 import { useStateLink } from '@hookstate/core'
 import { Initial } from '@hookstate/initial'
 import { executeChange } from './handleChange';
+import { FormikReimaginedProvider } from './FormikContext';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -82,11 +83,14 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
           executeChange(state, setFieldValue, e1);
         },
         state: state,
+        values: state.value,
       };
       return (
-        <Component {...oprops} {...injectedformikProps}>
-          {children}
-        </Component>
+        <FormikReimaginedProvider value={{state:state}}>
+          <Component {...oprops} {...injectedformikProps}>
+            {children}
+          </Component>
+        </FormikReimaginedProvider>
       );
     };
   };

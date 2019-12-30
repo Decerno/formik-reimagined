@@ -6,6 +6,7 @@ import { StateLink } from '@hookstate/core';
 export interface FormikReimaginedState<Values> {
   /** Form values */
   state: StateLink<Values>;
+  values: Values;
 }
 
 /**
@@ -43,10 +44,6 @@ export interface FormikReimaginedSharedProps<T, Value> {
    * Children render function <Field name>{props => ...}</Field>)
    */
   children?: (props: T) => React.ReactNode;
-  /**
-   * State
-   */
-  state: StateLink<Value>;
 }
 /**
  * State, handlers, and helpers injected as props into the wrapped form component.
@@ -89,3 +86,10 @@ export interface FormikReimaginedValues {
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
   FormikReimaginedHandlers;
+
+export type FormikReimaginedContextType<Values>={
+  /**
+  * State
+  */
+ state: StateLink<Values>;
+};
