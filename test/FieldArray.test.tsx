@@ -93,6 +93,33 @@ describe('<FieldArray />', () => {
       expect(formikBag.values.friends).toEqual(expected);
     });
 
+    it('dispatch onChange', () => {
+      let values: any;
+      let arrayHelpers: any;
+      ReactDOM.render(
+        <TestForm setState={(value:any)=>{values=value;}}>
+          {() => {
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
+          }}
+        </TestForm>,
+        node
+      );
+      act(() => {
+        arrayHelpers.push('jared');
+      });
+
+      const expected = ['jared', 'andrea', 'brent', 'jared'];
+      expect(values.friends).toEqual(expected);
+    });
+
     it('should add multiple values to the end of the field array', () => {
       let formikBag: any;
       let addFriendsFn: any;

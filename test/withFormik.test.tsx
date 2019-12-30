@@ -12,14 +12,7 @@ interface MyProps{
 
 const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<MyProps, Values>> = ({
   values,
-  //handleSubmit,
   handleChange,
-  //handleBlur,
-  //touched,
-  //setStatus,
-  //status,
-  //errors,
-  //isSubmitting,
 }) => {
   return (
     <form >
@@ -80,6 +73,5 @@ describe('withFormik()', () => {
     const { getProps } = renderWithFormik({}, { my: 'prop' });
     expect(getProps().my).toEqual('prop');
   });
-
 
 });

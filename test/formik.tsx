@@ -57,4 +57,7 @@ function FormikInner<
         : null
   );
 }
-export const Formik = withFormikReimagined<any,any>({mapPropsToValues:(props)=>props.initialValues})(FormikInner);
+export const Formik = withFormikReimagined<{ initialValues:any, setState(v:any):void },any>({
+  mapPropsToValues:(props)=>props.initialValues,
+  onChange:(state, props)=>{ if (props.setState) props.setState(state) }
+})(FormikInner);

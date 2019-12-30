@@ -29,7 +29,7 @@ export interface WithFormikReimaginedConfig<Props, Values extends FormikReimagin
    */
   validationSchema?: any | ((props: Props) => any);
 
-  onChange?(values: Values): void;
+  onChange?(values: Values, props: Props): void;
 }
 
 export type CompositeComponent<P> = React.ComponentClass<P> | React.StatelessComponent<P>;
@@ -56,7 +56,7 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
     }
     return val as Values;
   },
-  //onChange,
+  onChange,
 }: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
@@ -69,6 +69,11 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
       const [state, dispatch] = React.useReducer<React.Reducer<FormikReimaginedState<Values>, FormikReimaginedMessage<Values>>>(formikReimaginedReducer, {
         values:mapPropsToValues(props)
       });
+      React.useEffect(() => {
+        if (onChange){
+          onChange(state.values, props);
+        }
+      }, [state, onChange, props]);
 
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback( (field: string, value: any) => {
