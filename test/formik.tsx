@@ -35,6 +35,7 @@ export function Formik<
   Values extends FormikReimaginedValues = FormikReimaginedValues,
   ExtraProps = {}
 >(props: FormikReimaginedConfig<Values> & ExtraProps) {
+    // TODO: use withFormikReimagined
   const state = useStateLink(props.initialValues).with(Initial);
 
   const { component, children, ...oprops } = props as any;
