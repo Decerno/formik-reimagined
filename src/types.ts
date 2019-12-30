@@ -1,11 +1,7 @@
-import { StateLink } from '@hookstate/core';
-
 /**
  * Dumbed down version of Formik state tree
  */
 export interface FormikReimaginedState<Values> {
-  /** Form values */
-  state: StateLink<Values>;
   values: Values;
 }
 
@@ -86,10 +82,3 @@ export interface FormikReimaginedValues {
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
   FormikReimaginedHandlers;
-
-export interface FormikReimaginedContextType<Values>{
-  /**
-  * State
-  */
- state: StateLink<Values>;
-};

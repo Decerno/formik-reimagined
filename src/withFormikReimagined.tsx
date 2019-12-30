@@ -6,11 +6,9 @@ import {
   FormikReimaginedHandlers,
   FormikReimaginedState,
 } from './types';
-import * as R from 'ramda';
-import { useStateLink } from '@hookstate/core'
-import { Initial } from '@hookstate/initial'
 import { executeChange } from './handleChange';
-import { FormikReimaginedProvider } from './FormikContext';
+import { FormikReimaginedValueContext, FormikReimaginedUpdateContext } from './FormikContext';
+import { formikReimaginedReducer, FormikReimaginedMessage } from './reducer';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -58,7 +56,7 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
     }
     return val as Values;
   },
-  onChange,
+  //onChange,
 }: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
@@ -68,29 +66,36 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
   ): React.FunctionComponent<OuterProps> {
     //
     return function CWrapped(props: OuterProps): React.FunctionComponentElement<OuterProps> {
-      const state= useStateLink(mapPropsToValues(props)).with(Initial);
+      const [state, dispatch] = React.useReducer<React.Reducer<FormikReimaginedState<Values>, FormikReimaginedMessage<Values>>>(formikReimaginedReducer, {
+        values:mapPropsToValues(props)
+      });
+
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback( (field: string, value: any) => {
-        const next = R.set(R.lensProp(field), value, state.value);
-        state.set(next);
-        if (onChange) {
-          onChange(next);
-        }
-      },[state, onChange]);
+        dispatch({
+          type: 'SET_FIELD_VALUE',
+          payload: {
+            field,
+            value,
+          },
+        });
+      },[dispatch]);
+
       const injectedformikProps: FormikReimaginedHelpers & FormikReimaginedHandlers & FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
         handleChange: (e1: React.ChangeEvent<any>) => {
           executeChange(state, setFieldValue, e1);
         },
-        state: state,
-        values: state.value,
+        values: state.values,
       };
       return (
-        <FormikReimaginedProvider value={{state:state}}>
-          <Component {...oprops} {...injectedformikProps}>
-            {children}
-          </Component>
-        </FormikReimaginedProvider>
+        <FormikReimaginedValueContext.Provider value={state.values}>
+          <FormikReimaginedUpdateContext.Provider value={dispatch}>
+            <Component {...oprops} {...injectedformikProps}>
+              {children}
+            </Component>
+          </FormikReimaginedUpdateContext.Provider>
+        </FormikReimaginedValueContext.Provider>
       );
     };
   };

@@ -1,16 +1,13 @@
 import {
   FormikReimaginedValues,
   FormikReimaginedProps,
-  FormikReimaginedProvider,
   FormikReimaginedHelpers,
   FormikReimaginedHandlers,
   FormikReimaginedState,
+  withFormikReimagined,
 } from '../src';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
-import { Initial } from '@hookstate/initial';
-import { useStateLink } from '@hookstate/core';
-import R from 'ramda';
 interface FormikReimaginedConfig<Values> {
   /**
    * Form component to render
@@ -31,35 +28,25 @@ interface FormikReimaginedConfig<Values> {
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
 
-export function Formik<
+function FormikInner<
   Values extends FormikReimaginedValues = FormikReimaginedValues,
   ExtraProps = {}
->(props: FormikReimaginedConfig<Values> & ExtraProps) {
-    // TODO: use withFormikReimagined
-  const state = useStateLink(props.initialValues).with(Initial);
+>(props: FormikReimaginedConfig<Values> & ExtraProps & {values:Values; setFieldValue(field: string, value: any): void;}) {
 
   const { component, children, ...oprops } = props as any;
-  const setFieldValue = React.useCallback(
-    (field: string, value: any) => {
-      const next = R.set(R.lensProp(field), value, state.value);
-      state.set(next);
-    },
-    [state]
-  );
+
   const injectedformikProps: FormikReimaginedHelpers &
     FormikReimaginedHandlers &
     FormikReimaginedState<any> = {
-    setFieldValue: setFieldValue,
+    setFieldValue: props.setFieldValue,
     handleChange: (_: React.ChangeEvent<any>) => {
       throw new Error('not impl');
     },
-    state: state,
-    values: state.value,
+    values: props.values,
   };
   const formikbag = {...oprops, ...injectedformikProps};
   return (
-    <FormikReimaginedProvider value={{ state: state }}>
-      {component
+      component
         ? React.createElement(component as any, formikbag)
         : children // children come last, always called
         ? isFunction(children)
@@ -67,7 +54,7 @@ export function Formik<
           : !isEmptyChildren(children)
           ? React.Children.only(children)
           : null
-        : null}
-    </FormikReimaginedProvider>
+        : null
   );
 }
+export const Formik = withFormikReimagined<any,any>({mapPropsToValues:(props)=>props.initialValues})(FormikInner);

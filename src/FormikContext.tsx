@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { FormikReimaginedContextType } from './types';
+import { FormikReimaginedMessage } from './reducer';
 
-export const FormikReimaginedContext = React.createContext<FormikReimaginedContextType<any>>(
+export const FormikReimaginedValueContext = React.createContext<any>(undefined as any);
+export const FormikReimaginedUpdateContext = React.createContext<React.Dispatch<FormikReimaginedMessage<any>>>(
   undefined as any
 );
-export const FormikReimaginedProvider = FormikReimaginedContext.Provider;
-export const FormikReimaginedConsumer = FormikReimaginedContext.Consumer;
-
