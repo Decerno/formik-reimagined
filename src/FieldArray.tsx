@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormikReimaginedSharedProps, FormikReimaginedArrayHelpers } from './types';
-import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { FormikReimaginedValueContext, FormikReimaginedUpdateContext } from './FormikContext';
-import R from 'ramda';
+import * as R from 'ramda';
+import { FormikReimaginedMessage } from './reducer';
 
 /**
  * this implementation is not lazy enough
@@ -11,69 +11,30 @@ export class FieldArrayHelper<Value> implements FormikReimaginedArrayHelpers<Val
     /**
    *
    */
-  constructor(private onChange:{(next:ReadonlyArray<Value>):void},private state:ReadonlyArray<Value>) {
+  constructor(private dispatch:{(value:FormikReimaginedMessage<Value []>):void}, private name:string) {
   }
-  private updateArrayField = (
-    fn: { (s:ReadonlyArray<Value>):ReadonlyArray<Value> }
-  ) => {
-    this.onChange(fn(this.state))
-  };
 
   push = (value: Value) =>
-    this.updateArrayField(
-      (arrayLike: ReadonlyArray<Value>) => [
-        ...arrayLike,
-        value,
-      ],
-    );
+    this.dispatch({ type: 'PUSH_A', payload: { field: this.name, value } });
 
   swap = (indexA: number, indexB: number) =>
-    this.updateArrayField(
-      (array: ReadonlyArray<Value>) => swap(array, indexA, indexB)
-    );
+    this.dispatch({ type: 'SWAP_A', payload: { field: this.name, indexA,indexB } });
 
   move = (from: number, to: number) =>
-    this.updateArrayField((array: ReadonlyArray<Value>) => move(array, from, to));
+    this.dispatch({ type: 'MOVE_A', payload: { field: this.name, from,to} });
 
   insert = (index: number, value: Value) =>
-    this.updateArrayField(
-      (array: ReadonlyArray<Value>) => insert(array, index, value)
-    );
+    this.dispatch({ type: 'INSERT_A', payload: { field: this.name, index,value  } });
+
 
   replace = (index: number, value: Value) =>
-    this.updateArrayField(
-      (array: ReadonlyArray<Value>) => replace(array, index, value)
-    );
+    this.dispatch({ type: 'REPLACE_A', payload: { field: this.name, index,value  } });
 
-  unshift = (value: Value) => {
-    let length = -1;
-    this.updateArrayField(
-      (array: ReadonlyArray<Value>) => {
-        const arr = array ? [value, ...array] : [value];
-        if (length < 0) {
-          length = arr.length;
-        }
-        return arr;
-      }
-    );
-    return length;
-  };
+  unshift = (value: Value) =>
+    this.dispatch({ type: 'UNSHIFT_A', payload: { field: this.name, value  } });
 
-  remove= (index: number): Value => {
-    let result: any;
-    this.updateArrayField(
-      (array?: ReadonlyArray<any>) => {
-        const copy = array ? copyArray(array) : [];
-        if (!result) {
-          result = copy[index];
-        }
-        copy.splice(index, 1);
-        return copy;
-      }
-    );
-
-    return result;
-  }
+  remove= (index: number) =>
+    this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index  } });
 
 }
 export interface FieldArrayRenderProps<Value> extends FormikReimaginedArrayHelpers<Value> {}
@@ -89,14 +50,18 @@ export function FieldArrayState<P, Value>(props: P & FieldArrayProps<Value> & {
   /**
   * State
   */
- state: readonly Value [];
+ readonly state: readonly Value [];
+ /**
+  * Name of state to update
+  */
+ readonly name:string;
  /**
   * Update State
   */
- setState(value:readonly Value []): void;
+ dispatch(value: FormikReimaginedMessage<Value []>): void;
 }): React.FunctionComponentElement<P> {
 
-  const arrayHelpers: FormikReimaginedArrayHelpers<Value> = new FieldArrayHelper<Value>(props.setState, props.state);
+  const arrayHelpers: FormikReimaginedArrayHelpers<Value> = new FieldArrayHelper<Value>(props.dispatch, props.name);
 
   const { component, render, children } = props;
 
@@ -119,19 +84,10 @@ export function FieldArrayState<P, Value>(props: P & FieldArrayProps<Value> & {
 export function FieldArray<P, Value>({children, name, ...props}: P & FieldArrayProps<Value> & { readonly name:string; }): React.FunctionComponentElement<P> {
   const values = React.useContext(FormikReimaginedValueContext);
   const dispatch = React.useContext(FormikReimaginedUpdateContext);
-  const setFieldValue = React.useCallback( (value: any) => {
-    dispatch({
-      type: 'SET_FIELD_VALUE',
-      payload: {
-        field:name,
-        value,
-      },
-    });
-  },[dispatch]);
 
   const state: any[] = R.view(R.lensProp(name), values);
   if (state===undefined){
     throw new Error(`Missing state value for state named '${name}' in nested '${JSON.stringify(values)}'`);
   }
-  return <FieldArrayState {...props} state={state} setState={setFieldValue} >{children}</FieldArrayState>;
+  return <FieldArrayState {...props} state={state} name={name} dispatch={dispatch} >{children}</FieldArrayState>;
 }

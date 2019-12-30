@@ -63,9 +63,9 @@ export interface FormikReimaginedArrayHelpers<Value> {
   insert: (index: number, value: Value) => void;
   /** Imperatively replace a value at an index of an array  */
   replace: (index: number, value: Value) => void;
-  unshift: (value: Value) => number;
+  unshift: (value: Value) => void;
   /** Imperatively remove and element at an index of an array */
-  remove(index: number): Value | undefined;
+  remove(index: number): void;
 }
 
 /**

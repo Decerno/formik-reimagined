@@ -93,7 +93,7 @@ describe('<FieldArray />', () => {
       expect(formikBag.values.friends).toEqual(expected);
     });
 
-    xit('should add multiple values to the end of the field array', () => {
+    it('should add multiple values to the end of the field array', () => {
       let formikBag: any;
       let addFriendsFn: any;
       const AddFriendsButton = (arrayProps: any) => {
@@ -222,7 +222,7 @@ describe('<FieldArray />', () => {
   });
 
   describe('props.unshift()', () => {
-    it('should add a value to start of field array and return its length', () => {
+    it('should add a value to start of field array', () => {
       let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
@@ -243,8 +243,7 @@ describe('<FieldArray />', () => {
         node
       );
       act(() => {
-        const el = arrayHelpers.unshift('brian');
-        expect(el).toEqual(4);
+        arrayHelpers.unshift('brian');
       });
       const expected = ['brian', 'jared', 'andrea', 'brent'];
       expect(formikBag.values.friends).toEqual(expected);
