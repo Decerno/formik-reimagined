@@ -21,7 +21,7 @@
     "test": "jest --env=jsdom",
     "test:watch": "npm run test -- --watchAll",
     "prebuild": "rimraf dist",
-    "build": "tsc --format=cjs",
+    "build": "tsc",
     "prepublishOnly": "npm run build",
     "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'"
   },

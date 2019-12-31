@@ -25,7 +25,7 @@ export interface FormikReimaginedHandlers {
 
 /**
  */
-export interface FormikReimaginedSharedProps<T, Value> {
+export interface FormikReimaginedSharedProps<T> {
   /**
    * Field component to render. Can either be a string like 'select' or a component.
    */

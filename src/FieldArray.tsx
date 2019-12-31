@@ -38,7 +38,7 @@ export class FieldArrayHelper<Value> implements FormikReimaginedArrayHelpers<Val
 
 }
 export interface FieldArrayRenderProps<Value> extends FormikReimaginedArrayHelpers<Value> {}
-export type FieldArrayProps<Value> = FormikReimaginedSharedProps<FieldArrayRenderProps<Value>, ReadonlyArray<Value>>;
+export type FieldArrayProps<Value> = FormikReimaginedSharedProps<FieldArrayRenderProps<Value>>;
 
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean => React.Children.count(children) === 0;
