@@ -1,9 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import _ from 'lodash';
+import isFunction from 'lodash.isfunction';
 import { FieldArray } from '../src';
+import { Formik } from './formik';
 import { act } from 'react-dom/test-utils';
 const initialValues = { friends: ['jared', 'andrea', 'brent'] };
+
+const TestForm: React.SFC<any> = p => (
+  <Formik initialValues={{ friends: initialValues.friends }} {...p} />
+);
 
 describe('<FieldArray />', () => {
   const node = document.createElement('div');
@@ -14,65 +19,82 @@ describe('<FieldArray />', () => {
 
   it('renders component with array helpers as props', () => {
     const TestComponent = (arrayProps: any) => {
-      expect(_.isFunction(arrayProps.push)).toBeTruthy();
+      expect(isFunction(arrayProps.push)).toBeTruthy();
       return null;
     };
 
     ReactDOM.render(
-      <FieldArray component={TestComponent} value={initialValues.friends} />,
+      <TestForm>
+        {() => <FieldArray name="friends" component={TestComponent} />}
+      </TestForm>,
       node
     );
   });
 
   it('renders with render callback with array helpers as props', () => {
     ReactDOM.render(
-      <FieldArray
-        value={initialValues.friends}
-        render={arrayProps => {
-          expect(_.isFunction(arrayProps.push)).toBeTruthy();
-          return null;
-        }}
-      />,
+      <TestForm>
+        {() => (
+          <FieldArray
+            name="friends"
+            render={arrayProps => {
+              expect(isFunction(arrayProps.push)).toBeTruthy();
+              return null;
+            }}
+          />
+        )}
+      </TestForm>,
       node
     );
   });
 
   it('renders with "children as a function" with array helpers as props', () => {
     ReactDOM.render(
-      <FieldArray value={initialValues.friends}>
-        {arrayProps => {
-          expect(_.isFunction(arrayProps.push)).toBeTruthy();
-          return null;
-        }}
-      </FieldArray>,
+      <TestForm>
+        {() => (
+          <FieldArray name="friends">
+            {arrayProps => {
+              expect(isFunction(arrayProps.push)).toBeTruthy();
+              return null;
+            }}
+          </FieldArray>
+        )}
+      </TestForm>,
       node
     );
   });
 
   describe('props.push()', () => {
     it('should add a value to the end of the field array', () => {
-      let formikBag: any={values:{friends:[]}};
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          value={initialValues.friends}
-          onChange={value=>formikBag.values.friends=value}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         arrayHelpers.push('jared');
       });
+
       const expected = ['jared', 'andrea', 'brent', 'jared'];
       expect(formikBag.values.friends).toEqual(expected);
     });
 
-    xit('should add multiple values to the end of the field array', () => {
-      let formikBag: any={values:{friends:[]}};
+    it('should add multiple values to the end of the field array', () => {
+      let formikBag: any;
       let addFriendsFn: any;
       const AddFriendsButton = (arrayProps: any) => {
         const addFriends = () => {
@@ -88,12 +110,15 @@ describe('<FieldArray />', () => {
       };
 
       ReactDOM.render(
-        <FieldArray
-          onChange={value=>formikBag.values.friends=value}
-          value={initialValues.friends} render={AddFriendsButton} />,
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return <FieldArray name="friends" render={AddFriendsButton} />;
+          }}
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         addFriendsFn();
       });
       const expected = [
@@ -107,47 +132,30 @@ describe('<FieldArray />', () => {
       ];
       expect(formikBag.values.friends).toEqual(expected);
     });
-
-    it('should push actual referance', () => {
-      let personTemplate = { firstName: '', lastName: '' };
-      let formikBag: any={values:{people:[]}};
-      let arrayHelpers: any;
-      ReactDOM.render(
-        <FieldArray
-          onChange={value=>formikBag.values.people=value}
-          value={[]}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
-          }}
-        />,
-        node
-      );
-      act(()=>{
-        arrayHelpers.push(personTemplate);
-      });
-      expect(
-        formikBag.values.people[formikBag.values.people.length - 1]
-      ).toBe(personTemplate);
-    });
   });
 
   describe('props.swap()', () => {
     it('should swap two values in field array', () => {
-      let formikBag: any={values:{friends:[]}};
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          onChange={value=>formikBag.values.friends=value}
-          value={initialValues.friends}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         arrayHelpers.swap(0, 2);
       });
       const expected = ['brent', 'andrea', 'jared'];
@@ -157,20 +165,26 @@ describe('<FieldArray />', () => {
 
   describe('props.insert()', () => {
     it('should insert a value at given index of field array', () => {
-      let formikBag: any={values:{friends:[]}};
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          value={initialValues.friends}
-          onChange={value=>formikBag.values.friends=value}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         arrayHelpers.insert(1, 'brian');
       });
       const expected = ['jared', 'brian', 'andrea', 'brent'];
@@ -180,20 +194,26 @@ describe('<FieldArray />', () => {
 
   describe('props.replace()', () => {
     it('should replace a value at given index of field array', () => {
-      let formikBag: any={values:{friends:[]}};
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          value={initialValues.friends}
-          onChange={value=>formikBag.values.friends=value}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         arrayHelpers.replace(1, 'brian');
       });
       const expected = ['jared', 'brian', 'brent'];
@@ -202,51 +222,60 @@ describe('<FieldArray />', () => {
   });
 
   describe('props.unshift()', () => {
-    it('should add a value to start of field array and return its length', () => {
-      let formikBag: any={values:{friends:[]}};
+    it('should add a value to start of field array', () => {
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          onChange={value=>formikBag.values.friends=value}
-          value={initialValues.friends}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      let el = null;
-      act(()=>{
-        el=arrayHelpers.unshift('brian');
+      act(() => {
+        arrayHelpers.unshift('brian');
       });
       const expected = ['brian', 'jared', 'andrea', 'brent'];
       expect(formikBag.values.friends).toEqual(expected);
-      expect(el).toEqual(4);
     });
   });
 
   describe('props.remove()', () => {
     it('should remove a value at given index of field array', () => {
-      let formikBag: any={values:{friends:[]}};
+      let formikBag: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <FieldArray
-          value={initialValues.friends}
-          onChange={value=>formikBag.values.friends=value}
-          render={arrayProps => {
-            arrayHelpers = arrayProps;
-            return null;
+        <TestForm>
+          {(props: any) => {
+            formikBag = props;
+            return (
+              <FieldArray
+                name="friends"
+                render={arrayProps => {
+                  arrayHelpers = arrayProps;
+                  return null;
+                }}
+              />
+            );
           }}
-        />,
+        </TestForm>,
         node
       );
-      act(()=>{
+      act(() => {
         arrayHelpers.remove(1);
       });
       const expected = ['jared', 'brent'];
       expect(formikBag.values.friends).toEqual(expected);
     });
   });
-
 });

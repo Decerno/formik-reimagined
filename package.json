@@ -1,6 +1,6 @@
 {
   "name": "@wallymathieu/formik-reimagined",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha-1",
   "description": "Formik reimagined code based in large parts on Formik",
   "keywords": [
     "formik",
@@ -21,23 +21,31 @@
     "test": "jest --env=jsdom",
     "test:watch": "npm run test -- --watchAll",
     "prebuild": "rimraf dist",
-    "build": "tsc --format=cjs",
+    "build": "tsc",
     "prepublishOnly": "npm run build",
     "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'"
   },
-  "dependencies": {},
+  "dependencies": {
+    "hoist-non-react-statics": "^3.3.0",
+    "ramda": "^0.26.1"
+  },
   "optionalDependencies": {},
   "resolutions": {
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^9.4.0",
+    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^24.0.23",
-    "@types/lodash": "^4.14.149",
+    "@types/ramda": "^0.26.38",
+    "@types/lodash.isfunction": "^3.0.6",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.3",
     "jest": "^24.9.0",
-    "lodash": "^4.17.15",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.isequal": "^4.5.0",
+    "lodash.isfunction": "^3.0.9",
     "prettier": "^1.18.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
