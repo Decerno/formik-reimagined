@@ -6,7 +6,11 @@ export const move = (array: ReadonlyArray<any>, from: number, to: number) => {
   return copy;
 };
 
-export const swap = (arrayLike: ReadonlyArray<any>, indexA: number, indexB: number) => {
+export const swap = (
+  arrayLike: ReadonlyArray<any>,
+  indexA: number,
+  indexB: number
+) => {
   const copy = copyArray(arrayLike);
   const a = copy[indexA];
   copy[indexA] = copy[indexB];
@@ -14,13 +18,21 @@ export const swap = (arrayLike: ReadonlyArray<any>, indexA: number, indexB: numb
   return copy;
 };
 
-export const insert = (arrayLike: ReadonlyArray<any>, index: number, value: any) => {
+export const insert = (
+  arrayLike: ReadonlyArray<any>,
+  index: number,
+  value: any
+) => {
   const copy = copyArray(arrayLike);
   copy.splice(index, 0, value);
   return copy;
 };
 
-export const replace = (arrayLike: ReadonlyArray<any>, index: number, value: any) => {
+export const replace = (
+  arrayLike: ReadonlyArray<any>,
+  index: number,
+  value: any
+) => {
   const copy = copyArray(arrayLike);
   copy[index] = value;
   return copy;

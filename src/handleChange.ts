@@ -8,14 +8,20 @@ function getSelectedValues(options: any[]) {
 }
 
 /** Return the next value for a checkbox */
-function getValueForCheckbox(currentValue: string | any[], checked: boolean, valueProp: any) {
+function getValueForCheckbox(
+  currentValue: string | any[],
+  checked: boolean,
+  valueProp: any
+) {
   // eslint-disable-next-line eqeqeq
   if (valueProp == 'true' || valueProp == 'false') {
     return !!checked;
   }
 
   if (checked && valueProp) {
-    return Array.isArray(currentValue) ? currentValue.concat(valueProp) : [valueProp];
+    return Array.isArray(currentValue)
+      ? currentValue.concat(valueProp)
+      : [valueProp];
   }
   if (!Array.isArray(currentValue)) {
     return !currentValue;

@@ -47,7 +47,8 @@ export interface FormikReimaginedSharedProps<T> {
  *
  * @deprecated  Use `OuterProps & FormikProps<Values>` instead.
  */
-export type InjectedFormikReimaginedProps<Props, Values> = Props & FormikReimaginedProps<Values>;
+export type InjectedFormikReimaginedProps<Props, Values> = Props &
+  FormikReimaginedProps<Values>;
 
 /**
  *
