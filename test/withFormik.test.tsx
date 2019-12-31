@@ -6,16 +6,16 @@ import { render } from '@testing-library/react';
 interface Values {
   name: string;
 }
-interface MyProps{
-  alpha?:string
+interface MyProps {
+  alpha?: string;
 }
 
-const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<MyProps, Values>> = ({
-  values,
-  handleChange,
-}) => {
+const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<
+  MyProps,
+  Values
+>> = ({ values, handleChange }) => {
   return (
-    <form >
+    <form>
       <input
         type="text"
         onChange={handleChange}
@@ -26,7 +26,7 @@ const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<MyProps, 
     </form>
   );
 };
-const Form = withFormikReimagined<MyProps,Values>({})(FormInner);
+const Form = withFormikReimagined<MyProps, Values>({})(FormInner);
 
 const InitialValues: Values = { name: 'jared' };
 
@@ -35,7 +35,7 @@ const renderWithFormik = (options?: any, props?: any) => {
 
   const FormikForm = withFormikReimagined<{}, Values>({
     mapPropsToValues: () => InitialValues,
-    handleSubmit: ()=>{},
+    handleSubmit: () => {},
     ...options,
   })(props => (injected = props) && <Form {...props} />);
 
@@ -54,7 +54,7 @@ describe('withFormik()', () => {
     const props = getProps();
 
     expect(props).toEqual({
-      children:expect.anything(),
+      children: expect.anything(),
       handleChange: expect.any(Function),
       setFieldValue: expect.any(Function),
       state: expect.anything(),
@@ -73,5 +73,4 @@ describe('withFormik()', () => {
     const { getProps } = renderWithFormik({}, { my: 'prop' });
     expect(getProps().my).toEqual('prop');
   });
-
 });

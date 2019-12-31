@@ -7,13 +7,19 @@ import {
   FormikReimaginedState,
 } from './types';
 import { executeChange } from './handleChange';
-import { FormikReimaginedValueContext, FormikReimaginedUpdateContext } from './FormikContext';
+import {
+  FormikReimaginedValueContext,
+  FormikReimaginedUpdateContext,
+} from './FormikContext';
 import { formikReimaginedReducer, FormikReimaginedMessage } from './reducer';
 
 /**
  * withFormik() configuration options. Backwards compatible.
  */
-export interface WithFormikReimaginedConfig<Props, Values extends FormikReimaginedValues = FormikReimaginedValues> {
+export interface WithFormikReimaginedConfig<
+  Props,
+  Values extends FormikReimaginedValues = FormikReimaginedValues
+> {
   /**
    * Set the display name of the component. Useful for React DevTools.
    */
@@ -32,7 +38,9 @@ export interface WithFormikReimaginedConfig<Props, Values extends FormikReimagin
   onChange?(values: Values, props: Props): void;
 }
 
-export type CompositeComponent<P> = React.ComponentClass<P> | React.StatelessComponent<P>;
+export type CompositeComponent<P> =
+  | React.ComponentClass<P>
+  | React.StatelessComponent<P>;
 
 export interface ComponentDecorator<TOwnProps, TMergedProps> {
   (component: CompositeComponent<TMergedProps>): React.ComponentType<TOwnProps>;
@@ -45,11 +53,17 @@ export interface InferableComponentDecorator<TOwnProps> {
 /**
  * A public higher-order component to access the imperative API
  */
-export function withFormikReimagined<OuterProps extends object, Values extends FormikReimaginedValues>({
+export function withFormikReimagined<
+  OuterProps extends object,
+  Values extends FormikReimaginedValues
+>({
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
     for (let k in vanillaProps) {
-      if (vanillaProps.hasOwnProperty(k) && typeof vanillaProps[k] !== 'function') {
+      if (
+        vanillaProps.hasOwnProperty(k) &&
+        typeof vanillaProps[k] !== 'function'
+      ) {
         // @todo TypeScript fix
         (val as any)[k] = vanillaProps[k];
       }
@@ -65,28 +79,40 @@ export function withFormikReimagined<OuterProps extends object, Values extends F
     Component: CompositeComponent<OuterProps & FormikReimaginedProps<Values>>
   ): React.FunctionComponent<OuterProps> {
     //
-    return function CWrapped(props: OuterProps): React.FunctionComponentElement<OuterProps> {
-      const [state, dispatch] = React.useReducer<React.Reducer<FormikReimaginedState<Values>, FormikReimaginedMessage<Values>>>(formikReimaginedReducer, {
-        values:mapPropsToValues(props)
+    return function CWrapped(
+      props: OuterProps
+    ): React.FunctionComponentElement<OuterProps> {
+      const [state, dispatch] = React.useReducer<
+        React.Reducer<
+          FormikReimaginedState<Values>,
+          FormikReimaginedMessage<Values>
+        >
+      >(formikReimaginedReducer, {
+        values: mapPropsToValues(props),
       });
       React.useEffect(() => {
-        if (onChange){
+        if (onChange) {
           onChange(state.values, props);
         }
       }, [state, onChange, props]);
 
       const { children, ...oprops } = props as any;
-      const setFieldValue = React.useCallback( (field: string, value: any) => {
-        dispatch({
-          type: 'SET_FIELD_VALUE',
-          payload: {
-            field,
-            value,
-          },
-        });
-      },[dispatch]);
+      const setFieldValue = React.useCallback(
+        (field: string, value: any) => {
+          dispatch({
+            type: 'SET_FIELD_VALUE',
+            payload: {
+              field,
+              value,
+            },
+          });
+        },
+        [dispatch]
+      );
 
-      const injectedformikProps: FormikReimaginedHelpers & FormikReimaginedHandlers & FormikReimaginedState<any> = {
+      const injectedformikProps: FormikReimaginedHelpers &
+        FormikReimaginedHandlers &
+        FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
         handleChange: (e1: React.ChangeEvent<any>) => {
           executeChange(state, setFieldValue, e1);

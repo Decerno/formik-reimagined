@@ -31,8 +31,13 @@ const isEmptyChildren = (children: any): boolean =>
 function FormikInner<
   Values extends FormikReimaginedValues = FormikReimaginedValues,
   ExtraProps = {}
->(props: FormikReimaginedConfig<Values> & ExtraProps & {values:Values; setFieldValue(field: string, value: any): void;}) {
-
+>(
+  props: FormikReimaginedConfig<Values> &
+    ExtraProps & {
+      values: Values;
+      setFieldValue(field: string, value: any): void;
+    }
+) {
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers &
@@ -44,20 +49,23 @@ function FormikInner<
     },
     values: props.values,
   };
-  const formikbag = {...oprops, ...injectedformikProps};
-  return (
-      component
-        ? React.createElement(component as any, formikbag)
-        : children // children come last, always called
-        ? isFunction(children)
-          ? (children as (bag: any) => React.ReactNode)(formikbag)
-          : !isEmptyChildren(children)
-          ? React.Children.only(children)
-          : null
-        : null
-  );
+  const formikbag = { ...oprops, ...injectedformikProps };
+  return component
+    ? React.createElement(component as any, formikbag)
+    : children // children come last, always called
+    ? isFunction(children)
+      ? (children as (bag: any) => React.ReactNode)(formikbag)
+      : !isEmptyChildren(children)
+      ? React.Children.only(children)
+      : null
+    : null;
 }
-export const Formik = withFormikReimagined<{ initialValues:any, setState(v:any):void },any>({
-  mapPropsToValues:(props)=>props.initialValues,
-  onChange:(state, props)=>{ if (props.setState) props.setState(state) }
+export const Formik = withFormikReimagined<
+  { initialValues: any; setState(v: any): void },
+  any
+>({
+  mapPropsToValues: props => props.initialValues,
+  onChange: (state, props) => {
+    if (props.setState) props.setState(state);
+  },
 })(FormikInner);

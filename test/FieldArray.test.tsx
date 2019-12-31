@@ -97,7 +97,11 @@ describe('<FieldArray />', () => {
       let values: any;
       let arrayHelpers: any;
       ReactDOM.render(
-        <TestForm setState={(value:any)=>{values=value;}}>
+        <TestForm
+          setState={(value: any) => {
+            values = value;
+          }}
+        >
           {() => {
             return (
               <FieldArray
