@@ -1,6 +1,6 @@
 import { FormikReimaginedErrors, FormikReimaginedValues } from './types';
 import isFunction from 'lodash.isfunction';
-import {  Schema, ValidationError } from 'yup';
+import { ValidationError, ObjectSchema } from 'yup';
 
 /**
  * Transform Yup ValidationError to a more usable object
@@ -27,7 +27,7 @@ export function yupToFormErrors<Values>(
  */
 export function validateYupSchema<T extends FormikReimaginedValues>(
   values: T,
-  schema: Schema<T>,
+  schema: ObjectSchema<T>,
   context: any = {}
 ): Partial<T> {
   return schema['validateSync'](values, {
@@ -39,8 +39,8 @@ export function validateYupSchema<T extends FormikReimaginedValues>(
 /**
  * Run validation against a Yup schema and optionally run a function if successful
  */
-export function runValidationSchema<Values>(
-  validationSchema: Schema<Values>,
+export function runValidationSchema<Values extends object>(
+  validationSchema: ObjectSchema<Values>,
   values: Values,
   field?: string
 ): FormikReimaginedErrors<Values> {
@@ -73,7 +73,7 @@ export function runValidationSchema<Values>(
 }
 
 export function runValidateHandler<Values>(
-  validate: {(values:any,field?:string):FormikReimaginedErrors<Values>},
+  validate: { (values: any, field?: string): FormikReimaginedErrors<Values> },
   values: Values,
   field?: string
 ): FormikReimaginedErrors<Values> {

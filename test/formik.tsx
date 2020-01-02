@@ -9,8 +9,9 @@ import {
 } from '../src';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
+import { ObjectSchema } from 'yup';
 
-export interface FormikReimaginedConfig<Values> {
+export interface FormikReimaginedConfig<Values extends object> {
   /**
    * Form component to render
    */
@@ -30,12 +31,12 @@ export interface FormikReimaginedConfig<Values> {
   /**
    * A Yup Schema
    */
-  validationSchema?: any;
+  validationSchema?: ObjectSchema<Values>;
 
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
-  validate?: (values: Values) => void | object;
+  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
 }
 
 /** @private Does a React component have exactly 0 children? */

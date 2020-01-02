@@ -17,6 +17,7 @@ import {
   FormikReimaginedMessage,
   formikReimaginedErrorReducer,
 } from './reducer';
+import { Schema } from 'yup';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -33,24 +34,22 @@ export interface WithFormikReimaginedConfig<
   /**
    * A Yup Schema
    */
-  validationSchema?: any;
+  validationSchema?: Schema<Values>;
 
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
-  validate?: (values: Values, field?:string) => FormikReimaginedErrors<Values>;
+  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
 }
 
-export type CompositeComponent<P> =
+export type ComponentClassOrStatelessComponent<P> =
   | React.ComponentClass<P>
   | React.StatelessComponent<P>;
 
-export interface ComponentDecorator<TOwnProps, TMergedProps> {
-  (component: CompositeComponent<TMergedProps>): React.ComponentType<TOwnProps>;
-}
-
-export interface InferableComponentDecorator<TOwnProps> {
-  <T extends CompositeComponent<TOwnProps>>(component: T): T;
+export interface FormikReimaginedComponentDecorator<TOwnProps, TMergedProps> {
+  (
+    component: ComponentClassOrStatelessComponent<TMergedProps>
+  ): React.ComponentType<TOwnProps>;
 }
 
 /**
@@ -75,12 +74,17 @@ export function withFormikReimagined<
   },
   validate,
   validationSchema,
-}: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
+}: WithFormikReimaginedConfig<
+  OuterProps,
+  Values
+>): FormikReimaginedComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
 > {
   return function createFormik(
-    Component: CompositeComponent<OuterProps & FormikReimaginedProps<Values>>
+    Component: ComponentClassOrStatelessComponent<
+      OuterProps & FormikReimaginedProps<Values>
+    >
   ): React.FunctionComponent<OuterProps> {
     //
     return function CWrapped(

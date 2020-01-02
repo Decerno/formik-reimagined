@@ -1,7 +1,11 @@
 import * as React from 'react';
 import * as Yup from 'yup';
 
-import { FormikReimaginedProps, FieldArray } from '../src';
+import {
+  FormikReimaginedProps,
+  FieldArray,
+  FormikReimaginedErrors,
+} from '../src';
 import { Formik, FormikReimaginedConfig } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
 
@@ -83,7 +87,7 @@ function Form({
 
 const InitialValues = { name: 'jared', users: [] };
 
-function renderFormikReimagined<V = Values>(
+function renderFormikReimagined<V extends Object = Values>(
   props?: Partial<FormikReimaginedConfig<V> & { onSubmit?: any }>
 ) {
   let injected: any;
@@ -169,11 +173,11 @@ describe('<Formik>', () => {
     });
 
     it('runs validations by default', async () => {
-      const validateSync = jest.fn(() => new Map());
-      const validationSchema = {
-        validateSync,
-      };
-      const { getByTestId, rerender } = renderFormikReimagined({
+      const validateSync = jest.fn<FormikReimaginedErrors<Values>, any>(
+        _ => new Map()
+      );
+      const validationSchema: Yup.ObjectSchema<Values> = Yup.object();
+      const { getByTestId, rerender } = renderFormikReimagined<Values>({
         validate: validateSync,
         validationSchema,
       });
@@ -186,21 +190,27 @@ describe('<Formik>', () => {
         },
       });
       rerender();
-      expect(validateSync).toHaveBeenCalledTimes(4);
+      expect(validateSync).toHaveBeenCalledTimes(2);
     });
   });
 
   it('should merge validation errors', async () => {
-    const validate = () => new Map([['users[0].firstName', 'required']]);
-    const validationSchema = Yup.object({
+    const validate = (_: Values) => {
+      return (new Map([
+        ['users[0].firstName', 'required'],
+      ]) as any) as FormikReimaginedErrors<Values>;
+    };
+    const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
+      name: Yup.string(),
       users: Yup.array().of(
         Yup.object({
           lastName: Yup.string().required('required'),
+          firstName: Yup.string(),
         })
       ),
     });
 
-    const { getProps, getByTestId, rerender } = renderFormikReimagined({
+    const { getProps, getByTestId, rerender } = renderFormikReimagined<Values>({
       initialValues: { name: '', users: [{ firstName: '1', lastName: '2' }] },
       validate,
       validationSchema,
