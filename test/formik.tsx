@@ -5,10 +5,12 @@ import {
   FormikReimaginedHandlers,
   FormikReimaginedState,
   withFormikReimagined,
+  FormikReimaginedErrors,
 } from '../src';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
-interface FormikReimaginedConfig<Values> {
+
+export interface FormikReimaginedConfig<Values> {
   /**
    * Form component to render
    */
@@ -22,8 +24,20 @@ interface FormikReimaginedConfig<Values> {
   children?:
     | ((props: FormikReimaginedProps<Values>) => React.ReactNode)
     | React.ReactNode;
+  /** */
   initialValues: Values;
+
+  /**
+   * A Yup Schema
+   */
+  validationSchema?: any;
+
+  /**
+   * Validation function. Must return an error object where that object keys map to corresponding value.
+   */
+  validate?: (values: Values) => void | object;
 }
+
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
@@ -35,7 +49,10 @@ function FormikInner<
   props: FormikReimaginedConfig<Values> &
     ExtraProps & {
       values: Values;
+      errors: FormikReimaginedErrors<Values>;
       setFieldValue(field: string, value: any): void;
+      /** Classic React change handler, keyed by input name */
+      handleChange(e: React.ChangeEvent<any>): void;
     }
 ) {
   const { component, children, ...oprops } = props as any;
@@ -44,10 +61,9 @@ function FormikInner<
     FormikReimaginedHandlers<any> &
     FormikReimaginedState<any> = {
     setFieldValue: props.setFieldValue,
-    handleChange: (_: React.ChangeEvent<any>) => {
-      throw new Error('not impl');
-    },
+    handleChange: props.handleChange,
     values: props.values,
+    errors: props.errors,
   };
   const formikbag = { ...oprops, ...injectedformikProps };
   return component

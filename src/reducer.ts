@@ -1,6 +1,7 @@
-import { FormikReimaginedState } from './types';
+import { FormikReimaginedState, FormikReimaginedErrors } from './types';
 import * as R from 'ramda';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
+import { runValidationSchema, runValidateHandler } from './errors';
 
 export type FormikReimaginedMessage<Values> =
   | { type: 'SET_VALUES'; payload: Values }
@@ -107,4 +108,30 @@ export function formikReimaginedReducer<Values>(
     default:
       return state;
   }
+}
+
+export function formikReimaginedErrorReducer<Values>(
+  validationSchema: any | undefined,
+  validate: { (values: Values): void | object } | undefined
+) {
+  return function formikReimaginedErrorReducer(
+    state: FormikReimaginedState<Values>,
+    msg: FormikReimaginedMessage<Values>
+  ) {
+    const nextState = formikReimaginedReducer(state, msg);
+    const errors: FormikReimaginedErrors<Values>[] = [];
+    if (validationSchema) {
+      errors.push(runValidationSchema(validationSchema, nextState.values));
+    }
+    if (validate) {
+      errors.push(runValidateHandler(validate, nextState.values));
+    }
+    var errorEntries = errors
+      .map(m => Array.from(m.entries()))
+      .reduce(
+        (acc, entries) => acc.concat(entries),
+        [] as [keyof Values, string][]
+      );
+    return { values: nextState.values, errors: new Map(errorEntries) };
+  };
 }

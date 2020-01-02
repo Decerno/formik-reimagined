@@ -11,7 +11,11 @@ import {
   FormikReimaginedValueContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
-import { formikReimaginedReducer, FormikReimaginedMessage } from './reducer';
+import {
+  formikReimaginedReducer,
+  FormikReimaginedMessage,
+  formikReimaginedErrorReducer,
+} from './reducer';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -21,21 +25,19 @@ export interface WithFormikReimaginedConfig<
   Values extends FormikReimaginedValues = FormikReimaginedValues
 > {
   /**
-   * Set the display name of the component. Useful for React DevTools.
-   */
-  displayName?: string;
-
-  /**
    * Map props to the form values
    */
   mapPropsToValues?: (props: Props) => Values;
 
   /**
-   * A Yup Schema or a function that returns a Yup schema
+   * A Yup Schema
    */
-  validationSchema?: any | ((props: Props) => any);
+  validationSchema?: any;
 
-  //
+  /**
+   * Validation function. Must return an error object where that object keys map to corresponding value.
+   */
+  validate?: (values: Values) => void | object;
 }
 
 export type CompositeComponent<P> =
@@ -70,7 +72,8 @@ export function withFormikReimagined<
     }
     return val as Values;
   },
-  //onChange,
+  validate,
+  validationSchema,
 }: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
@@ -82,15 +85,26 @@ export function withFormikReimagined<
     return function CWrapped(
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
-
+      if (!validationSchema) {
+        validationSchema = (props as any).validationSchema;
+      }
+      if (!validate) {
+        validate = (props as any).validate;
+      }
       const [state, dispatch] = React.useReducer<
         React.Reducer<
           FormikReimaginedState<Values>,
           FormikReimaginedMessage<Values>
         >
-      >(formikReimaginedReducer, {
-        values: mapPropsToValues(props),
-      });
+      >(
+        validate == null && validationSchema == null
+          ? formikReimaginedReducer
+          : formikReimaginedErrorReducer(validationSchema, validate),
+        {
+          values: mapPropsToValues(props),
+          errors: new Map(),
+        }
+      );
       const p = props as any;
       const onChange = p.onChange;
       React.useEffect(() => {
@@ -121,6 +135,7 @@ export function withFormikReimagined<
           executeChange(state, setFieldValue, e1);
         },
         values: state.values,
+        errors: state.errors,
       };
       return (
         <FormikReimaginedValueContext.Provider value={state.values}>

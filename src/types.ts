@@ -3,7 +3,14 @@
  */
 export interface FormikReimaginedState<Values> {
   values: Values;
+  /** map of field names to specific error for that field */
+  errors: FormikReimaginedErrors<Values>;
 }
+
+/**
+ * A map containing error messages whose keys correspond to FormikValues.
+ */
+export type FormikReimaginedErrors<Values> = Map<keyof Values, string>;
 
 /**
  * Dumbed down version of Formik state helpers
@@ -67,6 +74,8 @@ export interface FormikReimaginedArrayHelpers<Value> {
   unshift: (value: Value) => void;
   /** Imperatively remove and element at an index of an array */
   remove(index: number): void;
+  /** Classic React change handler, keyed by input name */
+  handleChange(index: number, current: Value, e: React.ChangeEvent<any>): void;
 }
 
 /**
