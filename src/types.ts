@@ -16,11 +16,11 @@ export interface FormikReimaginedHelpers {
 /**
  * Dumbed down version of Formik form event handlers
  */
-export interface FormikReimaginedHandlers {
+export interface FormikReimaginedHandlers<Values> {
   /** Classic React change handler, keyed by input name */
   handleChange(e: React.ChangeEvent<any>): void;
-  /** Preact-like linkState. Will return a handleChange function.  */
-  handleChange(field: React.ChangeEvent<any>): void;
+  /** */
+  onChange?(values: Values): void;
 }
 
 /**
@@ -82,4 +82,4 @@ export interface FormikReimaginedValues {
  */
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
-  FormikReimaginedHandlers;
+  FormikReimaginedHandlers<Values>;

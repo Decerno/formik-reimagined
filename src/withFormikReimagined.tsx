@@ -114,7 +114,7 @@ export function withFormikReimagined<
       );
 
       const injectedformikProps: FormikReimaginedHelpers &
-        FormikReimaginedHandlers &
+        FormikReimaginedHandlers<any> &
         FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
         handleChange: (e1: React.ChangeEvent<any>) => {

@@ -41,7 +41,7 @@ function FormikInner<
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers &
-    FormikReimaginedHandlers &
+    FormikReimaginedHandlers<any> &
     FormikReimaginedState<any> = {
     setFieldValue: props.setFieldValue,
     handleChange: (_: React.ChangeEvent<any>) => {
@@ -64,7 +64,6 @@ function FormikInner<
 export const Formik = withFormikReimagined<
   {
     initialValues: any;
-    onChange?(values: any): void;
   },
   any
 >({
