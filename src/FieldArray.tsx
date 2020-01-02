@@ -1,14 +1,12 @@
 import React from 'react';
 import {
-  FormikReimaginedSharedProps,
-  FormikReimaginedArrayHelpers,
-} from './types';
-import {
   FormikReimaginedValueContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
 import * as R from 'ramda';
 import { FormikReimaginedMessage } from './reducer';
+import { FormikReimaginedArrayHelpers } from './types.array';
+import { FormikReimaginedSharedProps } from './types.props';
 
 /**
  * this implementation is not lazy enough

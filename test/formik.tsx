@@ -1,43 +1,14 @@
 import {
   FormikReimaginedValues,
-  FormikReimaginedProps,
   FormikReimaginedHelpers,
   FormikReimaginedHandlers,
   FormikReimaginedState,
   withFormikReimagined,
   FormikReimaginedErrors,
+  FormikReimaginedConfig,
 } from '../src';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
-import { ObjectSchema } from 'yup';
-
-export interface FormikReimaginedConfig<Values extends object> {
-  /**
-   * Form component to render
-   */
-  component?:
-    | React.ComponentType<FormikReimaginedProps<Values>>
-    | React.ReactNode;
-
-  /**
-   * React children or child render callback
-   */
-  children?:
-    | ((props: FormikReimaginedProps<Values>) => React.ReactNode)
-    | React.ReactNode;
-  /** */
-  initialValues: Values;
-
-  /**
-   * A Yup Schema
-   */
-  validationSchema?: ObjectSchema<Values>;
-
-  /**
-   * Validation function. Must return an error object where that object keys map to corresponding value.
-   */
-  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
-}
 
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean =>

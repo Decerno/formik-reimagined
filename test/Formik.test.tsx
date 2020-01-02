@@ -5,8 +5,9 @@ import {
   FormikReimaginedProps,
   FieldArray,
   FormikReimaginedErrors,
+  FormikReimaginedConfig,
 } from '../src';
-import { Formik, FormikReimaginedConfig } from './formik';
+import { Formik } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
@@ -87,8 +88,10 @@ function Form({
 
 const InitialValues = { name: 'jared', users: [] };
 
-function renderFormikReimagined<V extends Object = Values>(
-  props?: Partial<FormikReimaginedConfig<V> & { onSubmit?: any }>
+function renderFormikReimagined<V extends Values>(
+  props?: Partial<
+    FormikReimaginedConfig<any, V> & { onSubmit?: any; initialValues?: V }
+  >
 ) {
   let injected: any;
   const { rerender, ...rest } = render(
@@ -173,8 +176,8 @@ describe('<Formik>', () => {
     });
 
     it('runs validations by default', async () => {
-      const validateSync = jest.fn<FormikReimaginedErrors<Values>, any>(
-        _ => new Map()
+      const validateSync = jest.fn(
+        (_: Values) => (new Map() as any) as FormikReimaginedErrors<Values>
       );
       const validationSchema: Yup.ObjectSchema<Values> = Yup.object();
       const { getByTestId, rerender } = renderFormikReimagined<Values>({

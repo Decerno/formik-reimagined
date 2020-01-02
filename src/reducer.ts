@@ -2,6 +2,7 @@ import { FormikReimaginedState, FormikReimaginedErrors } from './types';
 import * as R from 'ramda';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
+import { ObjectSchema } from 'yup';
 
 export type FormikReimaginedBaseMessage<Values> =
   | { type: 'SET_VALUES'; payload: Values }
@@ -153,7 +154,7 @@ export function formikReimaginedReducer<Values>(
 }
 
 export function formikReimaginedErrorReducer<Values extends object>(
-  validationSchema: any | undefined,
+  validationSchema: ObjectSchema<Values> | undefined,
   validate:
     | { (values: Values, field?: string): FormikReimaginedErrors<Values> }
     | undefined

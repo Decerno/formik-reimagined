@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {
   FormikReimaginedHelpers,
-  FormikReimaginedProps,
   FormikReimaginedValues,
   FormikReimaginedHandlers,
   FormikReimaginedState,
-  FormikReimaginedErrors,
+  ComponentClassOrStatelessComponent,
+  FormikReimaginedComponentDecorator,
 } from './types';
 import { executeChangeMsg } from './handleChange';
 import {
@@ -17,40 +17,9 @@ import {
   FormikReimaginedMessage,
   formikReimaginedErrorReducer,
 } from './reducer';
-import { ObjectSchema } from 'yup';
-
-/**
- * withFormik() configuration options. Backwards compatible.
- */
-export interface WithFormikReimaginedConfig<
-  Props,
-  Values extends FormikReimaginedValues = FormikReimaginedValues
-> {
-  /**
-   * Map props to the form values
-   */
-  mapPropsToValues?: (props: Props) => Values;
-
-  /**
-   * A Yup Schema
-   */
-  validationSchema?: ObjectSchema<Values>;
-
-  /**
-   * Validation function. Must return an error object where that object keys map to corresponding value.
-   */
-  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
-}
-
-export type ComponentClassOrStatelessComponent<P> =
-  | React.ComponentClass<P>
-  | React.StatelessComponent<P>;
-
-export interface FormikReimaginedComponentDecorator<TOwnProps, TMergedProps> {
-  (
-    component: ComponentClassOrStatelessComponent<TMergedProps>
-  ): React.ComponentType<TOwnProps>;
-}
+import { WithFormikReimaginedConfig } from './types.config';
+import { FormikReimaginedProps } from './types.props';
+import isFunction from 'lodash.isfunction';
 
 /**
  * A public higher-order component to access the imperative API
@@ -104,7 +73,10 @@ export function withFormikReimagined<
       >(
         validate == null && validationSchema == null
           ? formikReimaginedReducer
-          : formikReimaginedErrorReducer(validationSchema, validate),
+          : formikReimaginedErrorReducer(
+              !isFunction(validationSchema) ? validationSchema : undefined,
+              validate
+            ),
         {
           values: mapPropsToValues(props),
           errors: new Map(),
