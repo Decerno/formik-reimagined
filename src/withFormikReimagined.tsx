@@ -20,6 +20,7 @@ import {
 import { WithFormikReimaginedConfig } from './types.config';
 import { FormikReimaginedProps } from './types.props';
 import isFunction from 'lodash.isfunction';
+import { runValidationSchema } from './errors';
 
 /**
  * A public higher-order component to access the imperative API
@@ -60,9 +61,11 @@ export function withFormikReimagined<
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
       if (!validationSchema) {
+        // NOTE: Used for testing
         validationSchema = (props as any).validationSchema;
       }
       if (!validate) {
+        // NOTE: Used for testing
         validate = (props as any).validate;
       }
       const [state, dispatch] = React.useReducer<
@@ -71,7 +74,8 @@ export function withFormikReimagined<
           FormikReimaginedMessage<Values>
         >
       >(
-        validate == null && validationSchema == null
+        validate == null &&
+          (validationSchema == null || isFunction(validationSchema))
           ? formikReimaginedReducer
           : formikReimaginedErrorReducer(
               !isFunction(validationSchema) ? validationSchema : undefined,
@@ -84,6 +88,18 @@ export function withFormikReimagined<
       );
       const p = props as any;
       const onChange = p.onChange;
+
+      React.useEffect(() => {
+        if (isFunction(validationSchema) && !state.errorsSet) {
+          const schema= validationSchema(props);
+          const errors = runValidationSchema(schema, state.values);
+          dispatch({
+            type: 'SET_ERRORS',
+            payload: errors,
+          });
+        }
+      }, [state, props, validationSchema]);
+
       React.useEffect(() => {
         if (onChange) {
           onChange(state.values);

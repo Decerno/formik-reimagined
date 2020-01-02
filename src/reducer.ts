@@ -5,6 +5,7 @@ import { runValidationSchema, runValidateHandler } from './errors';
 import { ObjectSchema } from 'yup';
 
 export type FormikReimaginedBaseMessage<Values> =
+  | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors<Values> }
   | { type: 'SET_VALUES'; payload: Values }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
@@ -59,6 +60,8 @@ export function formikReimaginedReducer<Values>(
   msg: FormikReimaginedMessage<Values>
 ) {
   switch (msg.type) {
+    case 'SET_ERRORS':
+      return { ...state, errors: msg.payload, errorsSet:true };
     case 'SET_VALUES':
       return { ...state, values: msg.payload };
     case 'SET_FIELD_VALUE':

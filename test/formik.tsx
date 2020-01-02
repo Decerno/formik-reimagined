@@ -14,12 +14,9 @@ import isFunction from 'lodash.isfunction';
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
 
-function FormikInner<
-  Values extends FormikReimaginedValues = FormikReimaginedValues,
-  ExtraProps = {}
->(
+function FormikInner<Values extends FormikReimaginedValues = FormikReimaginedValues>(
   props: FormikReimaginedConfig<Values> &
-    ExtraProps & {
+    {
       values: Values;
       errors: FormikReimaginedErrors<Values>;
       setFieldValue(field: string, value: any): void;

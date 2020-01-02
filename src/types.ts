@@ -2,6 +2,9 @@
  * Dumbed down version of Formik state tree
  */
 export interface FormikReimaginedState<Values> {
+  /** if errors are set using dispatch */
+  errorsSet?: boolean;
+  /** Values */
   values: Values;
   /** map of field names to specific error for that field */
   errors: FormikReimaginedErrors<Values>;
