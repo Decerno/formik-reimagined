@@ -32,7 +32,8 @@ export function withFormikReimagined<
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
     for (let k in vanillaProps) {
-      if (Object.prototype.hasOwnProperty.call(vanillaProps,k) &&
+      if (
+        Object.prototype.hasOwnProperty.call(vanillaProps, k) &&
         typeof vanillaProps[k] !== 'function'
       ) {
         // @todo TypeScript fix
@@ -73,11 +74,10 @@ export function withFormikReimagined<
           FormikReimaginedMessage<Values>
         >
       >(
-        validate == null &&
-          (validationSchema == null || isFunction(validationSchema))
+        validate == null && validationSchema == null
           ? formikReimaginedReducer
           : formikReimaginedErrorReducer(
-              !isFunction(validationSchema) ? validationSchema : undefined,
+              validationSchema!=null && !isFunction(validationSchema) ? validationSchema : undefined,
               validate
             ),
         {
@@ -90,7 +90,7 @@ export function withFormikReimagined<
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !state.errorsSet) {
-          const schema= validationSchema(props);
+          const schema = validationSchema(props);
           const errors = runValidationSchema(schema, state.values);
           dispatch({
             type: 'SET_ERRORS',

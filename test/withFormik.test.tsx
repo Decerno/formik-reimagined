@@ -1,19 +1,14 @@
 import * as React from 'react';
 
-import { withFormikReimagined, InjectedFormikReimaginedProps } from '../src';
+import { withFormikReimagined, FormikReimaginedProps } from '../src';
 import { render } from '@testing-library/react';
 
 interface Values {
   name: string;
 }
-interface MyProps {
-  alpha?: string;
-}
 
-const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<
-  MyProps,
-  Values
->> = ({ values, handleChange }) => {
+function FormInner(props: FormikReimaginedProps<Values>) {
+  const { values, handleChange } = props;
   return (
     <form>
       <input
@@ -25,8 +20,8 @@ const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<
       <button type="submit">Submit</button>
     </form>
   );
-};
-const Form = withFormikReimagined<MyProps, Values>({})(FormInner);
+}
+const Form = withFormikReimagined<{}, Values>({})(FormInner);
 
 const InitialValues: Values = { name: 'jared' };
 

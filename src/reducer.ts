@@ -61,7 +61,7 @@ export function formikReimaginedReducer<Values>(
 ) {
   switch (msg.type) {
     case 'SET_ERRORS':
-      return { ...state, errors: msg.payload, errorsSet:true };
+      return { ...state, errors: msg.payload, errorsSet: true };
     case 'SET_VALUES':
       return { ...state, values: msg.payload };
     case 'SET_FIELD_VALUE':
@@ -174,12 +174,15 @@ export function formikReimaginedErrorReducer<Values extends object>(
     if (validate) {
       errors.push(runValidateHandler(validate, nextState.values));
     }
+    if (nextState.errorsSet){
+      errors.push(nextState.errors);
+    }
     var errorEntries = errors
       .map(m => Array.from(m.entries()))
       .reduce(
         (acc, entries) => acc.concat(entries),
         [] as [keyof Values, string][]
       );
-    return { values: nextState.values, errors: new Map(errorEntries) };
+    return { ...nextState, errors: new Map(errorEntries) };
   };
 }
