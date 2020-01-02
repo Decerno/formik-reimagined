@@ -17,7 +17,7 @@ import {
   FormikReimaginedMessage,
   formikReimaginedErrorReducer,
 } from './reducer';
-import { Schema } from 'yup';
+import { ObjectSchema } from 'yup';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -34,7 +34,7 @@ export interface WithFormikReimaginedConfig<
   /**
    * A Yup Schema
    */
-  validationSchema?: Schema<Values>;
+  validationSchema?: ObjectSchema<Values>;
 
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
