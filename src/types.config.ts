@@ -2,17 +2,18 @@ import { FormikReimaginedValues, FormikReimaginedErrors } from './types';
 import { ObjectSchema } from 'yup';
 
 /**
- * withFormik() configuration options.
+ * Formik configuration options.
  */
 export interface FormikReimaginedConfig<
-  _Props,
+  Props,
   Values extends FormikReimaginedValues = FormikReimaginedValues
 > {
   /**
    * A Yup Schema
    */
-  validationSchema?: ObjectSchema<Values>;
-  //| { (props: Props): ObjectSchema<Values> }
+  validationSchema?:
+    | ObjectSchema<Values>
+    | { (props: Props): ObjectSchema<Values> };
 
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
