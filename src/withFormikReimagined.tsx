@@ -32,8 +32,7 @@ export function withFormikReimagined<
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
     for (let k in vanillaProps) {
-      if (
-        vanillaProps.hasOwnProperty(k) &&
+      if (Object.prototype.hasOwnProperty.call(vanillaProps,k) &&
         typeof vanillaProps[k] !== 'function'
       ) {
         // @todo TypeScript fix
@@ -98,7 +97,7 @@ export function withFormikReimagined<
             payload: errors,
           });
         }
-      }, [state, props, validationSchema]);
+      }, [state, props]);
 
       React.useEffect(() => {
         if (onChange) {
