@@ -5,6 +5,7 @@ import {
   FormikReimaginedValues,
   FormikReimaginedHandlers,
   FormikReimaginedState,
+  FormikReimaginedErrors,
 } from './types';
 import { executeChangeMsg } from './handleChange';
 import {
@@ -37,7 +38,7 @@ export interface WithFormikReimaginedConfig<
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
-  validate?: (values: Values) => void | object;
+  validate?: (values: Values, field?:string) => FormikReimaginedErrors<Values>;
 }
 
 export type CompositeComponent<P> =

@@ -154,7 +154,7 @@ export function formikReimaginedReducer<Values>(
 
 export function formikReimaginedErrorReducer<Values>(
   validationSchema: any | undefined,
-  validate: { (values: Values): void | object } | undefined
+  validate: { (values: Values, field?:string): FormikReimaginedErrors<Values> } | undefined
 ) {
   return function formikReimaginedErrorReducer(
     state: FormikReimaginedState<Values>,

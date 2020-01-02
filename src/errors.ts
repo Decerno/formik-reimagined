@@ -1,20 +1,21 @@
-import { FormikReimaginedErrors, FormikReimaginedValues } from 'types';
+import { FormikReimaginedErrors, FormikReimaginedValues } from './types';
 import isFunction from 'lodash.isfunction';
+import {  Schema, ValidationError } from 'yup';
 
 /**
  * Transform Yup ValidationError to a more usable object
  */
 export function yupToFormErrors<Values>(
-  yupError: any
+  yupError: ValidationError
 ): FormikReimaginedErrors<Values> {
   let errors: FormikReimaginedErrors<Values> = new Map<keyof Values, string>();
   if (yupError.inner) {
     if (yupError.inner.length === 0) {
-      errors.set(yupError.path, yupError.message);
+      errors.set(yupError.path as any, yupError.message);
     } else {
       for (let err of yupError.inner) {
-        if (!errors.has(err.path)) {
-          errors.set(err.path, err.message);
+        if (!errors.has(err.path as any)) {
+          errors.set(err.path as any, err.message);
         }
       }
     }
@@ -26,7 +27,7 @@ export function yupToFormErrors<Values>(
  */
 export function validateYupSchema<T extends FormikReimaginedValues>(
   values: T,
-  schema: any,
+  schema: Schema<T>,
   context: any = {}
 ): Partial<T> {
   return schema['validateSync'](values, {
@@ -39,7 +40,7 @@ export function validateYupSchema<T extends FormikReimaginedValues>(
  * Run validation against a Yup schema and optionally run a function if successful
  */
 export function runValidationSchema<Values>(
-  validationSchema: any,
+  validationSchema: Schema<Values>,
   values: Values,
   field?: string
 ): FormikReimaginedErrors<Values> {
@@ -72,7 +73,7 @@ export function runValidationSchema<Values>(
 }
 
 export function runValidateHandler<Values>(
-  validate: any,
+  validate: {(values:any,field?:string):FormikReimaginedErrors<Values>},
   values: Values,
   field?: string
 ): FormikReimaginedErrors<Values> {
