@@ -42,7 +42,7 @@ function Form({
                     <td>
                       <input
                         type="text"
-                        onChange={v => arrayHelpers.handleChange(i, value, v)}
+                        onChange={v => arrayHelpers.replace(i, { ...value, [v.target.name]: v.target.value })}
                         value={value.firstName}
                         name="firstName"
                         data-testid="firstName-input"
@@ -51,7 +51,7 @@ function Form({
                     <td>
                       <input
                         type="text"
-                        onChange={v => arrayHelpers.handleChange(i, value, v)}
+                        onChange={v => arrayHelpers.replace(i, { ...value, [v.target.name]: v.target.value })}
                         value={value.lastName}
                         name="lastName"
                         data-testid="lastName-input"

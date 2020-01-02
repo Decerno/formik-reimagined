@@ -6,7 +6,7 @@ import {
   FormikReimaginedHandlers,
   FormikReimaginedState,
 } from './types';
-import { executeChange } from './handleChange';
+import { executeChangeMsg } from './handleChange';
 import {
   FormikReimaginedValueContext,
   FormikReimaginedUpdateContext,
@@ -126,14 +126,18 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const handleChange=React.useCallback((e1: React.ChangeEvent<any>) => {
+        const msg = executeChangeMsg(e1);
+        if (msg!=null){
+          dispatch(msg);
+        }
+      },[dispatch]);
 
       const injectedformikProps: FormikReimaginedHelpers &
         FormikReimaginedHandlers<any> &
         FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
-        handleChange: (e1: React.ChangeEvent<any>) => {
-          executeChange(state, setFieldValue, e1);
-        },
+        handleChange: handleChange,
         values: state.values,
         errors: state.errors,
       };

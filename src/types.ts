@@ -74,8 +74,6 @@ export interface FormikReimaginedArrayHelpers<Value> {
   unshift: (value: Value) => void;
   /** Imperatively remove and element at an index of an array */
   remove(index: number): void;
-  /** Classic React change handler, keyed by input name */
-  handleChange(index: number, current: Value, e: React.ChangeEvent<any>): void;
 }
 
 /**

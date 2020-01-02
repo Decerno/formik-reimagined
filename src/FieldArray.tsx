@@ -9,7 +9,6 @@ import {
 } from './FormikContext';
 import * as R from 'ramda';
 import { FormikReimaginedMessage } from './reducer';
-import { executeChange } from './handleChange';
 
 /**
  * this implementation is not lazy enough
@@ -53,13 +52,6 @@ export class FieldArrayHelper<Value>
 
   remove = (index: number) =>
     this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index } });
-
-  handleChange = (index: number, current: Value, e: React.ChangeEvent<any>) => {
-    const setFieldValue = (field: string, value: any) => {
-      this.replace(index, R.set(R.lensProp(field), value, current));
-    };
-    executeChange(current, setFieldValue, e);
-  };
 }
 export interface FieldArrayRenderProps<Value>
   extends FormikReimaginedArrayHelpers<Value> {}
