@@ -5,13 +5,19 @@ import {
   FormikReimaginedValues,
   FormikReimaginedHandlers,
   FormikReimaginedState,
+  FormikReimaginedErrors,
 } from './types';
-import { executeChange } from './handleChange';
+import { executeChangeMsg } from './handleChange';
 import {
   FormikReimaginedValueContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
-import { formikReimaginedReducer, FormikReimaginedMessage } from './reducer';
+import {
+  formikReimaginedReducer,
+  FormikReimaginedMessage,
+  formikReimaginedErrorReducer,
+} from './reducer';
+import { Schema } from 'yup';
 
 /**
  * withFormik() configuration options. Backwards compatible.
@@ -21,33 +27,29 @@ export interface WithFormikReimaginedConfig<
   Values extends FormikReimaginedValues = FormikReimaginedValues
 > {
   /**
-   * Set the display name of the component. Useful for React DevTools.
-   */
-  displayName?: string;
-
-  /**
    * Map props to the form values
    */
   mapPropsToValues?: (props: Props) => Values;
 
   /**
-   * A Yup Schema or a function that returns a Yup schema
+   * A Yup Schema
    */
-  validationSchema?: any | ((props: Props) => any);
+  validationSchema?: Schema<Values>;
 
-  //
+  /**
+   * Validation function. Must return an error object where that object keys map to corresponding value.
+   */
+  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
 }
 
-export type CompositeComponent<P> =
+export type ComponentClassOrStatelessComponent<P> =
   | React.ComponentClass<P>
   | React.StatelessComponent<P>;
 
-export interface ComponentDecorator<TOwnProps, TMergedProps> {
-  (component: CompositeComponent<TMergedProps>): React.ComponentType<TOwnProps>;
-}
-
-export interface InferableComponentDecorator<TOwnProps> {
-  <T extends CompositeComponent<TOwnProps>>(component: T): T;
+export interface FormikReimaginedComponentDecorator<TOwnProps, TMergedProps> {
+  (
+    component: ComponentClassOrStatelessComponent<TMergedProps>
+  ): React.ComponentType<TOwnProps>;
 }
 
 /**
@@ -70,27 +72,44 @@ export function withFormikReimagined<
     }
     return val as Values;
   },
-  //onChange,
-}: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
+  validate,
+  validationSchema,
+}: WithFormikReimaginedConfig<
+  OuterProps,
+  Values
+>): FormikReimaginedComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
 > {
   return function createFormik(
-    Component: CompositeComponent<OuterProps & FormikReimaginedProps<Values>>
+    Component: ComponentClassOrStatelessComponent<
+      OuterProps & FormikReimaginedProps<Values>
+    >
   ): React.FunctionComponent<OuterProps> {
     //
     return function CWrapped(
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
-
+      if (!validationSchema) {
+        validationSchema = (props as any).validationSchema;
+      }
+      if (!validate) {
+        validate = (props as any).validate;
+      }
       const [state, dispatch] = React.useReducer<
         React.Reducer<
           FormikReimaginedState<Values>,
           FormikReimaginedMessage<Values>
         >
-      >(formikReimaginedReducer, {
-        values: mapPropsToValues(props),
-      });
+      >(
+        validate == null && validationSchema == null
+          ? formikReimaginedReducer
+          : formikReimaginedErrorReducer(validationSchema, validate),
+        {
+          values: mapPropsToValues(props),
+          errors: new Map(),
+        }
+      );
       const p = props as any;
       const onChange = p.onChange;
       React.useEffect(() => {
@@ -112,15 +131,23 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const handleChange = React.useCallback(
+        (e1: React.ChangeEvent<any>) => {
+          const msg = executeChangeMsg(e1);
+          if (msg != null) {
+            dispatch(msg);
+          }
+        },
+        [dispatch]
+      );
 
       const injectedformikProps: FormikReimaginedHelpers &
         FormikReimaginedHandlers<any> &
         FormikReimaginedState<any> = {
         setFieldValue: setFieldValue,
-        handleChange: (e1: React.ChangeEvent<any>) => {
-          executeChange(state, setFieldValue, e1);
-        },
+        handleChange: handleChange,
         values: state.values,
+        errors: state.errors,
       };
       return (
         <FormikReimaginedValueContext.Provider value={state.values}>

@@ -3,7 +3,14 @@
  */
 export interface FormikReimaginedState<Values> {
   values: Values;
+  /** map of field names to specific error for that field */
+  errors: FormikReimaginedErrors<Values>;
 }
+
+/**
+ * A map containing error messages whose keys correspond to FormikValues.
+ */
+export type FormikReimaginedErrors<Values> = Map<keyof Values, string>;
 
 /**
  * Dumbed down version of Formik state helpers

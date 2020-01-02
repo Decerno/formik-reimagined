@@ -15,10 +15,11 @@
     "dist"
   ],
   "peerDependencies": {
-    "react": "^16.9.0"
+    "react": "^16.9.0",
+    "yup": "^0.28.0"
   },
   "scripts": {
-    "test": "jest --env=jsdom",
+    "test": "jest",
     "test:watch": "npm run test -- --watchAll",
     "prebuild": "rimraf dist",
     "build": "tsc",
@@ -26,7 +27,6 @@
     "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^3.3.0",
     "ramda": "^0.26.1"
   },
   "optionalDependencies": {},
@@ -36,23 +36,24 @@
   },
   "devDependencies": {
     "@testing-library/react": "^9.4.0",
-    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^24.0.23",
-    "@types/ramda": "^0.26.38",
     "@types/lodash.isfunction": "^3.0.6",
+    "@types/ramda": "^0.26.38",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.3",
+    "@types/yup": "^0.26.27",
     "jest": "^24.9.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.isfunction": "^3.0.9",
-    "prettier": "^1.18.2",
+    "prettier": "^1.19.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^24.2.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "yup": "^0.28.0"
   },
   "repository": {
     "type": "git",
