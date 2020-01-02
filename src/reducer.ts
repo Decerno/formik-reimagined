@@ -3,25 +3,30 @@ import * as R from 'ramda';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
 
-export type FormikReimaginedBaseMessage<Values>=
+export type FormikReimaginedBaseMessage<Values> =
   | { type: 'SET_VALUES'; payload: Values }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
-    type: 'SWAP_A';
-    payload: { field: string; indexA: number; indexB: number };
-  }
+      type: 'SWAP_A';
+      payload: { field: string; indexA: number; indexB: number };
+    }
   | { type: 'MOVE_A'; payload: { field: string; from: number; to: number } }
   | { type: 'INSERT_A'; payload: { field: string; index: number; value?: any } }
   | {
-    type: 'REPLACE_A';
-    payload: { field: string; index: number; value?: any };
-  }
+      type: 'REPLACE_A';
+      payload: { field: string; index: number; value?: any };
+    }
   | { type: 'UNSHIFT_A'; payload: { field: string; value?: any } }
   | { type: 'REMOVE_A'; payload: { field: string; index: number } }
-  | { type: 'FLIP_CB'; payload: { field: string; checked: boolean; value: any } };
+  | {
+      type: 'FLIP_CB';
+      payload: { field: string; checked: boolean; value: any };
+    };
 
-export type FormikReimaginedMessage<Values> =FormikReimaginedBaseMessage<Values>;
+export type FormikReimaginedMessage<Values> = FormikReimaginedBaseMessage<
+  Values
+>;
 /** Return the next value for a checkbox */
 function getValueForCheckbox(
   currentValue: string | any[],
@@ -69,7 +74,8 @@ export function formikReimaginedReducer<Values>(
         ...state,
         values: R.over(
           R.lensProp(msg.payload.field),
-          (value)=>getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
+          value =>
+            getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
           state.values
         ),
       };

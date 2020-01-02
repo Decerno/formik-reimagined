@@ -126,12 +126,15 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
-      const handleChange=React.useCallback((e1: React.ChangeEvent<any>) => {
-        const msg = executeChangeMsg(e1);
-        if (msg!=null){
-          dispatch(msg);
-        }
-      },[dispatch]);
+      const handleChange = React.useCallback(
+        (e1: React.ChangeEvent<any>) => {
+          const msg = executeChangeMsg(e1);
+          if (msg != null) {
+            dispatch(msg);
+          }
+        },
+        [dispatch]
+      );
 
       const injectedformikProps: FormikReimaginedHelpers &
         FormikReimaginedHandlers<any> &

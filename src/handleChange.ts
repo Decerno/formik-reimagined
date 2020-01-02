@@ -11,7 +11,9 @@ function getSelectedValues(options: any[]) {
  * Execute change
  * @param event the react change event
  */
-export function executeChangeMsg(event: React.ChangeEvent<any>):FormikReimaginedMessage<any>|undefined {
+export function executeChangeMsg(
+  event: React.ChangeEvent<any>
+): FormikReimaginedMessage<any> | undefined {
   let field = null;
   let parsed;
   // If we can, persist the event
@@ -35,17 +37,17 @@ export function executeChangeMsg(event: React.ChangeEvent<any>):FormikReimagined
     console.warn('Missing id or name for handle change');
     return;
   }
-  if (/checkbox/.test(type)){
-    return { type: 'FLIP_CB', payload: {  field, checked, value } };
+  if (/checkbox/.test(type)) {
+    return { type: 'FLIP_CB', payload: { field, checked, value } };
   }
-  if (/number|range/.test(type)){
-    const nvalue=((parsed = parseFloat(value)), isNaN(parsed) ? '' : parsed);
-    return { type: 'SET_FIELD_VALUE', payload: {  field, value:nvalue } };
+  if (/number|range/.test(type)) {
+    const nvalue = ((parsed = parseFloat(value)), isNaN(parsed) ? '' : parsed);
+    return { type: 'SET_FIELD_VALUE', payload: { field, value: nvalue } };
   }
-  if (!!multiple){
-    const nvalue=getSelectedValues(options);
-    return { type: 'SET_FIELD_VALUE', payload: {  field, value:nvalue } };
+  if (!!multiple) {
+    const nvalue = getSelectedValues(options);
+    return { type: 'SET_FIELD_VALUE', payload: { field, value: nvalue } };
   }
 
-  return { type: 'SET_FIELD_VALUE', payload: {  field, value } }
-};
+  return { type: 'SET_FIELD_VALUE', payload: { field, value } };
+}
