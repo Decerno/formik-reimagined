@@ -13,17 +13,7 @@ interface MyProps {
 const FormInner: React.FunctionComponent<InjectedFormikReimaginedProps<
   MyProps,
   Values
->> = ({
-  values,
-  //handleSubmit,
-  handleChange,
-  //handleBlur,
-  //touched,
-  //setStatus,
-  //status,
-  //errors,
-  //isSubmitting,
-}) => {
+>> = ({ values, handleChange }) => {
   return (
     <form>
       <input
