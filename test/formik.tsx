@@ -60,12 +60,13 @@ function FormikInner<
       : null
     : null;
 }
+
 export const Formik = withFormikReimagined<
-  { initialValues: any; setState(v: any): void },
+  {
+    initialValues: any;
+    onChange?(values: any): void;
+  },
   any
 >({
   mapPropsToValues: props => props.initialValues,
-  onChange: (state, props) => {
-    if (props.setState) props.setState(state);
-  },
 })(FormikInner);

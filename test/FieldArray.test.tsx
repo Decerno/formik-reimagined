@@ -93,12 +93,12 @@ describe('<FieldArray />', () => {
       expect(formikBag.values.friends).toEqual(expected);
     });
 
-    it('dispatch onChange', () => {
+    it('dispatches onChange', () => {
       let values: any;
       let arrayHelpers: any;
       ReactDOM.render(
         <TestForm
-          setState={(value: any) => {
+          onChange={(value: any) => {
             values = value;
           }}
         >

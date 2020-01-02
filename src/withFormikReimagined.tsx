@@ -35,7 +35,7 @@ export interface WithFormikReimaginedConfig<
    */
   validationSchema?: any | ((props: Props) => any);
 
-  onChange?(values: Values, props: Props): void;
+  //
 }
 
 export type CompositeComponent<P> =
@@ -70,7 +70,7 @@ export function withFormikReimagined<
     }
     return val as Values;
   },
-  onChange,
+  //onChange,
 }: WithFormikReimaginedConfig<OuterProps, Values>): ComponentDecorator<
   OuterProps,
   OuterProps & FormikReimaginedProps<Values>
@@ -82,6 +82,7 @@ export function withFormikReimagined<
     return function CWrapped(
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
+
       const [state, dispatch] = React.useReducer<
         React.Reducer<
           FormikReimaginedState<Values>,
@@ -90,11 +91,13 @@ export function withFormikReimagined<
       >(formikReimaginedReducer, {
         values: mapPropsToValues(props),
       });
+      const p = props as any;
+      const onChange = p.onChange;
       React.useEffect(() => {
         if (onChange) {
-          onChange(state.values, props);
+          onChange(state.values);
         }
-      }, [state, onChange, props]);
+      }, [state, onChange]);
 
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
