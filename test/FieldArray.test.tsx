@@ -1,14 +1,25 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import isFunction from 'lodash.isfunction';
-import { FieldArray } from '../src';
-import { Formik } from './formik';
+import { FieldArray, withFormikReimagined } from '../src';
+import { FormikTestComponent } from './formik';
 import { act } from 'react-dom/test-utils';
+interface Values {
+  friends: string[];
+}
 const initialValues = { friends: ['jared', 'andrea', 'brent'] };
 
 const TestForm: React.SFC<any> = p => (
   <Formik initialValues={{ friends: initialValues.friends }} {...p} />
 );
+const Formik = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+})(FormikTestComponent);
 
 describe('<FieldArray />', () => {
   const node = document.createElement('div');

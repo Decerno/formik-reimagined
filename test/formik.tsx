@@ -3,7 +3,6 @@ import {
   FormikReimaginedHelpers,
   FormikReimaginedHandlers,
   FormikReimaginedState,
-  withFormikReimagined,
   FormikReimaginedErrors,
   FormikReimaginedConfig,
 } from '../src';
@@ -14,7 +13,7 @@ import isFunction from 'lodash.isfunction';
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
 
-function FormikInner<
+export function FormikTestComponent<
   Values extends FormikReimaginedValues = FormikReimaginedValues
 >(
   props: FormikReimaginedConfig<Values> & {
@@ -46,12 +45,3 @@ function FormikInner<
       : null
     : null;
 }
-
-export const Formik = withFormikReimagined<
-  {
-    initialValues: any;
-  },
-  any
->({
-  mapPropsToValues: props => props.initialValues,
-})(FormikInner);

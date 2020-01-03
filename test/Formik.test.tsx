@@ -8,14 +8,11 @@ import {
   FormikReimaginedConfig,
   withFormikReimagined,
 } from '../src';
-import { Formik } from './formik';
+import { FormikTestComponent } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
 export const noop = () => {};
-function later(delay: number, value?: any) {
-  return new Promise(resolve => setTimeout(resolve, delay, value));
-}
 interface ValuesUser {
   firstName: string;
   lastName: string;
@@ -24,6 +21,14 @@ interface Values {
   name: string;
   users: ValuesUser[];
 }
+const Formik = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+})(FormikTestComponent);
 
 function Form({
   values,
@@ -310,7 +315,6 @@ describe('<Formik>', () => {
     });
 
     rerender(<FormWithPropsValidation initialValues={initialValues} />);
-    await later(10);
     await wait(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['users[0].lastName', 'required']]);
