@@ -34,7 +34,9 @@ function Form({
   return (
     <form onSubmit={handleSubmit} data-testid="form">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
-      <pre data-testid="errors">{JSON.stringify(Array.from(errors.entries()))}</pre>
+      <pre data-testid="errors">
+        {JSON.stringify(Array.from(errors.entries()))}
+      </pre>
       <input
         type="text"
         onChange={handleChange}
@@ -102,6 +104,21 @@ const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
 });
 const InitialValues = { name: 'jared', users: [] };
 
+let countOfFormWithCountingValidation = 0;
+const FormWithCountingValidation = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+  validate: (_: Values) => {
+    return (new Map([
+      ['count', (++countOfFormWithCountingValidation).toString()],
+    ]) as any) as FormikReimaginedErrors<Values>;
+  },
+})(Form);
+
 const FormWithTwoValidations = withFormikReimagined<
   {
     initialValues: Values;
@@ -109,12 +126,12 @@ const FormWithTwoValidations = withFormikReimagined<
   Values
 >({
   mapPropsToValues: props => props.initialValues,
-  validate:(_: Values) => {
+  validate: (_: Values) => {
     return (new Map([
       ['users[0].firstName', 'required'],
     ]) as any) as FormikReimaginedErrors<Values>;
   },
-  validationSchema
+  validationSchema,
 })(Form);
 
 const FormWithPropsValidation = withFormikReimagined<
@@ -124,7 +141,22 @@ const FormWithPropsValidation = withFormikReimagined<
   Values
 >({
   mapPropsToValues: props => props.initialValues,
-  validationSchema: (_)=>validationSchema
+  validationSchema: _ => validationSchema,
+})(Form);
+let countOfFormWithPropsValidationAndCount = 0;
+const FormWithPropsValidationAndCount = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+  validationSchema: _ => validationSchema,
+  validate: (_: Values) => {
+    return (new Map([
+      ['count', (++countOfFormWithPropsValidationAndCount).toString()],
+    ]) as any) as FormikReimaginedErrors<Values>;
+  },
 })(Form);
 
 function renderFormikReimagined<V extends Values>(
@@ -215,14 +247,9 @@ describe('<Formik>', () => {
     });
 
     it('runs validations by default', async () => {
-      const validateSync = jest.fn(
-        (_: Values) => (new Map() as any) as FormikReimaginedErrors<Values>
+      const { rerender, getByTestId } = render(
+        <FormWithCountingValidation initialValues={InitialValues} />
       );
-      const validationSchema: Yup.ObjectSchema<Values> = Yup.object();
-      const { getByTestId, rerender } = renderFormikReimagined<Values>({
-        validate: validateSync,
-        validationSchema,
-      });
 
       fireEvent.change(getByTestId('name-input'), {
         persist: noop,
@@ -231,15 +258,20 @@ describe('<Formik>', () => {
           value: 'ian',
         },
       });
-      rerender();
-      expect(validateSync).toHaveBeenCalledTimes(2);
+      rerender(<FormWithCountingValidation initialValues={InitialValues} />);
+      const errors = JSON.parse(getByTestId('errors').innerHTML);
+      expect(errors).toEqual([['count', '2']]);
     });
   });
 
   it('should merge validation errors', async () => {
-    const initialValues={ name: '', users: [{ firstName: '1', lastName: '2' }] };
-    const { rerender, getByTestId, } = render(
-      <FormWithTwoValidations initialValues={initialValues} />);
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithTwoValidations initialValues={initialValues} />
+    );
 
     fireEvent.change(getByTestId('lastName-input'), {
       persist: noop,
@@ -250,9 +282,9 @@ describe('<Formik>', () => {
     });
     rerender(<FormWithTwoValidations initialValues={initialValues} />);
 
-    await wait( () => {
-      const values = JSON.parse( getByTestId('values').innerHTML);
-      const errors = JSON.parse( getByTestId('errors').innerHTML);
+    await wait(() => {
+      const values = JSON.parse(getByTestId('values').innerHTML);
+      const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(values.users[0].lastName).toEqual('');
       expect(errors).toEqual([
         ['users[0].lastName', 'required'],
@@ -261,9 +293,13 @@ describe('<Formik>', () => {
     });
   }, 10000);
   it('should validate with props', async () => {
-    const initialValues={ name: '', users: [{ firstName: '1', lastName: '2' }] };
-    const { rerender, getByTestId, } = render(
-      <FormWithPropsValidation initialValues={initialValues} />);
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithPropsValidation initialValues={initialValues} />
+    );
 
     fireEvent.change(getByTestId('lastName-input'), {
       persist: noop,
@@ -273,20 +309,37 @@ describe('<Formik>', () => {
       },
     });
 
-    fireEvent.change(getByTestId('lastName-input'), {
-      persist: noop,
-      target: {
-        name: 'lastName',
-        value: '',
-      },
-    });
     rerender(<FormWithPropsValidation initialValues={initialValues} />);
     await later(10);
-    await wait( () => {
-      const errors = JSON.parse( getByTestId('errors').innerHTML);
-      expect(errors).toEqual([
-        ['users[0].lastName', 'required'],
-      ]);
+    await wait(() => {
+      const errors = JSON.parse(getByTestId('errors').innerHTML);
+      expect(errors).toEqual([['users[0].lastName', 'required']]);
+    });
+  });
+  it('should not validate too often when using props', async () => {
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithPropsValidationAndCount initialValues={initialValues} />
+    );
+
+    await wait(() => {
+      const errors = JSON.parse(getByTestId('errors').innerHTML);
+      expect(errors).toEqual([['count', '2']]);
+    });
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '<>',
+      },
+    });
+    rerender(<FormWithPropsValidationAndCount initialValues={initialValues} />);
+    await wait(() => {
+      const errors = JSON.parse(getByTestId('errors').innerHTML);
+      expect(errors).toEqual([['count', '4']]);
     });
   });
 });

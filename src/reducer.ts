@@ -61,9 +61,18 @@ export function formikReimaginedReducer<Values>(
 ) {
   switch (msg.type) {
     case 'SET_ERRORS':
-      return { ...state, errors: msg.payload, errorsSet: true };
+      return {
+        ...state,
+        errors: aggregate([msg.payload, state.errors]),
+        errorsSet: true,
+      };
     case 'SET_VALUES':
-      return { ...state, values: msg.payload };
+      return {
+        ...state,
+        values: msg.payload,
+        errors: new Map(),
+        errorsSet: false,
+      };
     case 'SET_FIELD_VALUE':
       return {
         ...state,
@@ -155,6 +164,14 @@ export function formikReimaginedReducer<Values>(
       return state;
   }
 }
+/** */
+function aggregate<T, V>(maps: Map<T, V>[]) {
+  return new Map(
+    maps
+      .map(m => Array.from(m.entries()))
+      .reduce((acc, entries) => acc.concat(entries), [] as [T, V][])
+  );
+}
 
 export function formikReimaginedErrorReducer<Values extends object>(
   validationSchema: ObjectSchema<Values> | undefined,
@@ -166,7 +183,8 @@ export function formikReimaginedErrorReducer<Values extends object>(
     state: FormikReimaginedState<Values>,
     msg: FormikReimaginedMessage<Values>
   ) {
-    const nextState = formikReimaginedReducer(state, msg);
+    const nextState =
+      msg.type === 'SET_ERRORS' ? state : formikReimaginedReducer(state, msg);
     const errors: FormikReimaginedErrors<Values>[] = [];
     if (validationSchema) {
       errors.push(runValidationSchema(validationSchema, nextState.values));
@@ -174,15 +192,13 @@ export function formikReimaginedErrorReducer<Values extends object>(
     if (validate) {
       errors.push(runValidateHandler(validate, nextState.values));
     }
-    if (nextState.errorsSet){
-      errors.push(nextState.errors);
+    if (msg.type === 'SET_ERRORS') {
+      errors.push(msg.payload);
     }
-    var errorEntries = errors
-      .map(m => Array.from(m.entries()))
-      .reduce(
-        (acc, entries) => acc.concat(entries),
-        [] as [keyof Values, string][]
-      );
-    return { ...nextState, errors: new Map(errorEntries) };
+    return {
+      ...nextState,
+      errors: aggregate(errors),
+      errorsSet: msg.type === 'SET_ERRORS',
+    };
   };
 }

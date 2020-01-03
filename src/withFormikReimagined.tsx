@@ -60,14 +60,6 @@ export function withFormikReimagined<
     return function CWrapped(
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
-      if (!validationSchema) {
-        // NOTE: Used for testing
-        validationSchema = (props as any).validationSchema;
-      }
-      if (!validate) {
-        // NOTE: Used for testing
-        validate = (props as any).validate;
-      }
       const [state, dispatch] = React.useReducer<
         React.Reducer<
           FormikReimaginedState<Values>,
@@ -77,7 +69,9 @@ export function withFormikReimagined<
         validate == null && validationSchema == null
           ? formikReimaginedReducer
           : formikReimaginedErrorReducer(
-              validationSchema!=null && !isFunction(validationSchema) ? validationSchema : undefined,
+              validationSchema != null && !isFunction(validationSchema)
+                ? validationSchema
+                : undefined,
               validate
             ),
         {
@@ -89,7 +83,7 @@ export function withFormikReimagined<
       const onChange = p.onChange;
 
       React.useEffect(() => {
-        if (isFunction(validationSchema) && !state.errorsSet) {
+        if (isFunction(validationSchema) && !(state as any).errorsSet) {
           const schema = validationSchema(props);
           const errors = runValidationSchema(schema, state.values);
           dispatch({
