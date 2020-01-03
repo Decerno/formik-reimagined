@@ -26,7 +26,7 @@ export interface FormikReimaginedSharedProps<T> {
  * State, handlers, and helpers injected as props into the wrapped form component.
  * Used with withFormik()
  *
- * @deprecated  Use `OuterProps & FormikProps<Values>` instead.
+ * @deprecated  Use `OuterProps & FormikReimaginedProps<Values>` instead.
  */
 export type InjectedFormikReimaginedProps<Props, Values> = Props &
   FormikReimaginedProps<Values>;

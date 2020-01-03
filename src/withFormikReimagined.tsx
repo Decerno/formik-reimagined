@@ -20,6 +20,7 @@ import {
 import { WithFormikReimaginedConfig } from './types.config';
 import { FormikReimaginedProps } from './types.props';
 import isFunction from 'lodash.isfunction';
+import { runValidationSchema } from './errors';
 
 /**
  * A public higher-order component to access the imperative API
@@ -32,7 +33,7 @@ export function withFormikReimagined<
     let val: Values = {} as Values;
     for (let k in vanillaProps) {
       if (
-        vanillaProps.hasOwnProperty(k) &&
+        Object.prototype.hasOwnProperty.call(vanillaProps, k) &&
         typeof vanillaProps[k] !== 'function'
       ) {
         // @todo TypeScript fix
@@ -60,9 +61,11 @@ export function withFormikReimagined<
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
       if (!validationSchema) {
+        // NOTE: Used for testing
         validationSchema = (props as any).validationSchema;
       }
       if (!validate) {
+        // NOTE: Used for testing
         validate = (props as any).validate;
       }
       const [state, dispatch] = React.useReducer<
@@ -74,7 +77,7 @@ export function withFormikReimagined<
         validate == null && validationSchema == null
           ? formikReimaginedReducer
           : formikReimaginedErrorReducer(
-              !isFunction(validationSchema) ? validationSchema : undefined,
+              validationSchema!=null && !isFunction(validationSchema) ? validationSchema : undefined,
               validate
             ),
         {
@@ -84,6 +87,18 @@ export function withFormikReimagined<
       );
       const p = props as any;
       const onChange = p.onChange;
+
+      React.useEffect(() => {
+        if (isFunction(validationSchema) && !state.errorsSet) {
+          const schema = validationSchema(props);
+          const errors = runValidationSchema(schema, state.values);
+          dispatch({
+            type: 'SET_ERRORS',
+            payload: errors,
+          });
+        }
+      }, [state, props]);
+
       React.useEffect(() => {
         if (onChange) {
           onChange(state.values);

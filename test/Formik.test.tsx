@@ -12,7 +12,9 @@ import { fireEvent, render, wait } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
 export const noop = () => {};
-
+function later(delay: number, value?: any) {
+  return new Promise(resolve => setTimeout(resolve, delay, value));
+}
 interface ValuesUser {
   firstName: string;
   lastName: string;
@@ -196,36 +198,27 @@ describe('<Formik>', () => {
       expect(validateSync).toHaveBeenCalledTimes(2);
     });
   });
-
-  it('should merge validation errors', async () => {
+  const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
+    name: Yup.string(),
+    users: Yup.array().of(
+      Yup.object({
+        lastName: Yup.string().required('required'),
+        firstName: Yup.string(),
+      })
+    ),
+  });
+  xit('should merge validation errors', async () => {
     const validate = (_: Values) => {
       return (new Map([
         ['users[0].firstName', 'required'],
       ]) as any) as FormikReimaginedErrors<Values>;
     };
-    const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
-      name: Yup.string(),
-      users: Yup.array().of(
-        Yup.object({
-          lastName: Yup.string().required('required'),
-          firstName: Yup.string(),
-        })
-      ),
-    });
 
     const { getProps, getByTestId, rerender } = renderFormikReimagined<Values>({
       initialValues: { name: '', users: [{ firstName: '1', lastName: '2' }] },
       validate,
       validationSchema,
     });
-    fireEvent.change(getByTestId('firstName-input'), {
-      persist: noop,
-      target: {
-        name: 'firstName',
-        value: '',
-      },
-    });
-    rerender();
 
     fireEvent.change(getByTestId('lastName-input'), {
       persist: noop,
@@ -235,17 +228,41 @@ describe('<Formik>', () => {
       },
     });
     rerender();
-    const props = getProps();
-    wait(
-      () => {
-        setTimeout(() => {
-          expect(Array.from(props.errors.entries())).toEqual([
-            ['users[0].firstName', 'required'],
-            ['users[0].lastName', 'required'],
-          ]);
-        }, 1);
+    await later(1000);
+    await later(1000);
+
+    await wait( () => {
+      const props = getProps();
+      expect(Array.from(props.errors.entries())).toEqual([
+        ['users[0].firstName', 'required'],
+        ['users[0].lastName', 'required'],
+      ]);
+    });
+  }, 10000);
+  xit('should validate with props', async () => {
+    var count =0;
+    const validationSchema1 = ((_props: any) => {
+      count++;
+      return validationSchema;
+    });
+
+    const { getByTestId, rerender } = renderFormikReimagined<Values>({
+      initialValues: { name: '', users: [{ firstName: '1', lastName: '2' }] },
+      validate: undefined,
+      validationSchema: validationSchema1,
+    });
+
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '',
       },
-      { timeout: 100 }
-    );
+    });
+    rerender();
+    await later(10);
+    await wait( () => {
+      expect(count).toEqual(2);
+    });
   });
 });
