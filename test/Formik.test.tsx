@@ -6,6 +6,7 @@ import {
   FieldArray,
   FormikReimaginedErrors,
   FormikReimaginedConfig,
+  withFormikReimagined,
 } from '../src';
 import { Formik } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
@@ -26,11 +27,14 @@ interface Values {
 
 function Form({
   values,
+  errors,
   handleSubmit,
   handleChange,
 }: FormikReimaginedProps<Values> & { handleSubmit?: any }) {
   return (
     <form onSubmit={handleSubmit} data-testid="form">
+      <pre data-testid="values">{JSON.stringify(values)}</pre>
+      <pre data-testid="errors">{JSON.stringify(Array.from(errors.entries()))}</pre>
       <input
         type="text"
         onChange={handleChange}
@@ -87,8 +91,41 @@ function Form({
     </form>
   );
 }
-
+const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
+  name: Yup.string(),
+  users: Yup.array().of(
+    Yup.object({
+      lastName: Yup.string().required('required'),
+      firstName: Yup.string(),
+    })
+  ),
+});
 const InitialValues = { name: 'jared', users: [] };
+
+const FormWithTwoValidations = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+  validate:(_: Values) => {
+    return (new Map([
+      ['users[0].firstName', 'required'],
+    ]) as any) as FormikReimaginedErrors<Values>;
+  },
+  validationSchema
+})(Form);
+
+const FormWithPropsValidation = withFormikReimagined<
+  {
+    initialValues: Values;
+  },
+  Values
+>({
+  mapPropsToValues: props => props.initialValues,
+  validationSchema: (_)=>validationSchema
+})(Form);
 
 function renderFormikReimagined<V extends Values>(
   props?: Partial<
@@ -198,27 +235,11 @@ describe('<Formik>', () => {
       expect(validateSync).toHaveBeenCalledTimes(2);
     });
   });
-  const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
-    name: Yup.string(),
-    users: Yup.array().of(
-      Yup.object({
-        lastName: Yup.string().required('required'),
-        firstName: Yup.string(),
-      })
-    ),
-  });
-  xit('should merge validation errors', async () => {
-    const validate = (_: Values) => {
-      return (new Map([
-        ['users[0].firstName', 'required'],
-      ]) as any) as FormikReimaginedErrors<Values>;
-    };
 
-    const { getProps, getByTestId, rerender } = renderFormikReimagined<Values>({
-      initialValues: { name: '', users: [{ firstName: '1', lastName: '2' }] },
-      validate,
-      validationSchema,
-    });
+  it('should merge validation errors', async () => {
+    const initialValues={ name: '', users: [{ firstName: '1', lastName: '2' }] };
+    const { rerender, getByTestId, } = render(
+      <FormWithTwoValidations initialValues={initialValues} />);
 
     fireEvent.change(getByTestId('lastName-input'), {
       persist: noop,
@@ -227,29 +248,29 @@ describe('<Formik>', () => {
         value: '',
       },
     });
-    rerender();
-    await later(1000);
-    await later(1000);
+    rerender(<FormWithTwoValidations initialValues={initialValues} />);
 
     await wait( () => {
-      const props = getProps();
-      expect(Array.from(props.errors.entries())).toEqual([
-        ['users[0].firstName', 'required'],
+      const values = JSON.parse( getByTestId('values').innerHTML);
+      const errors = JSON.parse( getByTestId('errors').innerHTML);
+      expect(values.users[0].lastName).toEqual('');
+      expect(errors).toEqual([
         ['users[0].lastName', 'required'],
+        ['users[0].firstName', 'required'],
       ]);
     });
   }, 10000);
-  xit('should validate with props', async () => {
-    var count =0;
-    const validationSchema1 = ((_props: any) => {
-      count++;
-      return validationSchema;
-    });
+  it('should validate with props', async () => {
+    const initialValues={ name: '', users: [{ firstName: '1', lastName: '2' }] };
+    const { rerender, getByTestId, } = render(
+      <FormWithPropsValidation initialValues={initialValues} />);
 
-    const { getByTestId, rerender } = renderFormikReimagined<Values>({
-      initialValues: { name: '', users: [{ firstName: '1', lastName: '2' }] },
-      validate: undefined,
-      validationSchema: validationSchema1,
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '',
+      },
     });
 
     fireEvent.change(getByTestId('lastName-input'), {
@@ -259,10 +280,13 @@ describe('<Formik>', () => {
         value: '',
       },
     });
-    rerender();
+    rerender(<FormWithPropsValidation initialValues={initialValues} />);
     await later(10);
     await wait( () => {
-      expect(count).toEqual(2);
+      const errors = JSON.parse( getByTestId('errors').innerHTML);
+      expect(errors).toEqual([
+        ['users[0].lastName', 'required'],
+      ]);
     });
   });
 });
