@@ -44,7 +44,7 @@ export function executeChangeMsg(
     const nvalue = ((parsed = parseFloat(value)), isNaN(parsed) ? '' : parsed);
     return { type: 'SET_FIELD_VALUE', payload: { field, value: nvalue } };
   }
-  if (!!multiple) {
+  if (multiple) {
     const nvalue = getSelectedValues(options);
     return { type: 'SET_FIELD_VALUE', payload: { field, value: nvalue } };
   }
