@@ -82,6 +82,7 @@ export function withFormikReimagined<
       const p = props as any;
       const onChange = p.onChange;
       const onError = p.onError;
+      const onResult = p.onResult;
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !(state as any).errorsSet) {
@@ -105,6 +106,12 @@ export function withFormikReimagined<
           onError(state.errors);
         }
       }, [state, onError]);
+
+      React.useEffect(() => {
+        if (onResult) {
+          onResult(state.values, state.errors && state.errors.size > 0 ? state.errors : undefined);
+        }
+      }, [state, onResult]);
 
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
