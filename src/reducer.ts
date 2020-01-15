@@ -55,8 +55,8 @@ function getValueForCheckbox(
   return currentValue.slice(0, index).concat(currentValue.slice(index + 1));
 }
 // State reducer
-export function formikReimaginedReducer<Values>(
-  state: FormikReimaginedState<Values>,
+export function formikReimaginedReducer<Values, OtherKeys>(
+  state: FormikReimaginedState<Values, OtherKeys>,
   msg: FormikReimaginedMessage<Values>
 ) {
   switch (msg.type) {
@@ -173,14 +173,19 @@ function aggregate<T, V>(maps: Map<T, V>[]) {
   );
 }
 
-export function formikReimaginedErrorReducer<Values extends object>(
+export function formikReimaginedErrorReducer<Values extends object, OtherKeys>(
   validationSchema: ObjectSchema<Values> | undefined,
   validate:
-    | { (values: Values, field?: string): FormikReimaginedErrors<Values> }
+    | {
+        (values: Values, field?: string): FormikReimaginedErrors<
+          Values,
+          OtherKeys
+        >;
+      }
     | undefined
 ) {
   return function formikReimaginedErrorReducer(
-    state: FormikReimaginedState<Values>,
+    state: FormikReimaginedState<Values, OtherKeys>,
     msg: FormikReimaginedMessage<Values>
   ) {
     const nextState =

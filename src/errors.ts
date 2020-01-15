@@ -72,8 +72,10 @@ export function runValidationSchema<Values extends object>(
   }
 }
 
-export function runValidateHandler<Values>(
-  validate: { (values: any, field?: string): FormikReimaginedErrors<Values> },
+export function runValidateHandler<Values, OtherKeys = never>(
+  validate: {
+    (values: any, field?: string): FormikReimaginedErrors<Values, OtherKeys>;
+  },
   values: Values,
   field?: string
 ): FormikReimaginedErrors<Values> {

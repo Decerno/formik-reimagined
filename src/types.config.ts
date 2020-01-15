@@ -6,7 +6,8 @@ import { ObjectSchema } from 'yup';
  */
 export interface FormikReimaginedConfig<
   Props,
-  Values extends FormikReimaginedValues = FormikReimaginedValues
+  Values extends FormikReimaginedValues = FormikReimaginedValues,
+  OtherKeys = never
 > {
   /**
    * A Yup Schema
@@ -18,15 +19,19 @@ export interface FormikReimaginedConfig<
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
-  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
+  validate?: (
+    values: Values,
+    field?: string
+  ) => FormikReimaginedErrors<Values, OtherKeys>;
 }
 /**
  * withFormik() configuration options.
  */
 export interface WithFormikReimaginedConfig<
   Props,
-  Values extends FormikReimaginedValues = FormikReimaginedValues
-> extends FormikReimaginedConfig<Props, Values> {
+  Values extends FormikReimaginedValues = FormikReimaginedValues,
+  OtherKeys = never
+> extends FormikReimaginedConfig<Props, Values, OtherKeys> {
   /**
    * Map props to the form values
    */

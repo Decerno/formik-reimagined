@@ -1,17 +1,20 @@
 /**
  * Dumbed down version of Formik state tree
  */
-export interface FormikReimaginedState<Values> {
+export interface FormikReimaginedState<Values, OtherKeys = never> {
   /** Values */
   values: Values;
   /** map of field names to specific error for that field */
-  errors: FormikReimaginedErrors<Values>;
+  errors: FormikReimaginedErrors<Values, OtherKeys>;
 }
 
 /**
  * A map containing error messages whose keys correspond to FormikValues.
  */
-export type FormikReimaginedErrors<Values> = Map<keyof Values, string>;
+export type FormikReimaginedErrors<Values, OtherKeys = never> = Map<
+  keyof Values | OtherKeys,
+  string
+>;
 
 /**
  * Dumbed down version of Formik state helpers
@@ -24,11 +27,11 @@ export interface FormikReimaginedHelpers {
 /**
  * Dumbed down version of Formik form event handlers
  */
-export interface FormikReimaginedHandlers<Values> {
+export interface FormikReimaginedHandlers {
   /** Classic React change handler, keyed by input name */
   handleChange(e: React.ChangeEvent<any>): void;
-  /** */
-  onChange?(values: Values): void;
+  /** Form submit handler */
+  handleSubmit(e?: React.FormEvent<HTMLFormElement>): void;
 }
 
 /**

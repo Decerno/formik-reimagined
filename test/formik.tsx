@@ -16,21 +16,21 @@ const isEmptyChildren = (children: any): boolean =>
 export function FormikTestComponent<
   Values extends FormikReimaginedValues = FormikReimaginedValues
 >(
-  props: FormikReimaginedConfig<Values> & {
-    values: Values;
-    errors: FormikReimaginedErrors<Values>;
-    setFieldValue(field: string, value: any): void;
-    /** Classic React change handler, keyed by input name */
-    handleChange(e: React.ChangeEvent<any>): void;
-  }
+  props: FormikReimaginedConfig<Values> &
+    FormikReimaginedHandlers & {
+      values: Values;
+      errors: FormikReimaginedErrors<Values>;
+      setFieldValue(field: string, value: any): void;
+    }
 ) {
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers &
-    FormikReimaginedHandlers<any> &
+    FormikReimaginedHandlers &
     FormikReimaginedState<any> = {
     setFieldValue: props.setFieldValue,
     handleChange: props.handleChange,
+    handleSubmit: props.handleSubmit,
     values: props.values,
     errors: props.errors,
   };

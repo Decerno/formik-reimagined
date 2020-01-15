@@ -18,7 +18,10 @@ import {
   formikReimaginedErrorReducer,
 } from './reducer';
 import { WithFormikReimaginedConfig } from './types.config';
-import { FormikReimaginedProps } from './types.props';
+import {
+  FormikReimaginedProps,
+  OuterFormikReimaginedProps,
+} from './types.props';
 import isFunction from 'lodash.isfunction';
 import { runValidationSchema } from './errors';
 
@@ -26,8 +29,9 @@ import { runValidationSchema } from './errors';
  * A public higher-order component to access the imperative API
  */
 export function withFormikReimagined<
-  OuterProps extends object,
-  Values extends FormikReimaginedValues
+  OuterProps extends OuterFormikReimaginedProps<Values, OtherKeys>,
+  Values extends FormikReimaginedValues,
+  OtherKeys = never
 >({
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
@@ -46,29 +50,30 @@ export function withFormikReimagined<
   validationSchema,
 }: WithFormikReimaginedConfig<
   OuterProps,
-  Values
+  Values,
+  OtherKeys
 >): FormikReimaginedComponentDecorator<
   OuterProps,
-  OuterProps & FormikReimaginedProps<Values>
+  OuterProps & FormikReimaginedProps<Values, OtherKeys>
 > {
   return function createFormik(
     Component: ComponentClassOrStatelessComponent<
-      OuterProps & FormikReimaginedProps<Values>
+      OuterProps & FormikReimaginedProps<Values, OtherKeys>
     >
   ): React.FunctionComponent<OuterProps> {
     //
-    return function CWrapped(
+    return function FormikReimaginedWrapper(
       props: OuterProps
     ): React.FunctionComponentElement<OuterProps> {
       const [state, dispatch] = React.useReducer<
         React.Reducer<
-          FormikReimaginedState<Values>,
+          FormikReimaginedState<Values, OtherKeys>,
           FormikReimaginedMessage<Values>
         >
       >(
         validate == null && validationSchema == null
           ? formikReimaginedReducer
-          : formikReimaginedErrorReducer(
+          : formikReimaginedErrorReducer<Values, OtherKeys>(
               validationSchema != null && !isFunction(validationSchema)
                 ? validationSchema
                 : undefined,
@@ -79,10 +84,8 @@ export function withFormikReimagined<
           errors: new Map(),
         }
       );
-      const p = props as any;
-      const onChange = p.onChange;
-      const onError = p.onError;
-      const onResult = p.onResult;
+      const onChange = props.onChange;
+      const onError = props.onError;
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !(state as any).errorsSet) {
@@ -97,7 +100,12 @@ export function withFormikReimagined<
 
       React.useEffect(() => {
         if (onChange) {
-          onChange(state.values);
+          onChange(
+            state.values,
+            state.errors != null && state.errors.size > 0
+              ? state.errors
+              : undefined
+          );
         }
       }, [state, onChange]);
 
@@ -106,12 +114,6 @@ export function withFormikReimagined<
           onError(state.errors);
         }
       }, [state, onError]);
-
-      React.useEffect(() => {
-        if (onResult) {
-          onResult(state.values, state.errors && state.errors.size > 0 ? state.errors : undefined);
-        }
-      }, [state, onResult]);
 
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
@@ -135,12 +137,25 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const handleSubmit = React.useCallback(
+        (e?: React.FormEvent<HTMLFormElement>) => {
+          if (e && e.preventDefault && isFunction(e.preventDefault)) {
+            e.preventDefault();
+          }
+
+          if (e && e.stopPropagation && isFunction(e.stopPropagation)) {
+            e.stopPropagation();
+          }
+        },
+        []
+      );
 
       const injectedformikProps: FormikReimaginedHelpers &
-        FormikReimaginedHandlers<any> &
-        FormikReimaginedState<any> = {
+        FormikReimaginedHandlers &
+        FormikReimaginedState<Values, OtherKeys> = {
         setFieldValue: setFieldValue,
         handleChange: handleChange,
+        handleSubmit: handleSubmit,
         values: state.values,
         errors: state.errors,
       };
