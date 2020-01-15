@@ -14,20 +14,21 @@ const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
 
 export function FormikTestComponent<
-  Values extends FormikReimaginedValues = FormikReimaginedValues
+  Values extends FormikReimaginedValues = FormikReimaginedValues,
+  OtherKeys = never
 >(
-  props: FormikReimaginedConfig<Values> &
-    FormikReimaginedHandlers & {
+  props: FormikReimaginedConfig<Values, OtherKeys> &
+    FormikReimaginedHandlers &
+    FormikReimaginedHelpers & {
       values: Values;
-      errors: FormikReimaginedErrors<Values>;
-      setFieldValue(field: string, value: any): void;
+      errors: FormikReimaginedErrors<Values, OtherKeys>;
     }
 ) {
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers &
     FormikReimaginedHandlers &
-    FormikReimaginedState<any> = {
+    FormikReimaginedState<Values, OtherKeys> = {
     setFieldValue: props.setFieldValue,
     handleChange: props.handleChange,
     handleSubmit: props.handleSubmit,
