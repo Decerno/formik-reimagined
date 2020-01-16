@@ -6,6 +6,7 @@ import {
   FormikReimaginedState,
   ComponentClassOrStatelessComponent,
   FormikReimaginedComponentDecorator,
+  FormikReimaginedErrors,
 } from './types';
 import { executeChangeMsg } from './handleChange';
 import {
@@ -171,7 +172,7 @@ export function withFormikReimagined<
 function yieldErrorsOrUndefined<Values extends FormikReimaginedValues>(
   state: FormikReimaginedState<Values>
 ):
-  | import('/Users/mathieu/src/js/formik-reimagined/src/types').FormikReimaginedErrors
+  | FormikReimaginedErrors
   | undefined {
   return state.errors != null && state.errors.size > 0
     ? state.errors
