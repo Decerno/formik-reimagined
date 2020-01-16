@@ -3,8 +3,8 @@ import {
   FormikReimaginedHelpers,
   FormikReimaginedHandlers,
   FormikReimaginedState,
-  FormikReimaginedErrors,
-  FormikReimaginedConfig,
+  FormikReimaginedProps,
+  FormikReimaginedCallbacks,
 } from '../src';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
@@ -15,12 +15,7 @@ const isEmptyChildren = (children: any): boolean =>
 
 export function FormikTestComponent<
   Values extends FormikReimaginedValues = FormikReimaginedValues
->(
-  props: FormikReimaginedConfig<Values> & {
-    values: Values;
-    errors: FormikReimaginedErrors;
-  } & FormikReimaginedHelpers & FormikReimaginedHandlers
-) {
+>(props: FormikReimaginedProps<Values> & FormikReimaginedCallbacks<Values>) {
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers &

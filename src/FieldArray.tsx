@@ -11,8 +11,7 @@ import { FormikReimaginedSharedProps } from './types.props';
 /**
  * this implementation is not lazy enough
  */
-export class FieldArrayHelper<Value>
-  implements ArrayHelpers<Value> {
+export class FieldArrayHelper<Value> implements ArrayHelpers<Value> {
   /**
    *
    */
@@ -51,8 +50,7 @@ export class FieldArrayHelper<Value>
   remove = (index: number) =>
     this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index } });
 }
-export interface FieldArrayRenderProps<Value>
-  extends ArrayHelpers<Value> {}
+export interface FieldArrayRenderProps<Value> extends ArrayHelpers<Value> {}
 export type FieldArrayProps<Value> = FormikReimaginedSharedProps<
   FieldArrayRenderProps<Value>
 >;
@@ -81,9 +79,10 @@ export function FieldArrayState<P, Value>(
       dispatch(value: Message<Value[]>): void;
     }
 ): React.FunctionComponentElement<P> {
-  const arrayHelpers: ArrayHelpers<Value> = new FieldArrayHelper<
-    Value
-  >(props.dispatch, props.name);
+  const arrayHelpers: ArrayHelpers<Value> = new FieldArrayHelper<Value>(
+    props.dispatch,
+    props.name
+  );
 
   const { component, render, children } = props;
 

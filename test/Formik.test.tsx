@@ -7,6 +7,8 @@ import {
   FormikReimaginedErrors,
   FormikReimaginedConfig,
   withFormikReimagined,
+  FormikReimaginedSharedProps,
+  FormikReimaginedHandlers,
 } from '../src';
 import { FormikTestComponent } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
@@ -24,7 +26,7 @@ interface Values {
 const Formik = withFormikReimagined<
   {
     initialValues: Values;
-  },
+  } & FormikReimaginedSharedProps<FormikReimaginedHandlers>,
   Values
 >({
   mapPropsToValues: props => props.initialValues,
@@ -120,7 +122,7 @@ const FormWithCountingValidation = withFormikReimagined<
   validate: (_: Values) => {
     return (new Map([
       ['count', (++countOfFormWithCountingValidation).toString()],
-    ]) as any) as FormikReimaginedErrors<Values>;
+    ]) as any) as FormikReimaginedErrors;
   },
 })(Form);
 
@@ -134,7 +136,7 @@ const FormWithTwoValidations = withFormikReimagined<
   validate: (_: Values) => {
     return (new Map([
       ['users[0].firstName', 'required'],
-    ]) as any) as FormikReimaginedErrors<Values>;
+    ]) as any) as FormikReimaginedErrors;
   },
   validationSchema,
 })(Form);
@@ -160,7 +162,7 @@ const FormWithPropsValidationAndCount = withFormikReimagined<
   validate: (_: Values) => {
     return (new Map([
       ['count', (++countOfFormWithPropsValidationAndCount).toString()],
-    ]) as any) as FormikReimaginedErrors<Values>;
+    ]) as any) as FormikReimaginedErrors;
   },
 })(Form);
 
@@ -344,6 +346,64 @@ describe('<Formik>', () => {
     await wait(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '4']]);
+    });
+  });
+  describe('handleSubmit', () => {
+    it('should call preventDefault()', () => {
+      const preventDefault = jest.fn();
+      const FormPreventDefault = (
+        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
+          {({ handleSubmit }) => (
+            <button
+              data-testid="submit-button"
+              onClick={() => handleSubmit({ preventDefault } as any)}
+            />
+          )}
+        </Formik>
+      );
+
+      const { getByTestId } = render(FormPreventDefault);
+      fireEvent.click(getByTestId('submit-button'));
+
+      expect(preventDefault).toHaveBeenCalled();
+    });
+
+    it('should not error if called without an event', () => {
+      const FormNoEvent = (
+        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
+          {({ handleSubmit }) => (
+            <button
+              data-testid="submit-button"
+              onClick={() =>
+                handleSubmit(undefined as any /* undefined event */)
+              }
+            />
+          )}
+        </Formik>
+      );
+      const { getByTestId } = render(FormNoEvent);
+
+      expect(() => {
+        fireEvent.click(getByTestId('submit-button'));
+      }).not.toThrow();
+    });
+
+    it('should not error if called without preventDefault property', () => {
+      const FormNoPreventDefault = (
+        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
+          {({ handleSubmit }) => (
+            <button
+              data-testid="submit-button"
+              onClick={() => handleSubmit({} as any /* undefined event */)}
+            />
+          )}
+        </Formik>
+      );
+      const { getByTestId } = render(FormNoPreventDefault);
+
+      expect(() => {
+        fireEvent.click(getByTestId('submit-button'));
+      }).not.toThrow();
     });
   });
 });

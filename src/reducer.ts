@@ -26,9 +26,7 @@ export type BaseMessage<Values> =
       payload: { field: string; checked: boolean; value: any };
     };
 
-export type Message<Values> = BaseMessage<
-  Values
->;
+export type Message<Values> = BaseMessage<Values>;
 /** Return the next value for a checkbox */
 function getValueForCheckbox(
   currentValue: string | any[],

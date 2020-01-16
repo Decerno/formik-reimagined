@@ -18,7 +18,10 @@ import {
   formikReimaginedErrorReducer,
 } from './reducer';
 import { WithFormikReimaginedConfig } from './types.config';
-import { FormikReimaginedProps, FormikReimaginedCallbacks } from './types.props';
+import {
+  FormikReimaginedProps,
+  FormikReimaginedCallbacks,
+} from './types.props';
 import isFunction from 'lodash.isfunction';
 import { runValidationSchema } from './errors';
 
@@ -48,23 +51,22 @@ export function withFormikReimagined<
   OuterProps,
   Values
 >): FormikReimaginedComponentDecorator<
-  OuterProps,
+  OuterProps & FormikReimaginedCallbacks<Values>,
   OuterProps & FormikReimaginedProps<Values>
 > {
   return function createFormik(
     Component: ComponentClassOrStatelessComponent<
-      OuterProps & FormikReimaginedProps<Values>
+      OuterProps &
+        FormikReimaginedProps<Values> &
+        FormikReimaginedCallbacks<Values>
     >
   ): React.FunctionComponent<OuterProps & FormikReimaginedCallbacks<Values>> {
     //
     return function CWrapped(
-      props: OuterProps& FormikReimaginedCallbacks<Values>
+      props: OuterProps & FormikReimaginedCallbacks<Values>
     ): React.FunctionComponentElement<OuterProps> {
       const [state, dispatch] = React.useReducer<
-        React.Reducer<
-          FormikReimaginedState<Values>,
-          Message<Values>
-        >
+        React.Reducer<FormikReimaginedState<Values>, Message<Values>>
       >(
         validate == null && validationSchema == null
           ? formikReimaginedReducer
@@ -81,6 +83,7 @@ export function withFormikReimagined<
       );
       const onChange = props.onChange;
       const onError = props.onError;
+      const onSubmit = props.onSubmit;
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !(state as any).errorsSet) {
@@ -95,30 +98,16 @@ export function withFormikReimagined<
 
       React.useEffect(() => {
         if (onChange) {
-          onChange(state.values,
-            state.errors != null && state.errors.size > 0
-              ? state.errors
-              : undefined);
+          onChange(state.values, yieldErrorsOrUndefined<Values>(state));
         }
       }, [state, onChange]);
 
       React.useEffect(() => {
         if (onError) {
-          onError(state.errors);
+          onError(yieldErrorsOrUndefined<Values>(state));
         }
       }, [state, onError]);
-      const handleSubmit = React.useCallback(
-        (e?: React.FormEvent<HTMLFormElement>) => {
-          if (e && e.preventDefault && isFunction(e.preventDefault)) {
-            e.preventDefault();
-          }
 
-          if (e && e.stopPropagation && isFunction(e.stopPropagation)) {
-            e.stopPropagation();
-          }
-        },
-        []
-      );
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
         (field: string, value: any) => {
@@ -141,7 +130,23 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const handleSubmit = React.useCallback(
+        (e?: React.FormEvent<HTMLFormElement>) => {
+          if (e && e.preventDefault && isFunction(e.preventDefault)) {
+            e.preventDefault();
+          }
 
+          if (e && e.stopPropagation && isFunction(e.stopPropagation)) {
+            e.stopPropagation();
+          }
+          if (onSubmit && yieldErrorsOrUndefined<Values>(state) == null) {
+            onSubmit(state.values, {
+              setFieldValue,
+            });
+          }
+        },
+        [onSubmit, state, setFieldValue]
+      );
       const injectedformikProps: FormikReimaginedHelpers &
         FormikReimaginedHandlers &
         FormikReimaginedState<Values> = {
@@ -162,4 +167,13 @@ export function withFormikReimagined<
       );
     };
   };
+}
+function yieldErrorsOrUndefined<Values extends FormikReimaginedValues>(
+  state: FormikReimaginedState<Values>
+):
+  | import('/Users/mathieu/src/js/formik-reimagined/src/types').FormikReimaginedErrors
+  | undefined {
+  return state.errors != null && state.errors.size > 0
+    ? state.errors
+    : undefined;
 }

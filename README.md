@@ -11,4 +11,3 @@ In order to get around these issues we decided to make a Formik fork compatible 
 ## Lessons learned
 
 Some of the lessons learned from this fork can be moved over to Formik with some minor breaking changes to the procedural API.
-

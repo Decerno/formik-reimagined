@@ -41,6 +41,11 @@ export interface FormikReimaginedCallbacks<Values> {
    * Callback whenever error values changes
    */
   onError?(errors: FormikReimaginedErrors | undefined): void;
+
+  /**
+   * Submission handler
+   */
+  onSubmit?(values: Values, formikHelpers: FormikReimaginedHelpers): void;
 }
 
 /**
@@ -49,4 +54,4 @@ export interface FormikReimaginedCallbacks<Values> {
  */
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
-  FormikReimaginedHandlers ;
+  FormikReimaginedHandlers;
