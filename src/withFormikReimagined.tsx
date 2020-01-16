@@ -14,11 +14,11 @@ import {
 } from './FormikContext';
 import {
   formikReimaginedReducer,
-  FormikReimaginedMessage,
+  Message,
   formikReimaginedErrorReducer,
 } from './reducer';
 import { WithFormikReimaginedConfig } from './types.config';
-import { FormikReimaginedProps } from './types.props';
+import { FormikReimaginedProps, FormikReimaginedCallbacks } from './types.props';
 import isFunction from 'lodash.isfunction';
 import { runValidationSchema } from './errors';
 
@@ -55,15 +55,15 @@ export function withFormikReimagined<
     Component: ComponentClassOrStatelessComponent<
       OuterProps & FormikReimaginedProps<Values>
     >
-  ): React.FunctionComponent<OuterProps> {
+  ): React.FunctionComponent<OuterProps & FormikReimaginedCallbacks<Values>> {
     //
     return function CWrapped(
-      props: OuterProps
+      props: OuterProps& FormikReimaginedCallbacks<Values>
     ): React.FunctionComponentElement<OuterProps> {
       const [state, dispatch] = React.useReducer<
         React.Reducer<
           FormikReimaginedState<Values>,
-          FormikReimaginedMessage<Values>
+          Message<Values>
         >
       >(
         validate == null && validationSchema == null
@@ -79,10 +79,8 @@ export function withFormikReimagined<
           errors: new Map(),
         }
       );
-      const p = props as any;
-      const onChange = p.onChange;
-      const onError = p.onError;
-      const onResult = p.onResult;
+      const onChange = props.onChange;
+      const onError = props.onError;
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !(state as any).errorsSet) {
@@ -97,7 +95,10 @@ export function withFormikReimagined<
 
       React.useEffect(() => {
         if (onChange) {
-          onChange(state.values);
+          onChange(state.values,
+            state.errors != null && state.errors.size > 0
+              ? state.errors
+              : undefined);
         }
       }, [state, onChange]);
 
@@ -106,13 +107,18 @@ export function withFormikReimagined<
           onError(state.errors);
         }
       }, [state, onError]);
+      const handleSubmit = React.useCallback(
+        (e?: React.FormEvent<HTMLFormElement>) => {
+          if (e && e.preventDefault && isFunction(e.preventDefault)) {
+            e.preventDefault();
+          }
 
-      React.useEffect(() => {
-        if (onResult) {
-          onResult(state.values, state.errors && state.errors.size > 0 ? state.errors : undefined);
-        }
-      }, [state, onResult]);
-
+          if (e && e.stopPropagation && isFunction(e.stopPropagation)) {
+            e.stopPropagation();
+          }
+        },
+        []
+      );
       const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
         (field: string, value: any) => {
@@ -137,10 +143,11 @@ export function withFormikReimagined<
       );
 
       const injectedformikProps: FormikReimaginedHelpers &
-        FormikReimaginedHandlers<any> &
-        FormikReimaginedState<any> = {
-        setFieldValue: setFieldValue,
-        handleChange: handleChange,
+        FormikReimaginedHandlers &
+        FormikReimaginedState<Values> = {
+        setFieldValue,
+        handleChange,
+        handleSubmit,
         values: state.values,
         errors: state.errors,
       };

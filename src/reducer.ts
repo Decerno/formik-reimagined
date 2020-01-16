@@ -4,8 +4,8 @@ import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
 import { ObjectSchema } from 'yup';
 
-export type FormikReimaginedBaseMessage<Values> =
-  | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors<Values> }
+export type BaseMessage<Values> =
+  | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_VALUES'; payload: Values }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
@@ -26,7 +26,7 @@ export type FormikReimaginedBaseMessage<Values> =
       payload: { field: string; checked: boolean; value: any };
     };
 
-export type FormikReimaginedMessage<Values> = FormikReimaginedBaseMessage<
+export type Message<Values> = BaseMessage<
   Values
 >;
 /** Return the next value for a checkbox */
@@ -57,7 +57,7 @@ function getValueForCheckbox(
 // State reducer
 export function formikReimaginedReducer<Values>(
   state: FormikReimaginedState<Values>,
-  msg: FormikReimaginedMessage<Values>
+  msg: Message<Values>
 ) {
   switch (msg.type) {
     case 'SET_ERRORS':
@@ -176,16 +176,16 @@ function aggregate<T, V>(maps: Map<T, V>[]) {
 export function formikReimaginedErrorReducer<Values extends object>(
   validationSchema: ObjectSchema<Values> | undefined,
   validate:
-    | { (values: Values, field?: string): FormikReimaginedErrors<Values> }
+    | { (values: Values, field?: string): FormikReimaginedErrors }
     | undefined
 ) {
   return function formikReimaginedErrorReducer(
     state: FormikReimaginedState<Values>,
-    msg: FormikReimaginedMessage<Values>
+    msg: Message<Values>
   ) {
     const nextState =
       msg.type === 'SET_ERRORS' ? state : formikReimaginedReducer(state, msg);
-    const errors: FormikReimaginedErrors<Values>[] = [];
+    const errors: FormikReimaginedErrors[] = [];
     if (validationSchema) {
       errors.push(runValidationSchema(validationSchema, nextState.values));
     }

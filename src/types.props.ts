@@ -2,6 +2,7 @@ import {
   FormikReimaginedState,
   FormikReimaginedHandlers,
   FormikReimaginedHelpers,
+  FormikReimaginedErrors,
 } from './types';
 
 /**
@@ -30,10 +31,22 @@ export interface FormikReimaginedSharedProps<T> {
  */
 export type InjectedFormikReimaginedProps<Props, Values> = Props &
   FormikReimaginedProps<Values>;
+
+export interface FormikReimaginedCallbacks<Values> {
+  /**
+   * Callback whenever state changes, second parameter are errors if any
+   */
+  onChange?(values: Values, errors?: FormikReimaginedErrors): void;
+  /**
+   * Callback whenever error values changes
+   */
+  onError?(errors: FormikReimaginedErrors | undefined): void;
+}
+
 /**
  * State, handlers, and helpers made available to form component or render prop
  * of <Formik/>.
  */
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
-  FormikReimaginedHandlers<Values>;
+  FormikReimaginedHandlers ;

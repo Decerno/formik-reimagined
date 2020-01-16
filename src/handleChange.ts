@@ -1,4 +1,4 @@
-import { FormikReimaginedMessage } from 'reducer';
+import { Message } from 'reducer';
 
 /** Return multi select values based on an array of options */
 function getSelectedValues(options: any[]) {
@@ -13,7 +13,7 @@ function getSelectedValues(options: any[]) {
  */
 export function executeChangeMsg(
   event: React.ChangeEvent<any>
-): FormikReimaginedMessage<any> | undefined {
+): Message<any> | undefined {
   let field = null;
   let parsed;
   // If we can, persist the event

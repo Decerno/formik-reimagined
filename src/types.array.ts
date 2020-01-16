@@ -1,7 +1,7 @@
 /**
  *
  */
-export interface FormikReimaginedArrayHelpers<Value> {
+export interface ArrayHelpers<Value> {
   /** Imperatively add a value to the end of an array */
   push: (obj: Value) => void;
   /** Imperatively swap two values in an array */

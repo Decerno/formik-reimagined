@@ -18,7 +18,7 @@ export interface FormikReimaginedConfig<
   /**
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
-  validate?: (values: Values, field?: string) => FormikReimaginedErrors<Values>;
+  validate?: (values: Values, field?: string) => FormikReimaginedErrors;
 }
 /**
  * withFormik() configuration options.

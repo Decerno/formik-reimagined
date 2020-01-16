@@ -4,20 +4,20 @@ import {
   FormikReimaginedUpdateContext,
 } from './FormikContext';
 import * as R from 'ramda';
-import { FormikReimaginedMessage } from './reducer';
-import { FormikReimaginedArrayHelpers } from './types.array';
+import { Message } from './reducer';
+import { ArrayHelpers } from './types.array';
 import { FormikReimaginedSharedProps } from './types.props';
 
 /**
  * this implementation is not lazy enough
  */
 export class FieldArrayHelper<Value>
-  implements FormikReimaginedArrayHelpers<Value> {
+  implements ArrayHelpers<Value> {
   /**
    *
    */
   constructor(
-    private dispatch: { (value: FormikReimaginedMessage<Value[]>): void },
+    private dispatch: { (value: Message<Value[]>): void },
     private name: string
   ) {}
 
@@ -52,7 +52,7 @@ export class FieldArrayHelper<Value>
     this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index } });
 }
 export interface FieldArrayRenderProps<Value>
-  extends FormikReimaginedArrayHelpers<Value> {}
+  extends ArrayHelpers<Value> {}
 export type FieldArrayProps<Value> = FormikReimaginedSharedProps<
   FieldArrayRenderProps<Value>
 >;
@@ -78,10 +78,10 @@ export function FieldArrayState<P, Value>(
       /**
        * Update State
        */
-      dispatch(value: FormikReimaginedMessage<Value[]>): void;
+      dispatch(value: Message<Value[]>): void;
     }
 ): React.FunctionComponentElement<P> {
-  const arrayHelpers: FormikReimaginedArrayHelpers<Value> = new FieldArrayHelper<
+  const arrayHelpers: ArrayHelpers<Value> = new FieldArrayHelper<
     Value
   >(props.dispatch, props.name);
 

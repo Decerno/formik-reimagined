@@ -5,10 +5,10 @@ import { ValidationError, ObjectSchema } from 'yup';
 /**
  * Transform Yup ValidationError to a more usable object
  */
-export function yupToFormErrors<Values>(
+export function yupToFormErrors(
   yupError: ValidationError
-): FormikReimaginedErrors<Values> {
-  let errors: FormikReimaginedErrors<Values> = new Map<keyof Values, string>();
+): FormikReimaginedErrors {
+  let errors: FormikReimaginedErrors = new Map<string, string>();
   if (yupError.inner) {
     if (yupError.inner.length === 0) {
       errors.set(yupError.path as any, yupError.message);
@@ -43,7 +43,7 @@ export function runValidationSchema<Values extends object>(
   validationSchema: ObjectSchema<Values>,
   values: Values,
   field?: string
-): FormikReimaginedErrors<Values> {
+): FormikReimaginedErrors {
   const schema = isFunction(validationSchema)
     ? validationSchema(field)
     : validationSchema;
@@ -73,10 +73,10 @@ export function runValidationSchema<Values extends object>(
 }
 
 export function runValidateHandler<Values>(
-  validate: { (values: any, field?: string): FormikReimaginedErrors<Values> },
+  validate: { (values: any, field?: string): FormikReimaginedErrors },
   values: Values,
   field?: string
-): FormikReimaginedErrors<Values> {
+): FormikReimaginedErrors {
   const maybeErrors = (validate as any)(values, field);
   if (maybeErrors == null) {
     // use loose null check here on purpose
