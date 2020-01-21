@@ -57,8 +57,14 @@ function Form({
           <table>
             <tbody>
               {values.users.map((value, i) => {
+                const rowerrors = arrayHelpers.rowErrors(i);
                 return (
                   <tr key={i}>
+                    <td>
+                    <pre data-testid={"rowerrors"+i}>
+                      {JSON.stringify(rowerrors? Array.from(rowerrors.entries()):null)}
+                    </pre>
+                    </td>
                     <td>
                       <input
                         type="text"
@@ -292,10 +298,15 @@ describe('<Formik>', () => {
     await wait(() => {
       const values = JSON.parse(getByTestId('values').innerHTML);
       const errors = JSON.parse(getByTestId('errors').innerHTML);
+      const rowerrors = JSON.parse(getByTestId('rowerrors0').innerHTML);
       expect(values.users[0].lastName).toEqual('');
       expect(errors).toEqual([
         ['users[0].lastName', 'required'],
         ['users[0].firstName', 'required'],
+      ]);
+      expect(rowerrors).toEqual([
+        ['lastName', 'required'],
+        ['firstName', 'required'],
       ]);
     });
   }, 10000);

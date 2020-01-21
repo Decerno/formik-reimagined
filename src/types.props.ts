@@ -4,6 +4,7 @@ import {
   FormikReimaginedHelpers,
   FormikReimaginedErrors,
 } from './types';
+import { ArrayHelpers } from './types.array';
 
 /**
  */
@@ -55,3 +56,13 @@ export interface FormikReimaginedCallbacks<Values> {
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers &
   FormikReimaginedHandlers;
+/**
+ * Render properties of field array. Accessible through render and children.
+ **/
+export interface FieldArrayRProps<Value> extends ArrayHelpers<Value> {
+  rowErrors(index:number):FormikReimaginedErrors | undefined
+}
+export type FieldArrayAllProps<Value> = FormikReimaginedSharedProps<
+  FieldArrayRProps<Value>
+>;
+

@@ -10,7 +10,7 @@ import {
 } from './types';
 import { executeChangeMsg } from './handleChange';
 import {
-  FormikReimaginedValueContext,
+  FormikReimaginedStateContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
 import {
@@ -158,13 +158,13 @@ export function withFormikReimagined<
         errors: state.errors,
       };
       return (
-        <FormikReimaginedValueContext.Provider value={state.values}>
+        <FormikReimaginedStateContext.Provider value={state}>
           <FormikReimaginedUpdateContext.Provider value={dispatch}>
             <Component {...oprops} {...injectedformikProps}>
               {children}
             </Component>
           </FormikReimaginedUpdateContext.Provider>
-        </FormikReimaginedValueContext.Provider>
+        </FormikReimaginedStateContext.Provider>
       );
     };
   };

@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  FormikReimaginedValueContext,
+  FormikReimaginedStateContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
 import * as R from 'ramda';
 import { Message } from './reducer';
 import { ArrayHelpers } from './types.array';
-import { FormikReimaginedSharedProps } from './types.props';
+import { FieldArrayAllProps, FieldArrayRProps } from './types.props';
+import { FormikReimaginedErrors } from 'types';
 
 /**
  * this implementation is not lazy enough
@@ -50,10 +51,6 @@ export class FieldArrayHelper<Value> implements ArrayHelpers<Value> {
   remove = (index: number) =>
     this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index } });
 }
-export interface FieldArrayRenderProps<Value> extends ArrayHelpers<Value> {}
-export type FieldArrayProps<Value> = FormikReimaginedSharedProps<
-  FieldArrayRenderProps<Value>
->;
 
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean =>
@@ -64,7 +61,7 @@ const isEmptyChildren = (children: any): boolean =>
  */
 export function FieldArrayState<P, Value>(
   props: P &
-    FieldArrayProps<Value> & {
+    FieldArrayAllProps<Value> & {
       /**
        * State
        */
@@ -73,6 +70,10 @@ export function FieldArrayState<P, Value>(
        * Name of state to update
        */
       readonly name: string;
+      /**
+       * Name of state to update
+       */
+      readonly errors: FormikReimaginedErrors|undefined;
       /**
        * Update State
        */
@@ -84,9 +85,15 @@ export function FieldArrayState<P, Value>(
     props.name
   );
 
-  const { component, render, children } = props;
-
-  const fprops: FieldArrayRenderProps<Value> = {
+  const { component, render, children, errors } = props;
+  const rowErrors = React.useCallback((i:number)=>{
+    const prefix = props.name+"["+i+"].";
+    const keyMap =  Array.from(errors?.entries()||[]).filter(kv=>kv[0].startsWith(prefix));
+    //throw new Error(JSON.stringify( {keyMap, errors: errors? Array.from(errors.entries()):null }));
+    return keyMap.length>0? new Map(keyMap.map(kv=> [kv[0].substr(prefix.length), kv[1]] )) : undefined;
+  },[errors]);
+  const fprops: FieldArrayRProps<Value> = {
+    rowErrors:rowErrors,
     ...arrayHelpers,
   };
 
@@ -107,22 +114,22 @@ export function FieldArray<P, Value>({
   name,
   ...props
 }: P &
-  FieldArrayProps<Value> & {
+  FieldArrayAllProps<Value> & {
     readonly name: string;
   }): React.FunctionComponentElement<P> {
-  const values = React.useContext(FormikReimaginedValueContext);
+  const rawState = React.useContext(FormikReimaginedStateContext);
   const dispatch = React.useContext(FormikReimaginedUpdateContext);
 
-  const state: any[] = R.view(R.lensProp(name), values);
+  const state: any[] = R.view(R.lensProp(name), rawState.values);
   if (state === undefined) {
     throw new Error(
       `Missing state value for state named '${name}' in nested '${JSON.stringify(
-        values
+        rawState.values
       )}'`
     );
   }
   return (
-    <FieldArrayState {...props} state={state} name={name} dispatch={dispatch}>
+    <FieldArrayState {...props} state={state} errors={rawState.errors} name={name} dispatch={dispatch}>
       {children}
     </FieldArrayState>
   );
