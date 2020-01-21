@@ -6,13 +6,13 @@ import {
 import * as R from 'ramda';
 import { Message } from './reducer';
 import { ArrayHelpers } from './types.array';
-import { FieldArrayAllProps, FieldArrayRProps } from './types.props';
+import { FieldArrayAllProps } from './types.props';
 import { FormikReimaginedErrors } from 'types';
 
 /**
  * this implementation is not lazy enough
  */
-export class FieldArrayHelper<Value> implements ArrayHelpers<Value> {
+export class FieldArrayHelper<Value> implements Omit<ArrayHelpers<Value>,'errors'> {
   /**
    *
    */
@@ -80,20 +80,19 @@ export function FieldArrayState<P, Value>(
       dispatch(value: Message<Value[]>): void;
     }
 ): React.FunctionComponentElement<P> {
-  const arrayHelpers: ArrayHelpers<Value> = new FieldArrayHelper<Value>(
+  const arrayHelpers = new FieldArrayHelper<Value>(
     props.dispatch,
     props.name
   );
 
   const { component, render, children, errors } = props;
-  const rowErrors = React.useCallback((i:number)=>{
+  const getErrors = React.useCallback((i:number)=>{
     const prefix = props.name+"["+i+"].";
     const keyMap =  Array.from(errors?.entries()||[]).filter(kv=>kv[0].startsWith(prefix));
-    //throw new Error(JSON.stringify( {keyMap, errors: errors? Array.from(errors.entries()):null }));
-    return keyMap.length>0? new Map(keyMap.map(kv=> [kv[0].substr(prefix.length), kv[1]] )) : undefined;
+    return new Map(keyMap.map(kv=> [kv[0].substr(prefix.length), kv[1]] ));
   },[errors]);
-  const fprops: FieldArrayRProps<Value> = {
-    rowErrors:rowErrors,
+  const fprops: ArrayHelpers<Value> = {
+    errors:getErrors,
     ...arrayHelpers,
   };
 

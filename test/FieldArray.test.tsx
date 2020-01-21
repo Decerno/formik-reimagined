@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import isFunction from 'lodash.isfunction';
-import { FieldArray, withFormikReimagined } from '../src';
+import { FieldArray, withFormikReimagined, ArrayHelpers } from '../src';
 import { FormikTestComponent } from './formik';
 import { act } from 'react-dom/test-utils';
 interface Values {
@@ -78,7 +78,7 @@ describe('<FieldArray />', () => {
   describe('props.push()', () => {
     it('should add a value to the end of the field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {
@@ -106,7 +106,7 @@ describe('<FieldArray />', () => {
 
     it('dispatches onChange', () => {
       let values: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm
           onChange={(value: any) => {
@@ -179,7 +179,7 @@ describe('<FieldArray />', () => {
   describe('props.swap()', () => {
     it('should swap two values in field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {
@@ -208,7 +208,7 @@ describe('<FieldArray />', () => {
   describe('props.insert()', () => {
     it('should insert a value at given index of field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {
@@ -237,7 +237,7 @@ describe('<FieldArray />', () => {
   describe('props.replace()', () => {
     it('should replace a value at given index of field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {
@@ -266,7 +266,7 @@ describe('<FieldArray />', () => {
   describe('props.unshift()', () => {
     it('should add a value to start of field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {
@@ -295,7 +295,7 @@ describe('<FieldArray />', () => {
   describe('props.remove()', () => {
     it('should remove a value at given index of field array', () => {
       let formikBag: any;
-      let arrayHelpers: any;
+      let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
         <TestForm>
           {(props: any) => {

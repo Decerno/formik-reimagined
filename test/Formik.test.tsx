@@ -57,7 +57,7 @@ function Form({
           <table>
             <tbody>
               {values.users.map((value, i) => {
-                const rowerrors = arrayHelpers.rowErrors(i);
+                const rowerrors = arrayHelpers.errors(i);
                 return (
                   <tr key={i}>
                     <td>
