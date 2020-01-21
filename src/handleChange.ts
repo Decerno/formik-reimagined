@@ -13,7 +13,7 @@ function getSelectedValues(options: any[]) {
  */
 export function executeChangeMsg(
   event: React.ChangeEvent<any>
-): Message<any> | undefined {
+): Message | undefined {
   let field = null;
   let parsed;
   // If we can, persist the event
