@@ -67,7 +67,7 @@ export function withFormikReimagined<
       props: OuterProps & FormikReimaginedCallbacks<Values>
     ): React.FunctionComponentElement<OuterProps> {
       const [state, dispatch] = React.useReducer<
-        React.Reducer<FormikReimaginedState<Values>, Message<Values>>
+        React.Reducer<FormikReimaginedState<Values>, Message>
       >(
         validate == null && validationSchema == null
           ? formikReimaginedReducer

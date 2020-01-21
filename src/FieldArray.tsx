@@ -17,7 +17,7 @@ export class FieldArrayHelper<Value> implements Omit<ArrayHelpers<Value>,'errors
    *
    */
   constructor(
-    private dispatch: { (value: Message<Value[]>): void },
+    private dispatch: { (value: Message): void },
     private name: string
   ) {}
 
@@ -77,7 +77,7 @@ export function FieldArrayState<P, Value>(
       /**
        * Update State
        */
-      dispatch(value: Message<Value[]>): void;
+      dispatch(value: Message): void;
     }
 ): React.FunctionComponentElement<P> {
   const arrayHelpers = new FieldArrayHelper<Value>(

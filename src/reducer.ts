@@ -4,7 +4,7 @@ import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
 import { ObjectSchema } from 'yup';
 
-export type BaseMessage<Values> =
+export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
@@ -25,7 +25,7 @@ export type BaseMessage<Values> =
       payload: { field: string; checked: boolean; value: any };
     };
 
-export type Message<Values> = BaseMessage<Values>;
+export type Message = BaseMessage;
 /** Return the next value for a checkbox */
 function getValueForCheckbox(
   currentValue: string | any[],
@@ -54,7 +54,7 @@ function getValueForCheckbox(
 // State reducer
 export function formikReimaginedReducer<Values>(
   state: FormikReimaginedState<Values>,
-  msg: Message<Values>
+  msg: Message
 ) {
   switch (msg.type) {
     case 'SET_ERRORS':
@@ -171,7 +171,7 @@ export function formikReimaginedErrorReducer<Values extends object>(
 ) {
   return function formikReimaginedErrorReducer(
     state: FormikReimaginedState<Values>,
-    msg: Message<Values>
+    msg: Message
   ) {
     const nextState =
       msg.type === 'SET_ERRORS' ? state : formikReimaginedReducer(state, msg);
