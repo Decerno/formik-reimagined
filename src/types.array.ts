@@ -1,3 +1,5 @@
+import { FormikReimaginedErrors } from './types';
+
 /**
  *
  */
@@ -15,4 +17,6 @@ export interface ArrayHelpers<Value> {
   unshift: (value: Value) => void;
   /** Imperatively remove and element at an index of an array */
   remove(index: number): void;
+  /** Get row errors */
+  errors(index: number): FormikReimaginedErrors
 }

@@ -59,10 +59,7 @@ export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
 /**
  * Render properties of field array. Accessible through render and children.
  **/
-export interface FieldArrayRProps<Value> extends ArrayHelpers<Value> {
-  rowErrors(index:number):FormikReimaginedErrors | undefined
-}
 export type FieldArrayAllProps<Value> = FormikReimaginedSharedProps<
-  FieldArrayRProps<Value>
+  ArrayHelpers<Value>
 >;
 
