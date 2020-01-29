@@ -4,7 +4,7 @@ Formik inspired API
 
 ## Why
 
-We have used Formik to render a huge form hundreds of fields in many subcomponents. The performance impact of Formik validation and submit caused degraded user experience.
+We have used Formik to render a huge form with hundreds of fields in many subcomponents. The performance impact of Formik validation and submit caused degraded user experience.
 
 In order to get around these issues we decided to make a Formik fork compatible with the parts of the Formik API that is relevant in the application.
 
