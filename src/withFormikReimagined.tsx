@@ -80,6 +80,7 @@ export function withFormikReimagined<
         {
           values: mapPropsToValues(props),
           errors: new Map(),
+          touched: {},
         }
       );
       const onChange = props.onChange;
@@ -156,6 +157,7 @@ export function withFormikReimagined<
         handleSubmit,
         values: state.values,
         errors: state.errors,
+        touched: state.touched,
       };
       return (
         <FormikReimaginedStateContext.Provider value={state}>

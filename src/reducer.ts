@@ -7,6 +7,7 @@ import { ObjectSchema } from 'yup';
 export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
+  | { type: 'SET_TOUCHED'; payload: { field: string; } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -63,6 +64,11 @@ export function formikReimaginedReducer<Values>(
         errors: aggregate([msg.payload, state.errors]),
         errorsSet: true,
       };
+    case 'SET_TOUCHED':
+      return {
+        ...state,
+        touched:{...state.touched, [msg.payload.field]:true},
+      };
     case 'SET_FIELD_VALUE':
       return {
         ...state,
@@ -71,6 +77,7 @@ export function formikReimaginedReducer<Values>(
           msg.payload.value,
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'FLIP_CB':
       return {
@@ -81,6 +88,7 @@ export function formikReimaginedReducer<Values>(
             getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'PUSH_A':
       return {
@@ -90,6 +98,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => [...arrayLike, msg.payload.value],
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'SWAP_A':
       return {
@@ -99,6 +108,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'MOVE_A':
       return {
@@ -108,6 +118,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'INSERT_A':
       return {
@@ -117,6 +128,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'REPLACE_A':
       return {
@@ -126,6 +138,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'UNSHIFT_A':
       return {
@@ -136,6 +149,7 @@ export function formikReimaginedReducer<Values>(
             array ? [msg.payload.value, ...array] : [msg.payload.value],
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     case 'REMOVE_A':
       return {
@@ -149,6 +163,7 @@ export function formikReimaginedReducer<Values>(
           },
           state.values
         ),
+        touched:{...state.touched, [msg.payload.field]:true},
       };
     default:
       return state;
