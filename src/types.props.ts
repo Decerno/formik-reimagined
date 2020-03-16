@@ -62,4 +62,3 @@ export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
 export type FieldArrayAllProps<Value> = FormikReimaginedSharedProps<
   ArrayHelpers<Value>
 >;
-

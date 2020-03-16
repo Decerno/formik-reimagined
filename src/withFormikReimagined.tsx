@@ -173,9 +173,7 @@ export function withFormikReimagined<
 }
 function yieldErrorsOrUndefined<Values extends FormikReimaginedValues>(
   state: FormikReimaginedState<Values>
-):
-  | FormikReimaginedErrors
-  | undefined {
+): FormikReimaginedErrors | undefined {
   return state.errors != null && state.errors.size > 0
     ? state.errors
     : undefined;

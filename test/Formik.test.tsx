@@ -61,9 +61,11 @@ function Form({
                 return (
                   <tr key={i}>
                     <td>
-                    <pre data-testid={"rowerrors"+i}>
-                      {JSON.stringify(rowerrors? Array.from(rowerrors.entries()):null)}
-                    </pre>
+                      <pre data-testid={'rowerrors' + i}>
+                        {JSON.stringify(
+                          rowerrors ? Array.from(rowerrors.entries()) : null
+                        )}
+                      </pre>
                     </td>
                     <td>
                       <input
