@@ -26,6 +26,7 @@ export function FormikTestComponent<
     handleSubmit: props.handleSubmit,
     values: props.values,
     errors: props.errors,
+    touched: props.touched,
   };
   const formikbag = { ...oprops, ...injectedformikProps };
   return component
