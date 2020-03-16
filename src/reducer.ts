@@ -7,7 +7,7 @@ import { ObjectSchema } from 'yup';
 export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
-  | { type: 'SET_TOUCHED'; payload: { field: string } }
+  //| { type: 'SET_TOUCHED'; payload: { field: string } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -72,6 +72,7 @@ export function formikReimaginedReducer<Values>(
           msg.payload.value,
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'FLIP_CB':
       return {
@@ -82,6 +83,7 @@ export function formikReimaginedReducer<Values>(
             getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'PUSH_A':
       return {
@@ -91,6 +93,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => [...arrayLike, msg.payload.value],
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'SWAP_A':
       return {
@@ -100,6 +103,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'MOVE_A':
       return {
@@ -118,6 +122,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'REPLACE_A':
       return {
@@ -127,6 +132,7 @@ export function formikReimaginedReducer<Values>(
           arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'UNSHIFT_A':
       return {
@@ -137,6 +143,7 @@ export function formikReimaginedReducer<Values>(
             array ? [msg.payload.value, ...array] : [msg.payload.value],
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'REMOVE_A':
       return {
@@ -150,6 +157,7 @@ export function formikReimaginedReducer<Values>(
           },
           state.values
         ),
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     default:
       return state;
@@ -191,68 +199,5 @@ export function formikReimaginedErrorReducer<Values extends object>(
       errors: aggregate(errors),
       errorsSet: msg.type === 'SET_ERRORS',
     };
-  };
-}
-export function getformikReimaginedTouchedReducer<Values>(innerReducer: {
-  (state: FormikReimaginedState<Values>, msg: Message): FormikReimaginedState<
-    Values
-  >;
-}) {
-  return function(state: FormikReimaginedState<Values>, msg: Message) {
-    const nextState = innerReducer(state, msg);
-    switch (msg.type) {
-      case 'SET_TOUCHED':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'SET_FIELD_VALUE':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'FLIP_CB':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'PUSH_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'SWAP_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'MOVE_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'INSERT_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'REPLACE_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'UNSHIFT_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      case 'REMOVE_A':
-        return {
-          ...nextState,
-          touched: { ...state.touched, [msg.payload.field]: true },
-        };
-      default:
-        return nextState;
-    }
   };
 }

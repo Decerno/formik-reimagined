@@ -17,7 +17,6 @@ import {
   formikReimaginedReducer,
   Message,
   formikReimaginedErrorReducer,
-  getformikReimaginedTouchedReducer,
 } from './reducer';
 import { WithFormikReimaginedConfig } from './types.config';
 import {
@@ -49,7 +48,6 @@ export function withFormikReimagined<
   },
   validate,
   validationSchema,
-  touch,
 }: WithFormikReimaginedConfig<
   OuterProps,
   Values
@@ -78,7 +76,7 @@ export function withFormikReimagined<
         );
       const [state, dispatch] = React.useReducer<
         React.Reducer<FormikReimaginedState<Values>, Message>
-      >(touch?getformikReimaginedTouchedReducer(reducer):reducer,
+      >(reducer,
         {
           values: mapPropsToValues(props),
           errors: new Map(),
