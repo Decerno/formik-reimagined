@@ -7,7 +7,7 @@ import { ObjectSchema } from 'yup';
 export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
-  //| { type: 'SET_TOUCHED'; payload: { field: string } }
+  | { type: 'SET_TOUCHED'; payload: { field: string } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -63,6 +63,11 @@ export function formikReimaginedReducer<Values>(
         ...state,
         errors: aggregate([msg.payload, state.errors]),
         errorsSet: true,
+      };
+    case 'SET_TOUCHED':
+      return {
+        ...state,
+        touched: { ...state.touched, [msg.payload.field]: true },
       };
     case 'SET_FIELD_VALUE':
       return {

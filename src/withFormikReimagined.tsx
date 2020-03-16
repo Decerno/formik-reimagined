@@ -66,23 +66,22 @@ export function withFormikReimagined<
     return function CWrapped(
       props: OuterProps & FormikReimaginedCallbacks<Values>
     ): React.FunctionComponentElement<OuterProps> {
-      const reducer = validate == null && validationSchema == null
-      ? formikReimaginedReducer
-      : formikReimaginedErrorReducer(
-          validationSchema != null && !isFunction(validationSchema)
-            ? validationSchema
-            : undefined,
-          validate
-        );
+      const reducer =
+        validate == null && validationSchema == null
+          ? formikReimaginedReducer
+          : formikReimaginedErrorReducer(
+              validationSchema != null && !isFunction(validationSchema)
+                ? validationSchema
+                : undefined,
+              validate
+            );
       const [state, dispatch] = React.useReducer<
         React.Reducer<FormikReimaginedState<Values>, Message>
-      >(reducer,
-        {
-          values: mapPropsToValues(props),
-          errors: new Map(),
-          touched: {},
-        }
-      );
+      >(reducer, {
+        values: mapPropsToValues(props),
+        errors: new Map(),
+        touched: {},
+      });
       const onChange = props.onChange;
       const onError = props.onError;
       const onSubmit = props.onSubmit;
@@ -123,6 +122,17 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const setTouched = React.useCallback(
+        (field: string) => {
+          dispatch({
+            type: 'SET_TOUCHED',
+            payload: {
+              field,
+            },
+          });
+        },
+        [dispatch]
+      );
       const handleChange = React.useCallback(
         (e1: React.ChangeEvent<any>) => {
           const msg = executeChangeMsg(e1);
@@ -144,15 +154,17 @@ export function withFormikReimagined<
           if (onSubmit && yieldErrorsOrUndefined<Values>(state) == null) {
             onSubmit(state.values, {
               setFieldValue,
+              setTouched,
             });
           }
         },
-        [onSubmit, state, setFieldValue]
+        [onSubmit, state, setFieldValue, setTouched]
       );
       const injectedformikProps: FormikReimaginedHelpers &
         FormikReimaginedHandlers &
         FormikReimaginedState<Values> = {
         setFieldValue,
+        setTouched,
         handleChange,
         handleSubmit,
         values: state.values,

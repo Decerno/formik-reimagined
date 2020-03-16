@@ -24,6 +24,7 @@ export function FormikTestComponent<
     setFieldValue: props.setFieldValue,
     handleChange: props.handleChange,
     handleSubmit: props.handleSubmit,
+    setTouched: props.setTouched,
     values: props.values,
     errors: props.errors,
     touched: props.touched,
