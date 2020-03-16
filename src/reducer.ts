@@ -193,62 +193,66 @@ export function formikReimaginedErrorReducer<Values extends object>(
     };
   };
 }
-export function formikReimaginedTouchedReducer<Values>(
-  state: FormikReimaginedState<Values>,
-  msg: Message
-) {
-  switch (msg.type) {
-    case 'SET_TOUCHED':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'SET_FIELD_VALUE':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'FLIP_CB':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'PUSH_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'SWAP_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'MOVE_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'INSERT_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'REPLACE_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'UNSHIFT_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'REMOVE_A':
-      return {
-        ...state,
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    default:
-      return state;
-  }
+export function getformikReimaginedTouchedReducer<Values>(innerReducer: {
+  (state: FormikReimaginedState<Values>, msg: Message): FormikReimaginedState<
+    Values
+  >;
+}) {
+  return function(state: FormikReimaginedState<Values>, msg: Message) {
+    const nextState = innerReducer(state, msg);
+    switch (msg.type) {
+      case 'SET_TOUCHED':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'SET_FIELD_VALUE':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'FLIP_CB':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'PUSH_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'SWAP_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'MOVE_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'INSERT_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'REPLACE_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'UNSHIFT_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      case 'REMOVE_A':
+        return {
+          ...nextState,
+          touched: { ...state.touched, [msg.payload.field]: true },
+        };
+      default:
+        return nextState;
+    }
+  };
 }
