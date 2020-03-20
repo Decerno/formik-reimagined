@@ -1,6 +1,6 @@
 {
   "name": "@wallymathieu/formik-reimagined",
-  "version": "1.0.0-alpha-10",
+  "version": "1.0.0-alpha-12",
   "description": "Formik reimagined code based in large parts on Formik",
   "keywords": [
     "formik",
@@ -51,7 +51,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^2.3.0",
-    "jest": "^24.9.0",
+    "jest": "^25.1.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.isfunction": "^3.0.9",

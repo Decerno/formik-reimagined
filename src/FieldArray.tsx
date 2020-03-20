@@ -12,7 +12,8 @@ import { FormikReimaginedErrors } from 'types';
 /**
  * this implementation is not lazy enough
  */
-export class FieldArrayHelper<Value> implements Omit<ArrayHelpers<Value>,'errors'> {
+export class FieldArrayHelper<Value>
+  implements Omit<ArrayHelpers<Value>, 'errors'> {
   /**
    *
    */
@@ -73,26 +74,28 @@ export function FieldArrayState<P, Value>(
       /**
        * Name of state to update
        */
-      readonly errors: FormikReimaginedErrors|undefined;
+      readonly errors: FormikReimaginedErrors | undefined;
       /**
        * Update State
        */
       dispatch(value: Message): void;
     }
 ): React.FunctionComponentElement<P> {
-  const arrayHelpers = new FieldArrayHelper<Value>(
-    props.dispatch,
-    props.name
-  );
+  const arrayHelpers = new FieldArrayHelper<Value>(props.dispatch, props.name);
 
   const { component, render, children, errors } = props;
-  const getErrors = React.useCallback((i:number)=>{
-    const prefix = props.name+"["+i+"].";
-    const keyMap =  Array.from(errors?.entries()||[]).filter(kv=>kv[0].startsWith(prefix));
-    return new Map(keyMap.map(kv=> [kv[0].substr(prefix.length), kv[1]] ));
-  },[errors]);
+  const getErrors = React.useCallback(
+    (i: number) => {
+      const prefix = props.name + '[' + i + '].';
+      const keyMap = Array.from(errors?.entries() || []).filter(kv =>
+        kv[0].startsWith(prefix)
+      );
+      return new Map(keyMap.map(kv => [kv[0].substr(prefix.length), kv[1]]));
+    },
+    [errors]
+  );
   const fprops: ArrayHelpers<Value> = {
-    errors:getErrors,
+    errors: getErrors,
     ...arrayHelpers,
   };
 
@@ -128,7 +131,13 @@ export function FieldArray<P, Value>({
     );
   }
   return (
-    <FieldArrayState {...props} state={state} errors={rawState.errors} name={name} dispatch={dispatch}>
+    <FieldArrayState
+      {...props}
+      state={state}
+      errors={rawState.errors}
+      name={name}
+      dispatch={dispatch}
+    >
       {children}
     </FieldArrayState>
   );
