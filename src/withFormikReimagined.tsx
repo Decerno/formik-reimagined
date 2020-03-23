@@ -75,11 +75,15 @@ export function withFormikReimagined<
                 : undefined,
               validate
             );
+      const initialValues = mapPropsToValues(props);
       const [state, dispatch] = React.useReducer<
         React.Reducer<FormikReimaginedState<Values>, Message>
       >(reducer, {
-        values: mapPropsToValues(props),
-        errors: new Map(),
+        values: initialValues,
+        errors:
+          validationSchema != null && !isFunction(validationSchema)
+            ? runValidationSchema(validationSchema, initialValues)
+            : new Map(),
         touched: {},
       });
       const onChange = props.onChange;
