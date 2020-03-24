@@ -17,11 +17,13 @@ export type FormikReimaginedErrors = Map<string, string>;
 /**
  * Dumbed down version of Formik state helpers
  */
-export interface FormikReimaginedHelpers {
+export interface FormikReimaginedHelpers<Values> {
   /** Set value of form field directly */
   setFieldValue(field: string, value: any): void;
   /** Set field as touched */
   setTouched(field: string): void;
+  /** Set all values */
+  setValues(values: Values): void;
 }
 
 /**
