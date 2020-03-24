@@ -18,10 +18,11 @@ export function FormikTestComponent<
 >(props: FormikReimaginedProps<Values> & FormikReimaginedCallbacks<Values>) {
   const { component, children, ...oprops } = props as any;
 
-  const injectedformikProps: FormikReimaginedHelpers &
+  const injectedformikProps: FormikReimaginedHelpers<Values> &
     FormikReimaginedHandlers &
     FormikReimaginedState<Values> = {
     setFieldValue: props.setFieldValue,
+    setValues: props.setValues,
     handleChange: props.handleChange,
     handleSubmit: props.handleSubmit,
     setTouched: props.setTouched,

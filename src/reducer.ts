@@ -8,6 +8,7 @@ export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
   | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
   | { type: 'SET_TOUCHED'; payload: { field: string } }
+  | { type: 'SET_VALUES'; payload: any }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -78,6 +79,11 @@ export function formikReimaginedReducer<Values>(
           state.values
         ),
         touched: { ...state.touched, [msg.payload.field]: true },
+      };
+    case 'SET_VALUES':
+      return {
+        ...state,
+        values: msg.payload,
       };
     case 'FLIP_CB':
       return {

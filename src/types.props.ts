@@ -46,7 +46,10 @@ export interface FormikReimaginedCallbacks<Values> {
   /**
    * Submission handler
    */
-  onSubmit?(values: Values, formikHelpers: FormikReimaginedHelpers): void;
+  onSubmit?(
+    values: Values,
+    formikHelpers: FormikReimaginedHelpers<Values>
+  ): void;
 }
 
 /**
@@ -54,7 +57,7 @@ export interface FormikReimaginedCallbacks<Values> {
  * of <Formik/>.
  */
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
-  FormikReimaginedHelpers &
+  FormikReimaginedHelpers<Values> &
   FormikReimaginedHandlers;
 /**
  * Render properties of field array. Accessible through render and children.

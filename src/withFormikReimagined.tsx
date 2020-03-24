@@ -126,6 +126,15 @@ export function withFormikReimagined<
         },
         [dispatch]
       );
+      const setValues = React.useCallback(
+        (values: Values) => {
+          dispatch({
+            type: 'SET_VALUES',
+            payload: values,
+          });
+        },
+        [dispatch]
+      );
       const setTouched = React.useCallback(
         (field: string) => {
           dispatch({
@@ -158,16 +167,18 @@ export function withFormikReimagined<
           if (onSubmit && yieldErrorsOrUndefined<Values>(state) == null) {
             onSubmit(state.values, {
               setFieldValue,
+              setValues,
               setTouched,
             });
           }
         },
-        [onSubmit, state, setFieldValue, setTouched]
+        [onSubmit, state, setFieldValue, setTouched, setValues]
       );
-      const injectedformikProps: FormikReimaginedHelpers &
+      const injectedformikProps: FormikReimaginedHelpers<Values> &
         FormikReimaginedHandlers &
         FormikReimaginedState<Values> = {
         setFieldValue,
+        setValues,
         setTouched,
         handleChange,
         handleSubmit,
