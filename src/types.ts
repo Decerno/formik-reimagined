@@ -7,7 +7,6 @@ export interface FormikReimaginedState<Values> {
   /** map of field names to specific error for that field */
   errors: FormikReimaginedErrors;
   touched: { [field: string]: boolean };
-  // props:Props;
 }
 
 /**
