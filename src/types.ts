@@ -7,6 +7,7 @@ export interface FormikReimaginedState<Values> {
   /** map of field names to specific error for that field */
   errors: FormikReimaginedErrors;
   touched: { [field: string]: boolean };
+  // props:Props;
 }
 
 /**
@@ -17,13 +18,14 @@ export type FormikReimaginedErrors = Map<string, string>;
 /**
  * Dumbed down version of Formik state helpers
  */
-export interface FormikReimaginedHelpers<Values> {
+export interface FormikReimaginedHelpers<Props, Values> {
   /** Set value of form field directly */
   setFieldValue(field: string, value: any): void;
   /** Set field as touched */
   setTouched(field: string): void;
   /** Set all values */
   setValues(values: Values): void;
+  props: Props;
 }
 
 /**
@@ -34,6 +36,8 @@ export interface FormikReimaginedHandlers {
   handleChange(e: React.ChangeEvent<any>): void;
   /** Form submit handler */
   handleSubmit(e?: React.FormEvent<HTMLFormElement>): void;
+  /** Submit form */
+  submitForm(e?: React.FormEvent<HTMLFormElement>): void;
 }
 
 /**

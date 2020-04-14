@@ -31,9 +31,9 @@ export interface FormikReimaginedSharedProps<T> {
  * @deprecated  Use `OuterProps & FormikReimaginedProps<Values>` instead.
  */
 export type InjectedFormikReimaginedProps<Props, Values> = Props &
-  FormikReimaginedProps<Values>;
+  FormikReimaginedProps<Props, Values>;
 
-export interface FormikReimaginedCallbacks<Values> {
+export interface FormikReimaginedCallbacks<Props, Values> {
   /**
    * Callback whenever state changes, second parameter are errors if any
    */
@@ -48,7 +48,7 @@ export interface FormikReimaginedCallbacks<Values> {
    */
   onSubmit?(
     values: Values,
-    formikHelpers: FormikReimaginedHelpers<Values>
+    formikHelpers: FormikReimaginedHelpers<Props, Values>
   ): void;
 }
 
@@ -56,8 +56,10 @@ export interface FormikReimaginedCallbacks<Values> {
  * State, handlers, and helpers made available to form component or render prop
  * of <Formik/>.
  */
-export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
-  FormikReimaginedHelpers<Values> &
+export type FormikReimaginedProps<Props, Values> = FormikReimaginedState<
+  Values
+> &
+  FormikReimaginedHelpers<Props, Values> &
   FormikReimaginedHandlers;
 /**
  * Render properties of field array. Accessible through render and children.
