@@ -12,12 +12,14 @@ interface Values {
 
 function Form({
   values,
+  touched,
   setFieldValue,
   setValues,
 }: FormikReimaginedProps<Values>) {
   return (
     <form data-testid="form" noValidate={true} autoComplete="off">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
+      <pre data-testid="touched">{JSON.stringify(touched)}</pre>
       <div>
         <input
           type="text"
@@ -74,6 +76,8 @@ describe('<SetValues>', () => {
 
     const values = JSON.parse(getByTestId('values').innerHTML);
     expect(values).toEqual({ value1: '1', value2: '' });
+    const touched = JSON.parse(getByTestId('touched').innerHTML);
+    expect(touched).toEqual({ value1:true });
   });
   it('should set all values on button click', async () => {
     const { getByTestId } = render(<Formik initialValues={InitialValues} />);
@@ -87,5 +91,8 @@ describe('<SetValues>', () => {
 
     const values = JSON.parse(getByTestId('values').innerHTML);
     expect(values).toEqual({ value1: 'a', value2: 'b' });
+    const touched = JSON.parse(getByTestId('touched').innerHTML);
+    expect(touched).toEqual({ value1: true, value2: true });
   });
+
 });

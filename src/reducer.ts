@@ -84,6 +84,7 @@ export function formikReimaginedReducer<Values>(
       return {
         ...state,
         values: msg.payload,
+        touched: { ...state.touched, ...(fieldsWithBooleanTrue(msg.payload)) },
       };
     case 'FLIP_CB':
       return {
@@ -174,6 +175,18 @@ export function formikReimaginedReducer<Values>(
       return state;
   }
 }
+/**
+ * You get a new object with all the property values set to true.
+ *
+ * For instance:
+ * `{ "a":1, "b":2 }`
+ * becomes
+ * `{ "a":true, "b":true}`
+*/
+function fieldsWithBooleanTrue(payload: any) {
+  return Object.keys(payload).reduce(((prev, c) => { prev[c] = true; return prev; }), {} as any);
+}
+
 /** */
 function aggregate<T, V>(maps: Map<T, V>[]) {
   return new Map(
