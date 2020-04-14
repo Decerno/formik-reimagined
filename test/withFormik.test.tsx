@@ -7,7 +7,7 @@ interface Values {
   name: string;
 }
 
-function FormInner(props: FormikReimaginedProps<Values>) {
+function FormInner(props: FormikReimaginedProps<any, Values>) {
   const { values, handleChange } = props;
   return (
     <form>
