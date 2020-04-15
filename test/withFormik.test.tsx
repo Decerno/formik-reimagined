@@ -1,13 +1,25 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
-
-import { withFormikReimagined, FormikReimaginedProps } from '../src';
-import { render } from '@testing-library/react';
+import {
+  withFormikReimagined,
+  FormikReimaginedProps,
+  InjectedFormikReimaginedProps,
+} from '../src';
+import { render, fireEvent } from '@testing-library/react';
+import { noop } from './Formik.test';
 
 interface Values {
   name: string;
 }
 
-function FormInner(props: FormikReimaginedProps<any, Values>) {
+interface OwnProps {
+  initialValues: Values;
+  injectedProp?: boolean;
+}
+
+type SubmitCallback = (e?: React.FormEvent<any> | undefined) => void;
+
+function FormInner(props: FormikReimaginedProps<Values>) {
   const { values, handleChange } = props;
   return (
     <form>
@@ -67,5 +79,61 @@ describe('withFormik()', () => {
   it('passes down custom props', () => {
     const { getProps } = renderWithFormik({}, { my: 'prop' });
     expect(getProps().my).toEqual('prop');
+  });
+
+  it('should trigger external handleSubmit on submitForm()', () => {
+    let myValues: Values = { name: 'jared' };
+    let myInjectedProp = false;
+    let submit: SubmitCallback = () => {};
+
+    const FormHandleSubmit: React.FC<InjectedFormikReimaginedProps<
+      OwnProps,
+      Values
+    >> = ({ values, errors, handleChange, submitForm }) => {
+      submit = submitForm;
+      return (
+        <form noValidate={true} autoComplete="off" data-testid="form">
+          <pre data-testid="values">{JSON.stringify(values)}</pre>
+          <pre data-testid="errors">
+            {JSON.stringify(Array.from(errors.entries()))}
+          </pre>
+          <input
+            type="text"
+            onChange={handleChange}
+            value={values.name}
+            name="name"
+            data-testid="name-input"
+          />
+        </form>
+      );
+    };
+    const FormikHandleSubmit = withFormikReimagined<OwnProps, Values>({
+      mapPropsToValues: props => props.initialValues,
+      handleSubmit: (values, formikHelpers) => {
+        myValues = values;
+        myInjectedProp = formikHelpers.props.injectedProp || false;
+      },
+    })(FormHandleSubmit);
+
+    const { getByTestId } = render(
+      <FormikHandleSubmit
+        initialValues={{ name: 'jared' }}
+        injectedProp={true}
+      />
+    );
+
+    fireEvent.change(getByTestId('name-input'), {
+      persist: noop,
+      target: {
+        name: 'name',
+        value: 'john',
+      },
+    });
+
+    submit();
+
+    // Assert
+    expect(myValues.name).toBe('john');
+    expect(myInjectedProp).toBe(true);
   });
 });

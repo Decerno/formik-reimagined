@@ -1,30 +1,30 @@
+import isFunction from 'lodash.isfunction';
 import * as React from 'react';
-import {
-  FormikReimaginedHelpers,
-  FormikReimaginedValues,
-  FormikReimaginedHandlers,
-  FormikReimaginedState,
-  ComponentClassOrStatelessComponent,
-  FormikReimaginedComponentDecorator,
-  FormikReimaginedErrors,
-} from './types';
-import { executeChangeMsg } from './handleChange';
+import { runValidationSchema } from './errors';
 import {
   FormikReimaginedStateContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
+import { executeChangeMsg } from './handleChange';
 import {
+  formikReimaginedErrorReducer,
   formikReimaginedReducer,
   Message,
-  formikReimaginedErrorReducer,
 } from './reducer';
+import {
+  ComponentClassOrStatelessComponent,
+  FormikReimaginedComponentDecorator,
+  FormikReimaginedErrors,
+  FormikReimaginedHandlers,
+  FormikReimaginedHelpers,
+  FormikReimaginedState,
+  FormikReimaginedValues,
+} from './types';
 import { WithFormikReimaginedConfig } from './types.config';
 import {
-  FormikReimaginedProps,
   FormikReimaginedCallbacks,
+  FormikReimaginedProps,
 } from './types.props';
-import isFunction from 'lodash.isfunction';
-import { runValidationSchema } from './errors';
 
 /**
  * A public higher-order component to access the imperative API
@@ -54,12 +54,12 @@ export function withFormikReimagined<
   Values
 >): FormikReimaginedComponentDecorator<
   OuterProps & FormikReimaginedCallbacks<OuterProps, Values>,
-  OuterProps & FormikReimaginedProps<OuterProps, Values>
+  OuterProps & FormikReimaginedProps<Values>
 > {
   return function createFormik(
     Component: ComponentClassOrStatelessComponent<
       OuterProps &
-        FormikReimaginedProps<OuterProps, Values> &
+        FormikReimaginedProps<Values> &
         FormikReimaginedCallbacks<OuterProps, Values>
     >
   ): React.FunctionComponent<
@@ -89,9 +89,8 @@ export function withFormikReimagined<
             : new Map(),
         touched: {},
       });
-      const onChange = props.onChange;
-      const onError = props.onError;
-      const onSubmit = props.onSubmit;
+      const { onChange, onError, onSubmit } = props;
+      const { children, ...outerProps } = props as any;
 
       React.useEffect(() => {
         if (isFunction(validationSchema) && !(state as any).errorsSet) {
@@ -116,7 +115,6 @@ export function withFormikReimagined<
         }
       }, [state, onError]);
 
-      const { children, ...oprops } = props as any;
       const setFieldValue = React.useCallback(
         (field: string, value: any) => {
           dispatch({
@@ -166,7 +164,7 @@ export function withFormikReimagined<
                 setFieldValue,
                 setValues,
                 setTouched,
-                props,
+                props: outerProps,
               });
             }
             if (handleSubmit) {
@@ -174,12 +172,12 @@ export function withFormikReimagined<
                 setFieldValue,
                 setValues,
                 setTouched,
-                props,
+                props: outerProps,
               });
             }
           }
         },
-        [onSubmit, state, setFieldValue, setTouched, setValues, props]
+        [onSubmit, state, setFieldValue, setTouched, setValues, outerProps]
       );
       const handleSubmitEvent = React.useCallback(
         (e?: React.FormEvent<HTMLFormElement>) => {
@@ -193,7 +191,7 @@ export function withFormikReimagined<
         },
         [submitForm]
       );
-      const injectedformikProps: FormikReimaginedHelpers<OuterProps, Values> &
+      const injectedformikProps: FormikReimaginedHelpers<Values> &
         FormikReimaginedHandlers &
         FormikReimaginedState<Values> = {
         setFieldValue,
@@ -205,12 +203,11 @@ export function withFormikReimagined<
         values: state.values,
         errors: state.errors,
         touched: state.touched,
-        props,
       };
       return (
         <FormikReimaginedStateContext.Provider value={state}>
           <FormikReimaginedUpdateContext.Provider value={dispatch}>
-            <Component {...oprops} {...injectedformikProps}>
+            <Component {...outerProps} {...injectedformikProps}>
               {children}
             </Component>
           </FormikReimaginedUpdateContext.Provider>

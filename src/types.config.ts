@@ -3,6 +3,7 @@ import {
   FormikReimaginedErrors,
   FormikReimaginedHelpers,
   FormikReimaginedValues,
+  FormikReimaginedPropHelpers,
 } from './types';
 
 /**
@@ -29,7 +30,8 @@ export interface FormikReimaginedConfig<
    */
   handleSubmit?: (
     values: Values,
-    formikHelpers: FormikReimaginedHelpers<Props, Values>
+    formikHelpers: FormikReimaginedHelpers<Values> &
+      FormikReimaginedPropHelpers<Props>
   ) => void;
 }
 

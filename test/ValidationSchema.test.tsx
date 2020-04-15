@@ -16,7 +16,7 @@ interface RowValue {
   readonly description: string;
 }
 
-function Form({ values, errors }: FormikReimaginedProps<any, Values>) {
+function Form({ values, errors }: FormikReimaginedProps<Values>) {
   return (
     <form data-testid="form" noValidate={true} autoComplete="off">
       <pre data-testid="values">{JSON.stringify(values)}</pre>

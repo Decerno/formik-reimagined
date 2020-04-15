@@ -1,18 +1,17 @@
-/* eslint-disable react/prop-types */
-import { fireEvent, render, wait } from '@testing-library/react';
 import * as React from 'react';
 import * as Yup from 'yup';
+
 import {
-  FieldArray,
-  FormikReimaginedConfig,
-  FormikReimaginedErrors,
-  FormikReimaginedHandlers,
   FormikReimaginedProps,
-  FormikReimaginedSharedProps,
-  InjectedFormikReimaginedProps,
+  FieldArray,
+  FormikReimaginedErrors,
+  FormikReimaginedConfig,
   withFormikReimagined,
+  FormikReimaginedSharedProps,
+  FormikReimaginedHandlers,
 } from '../src';
 import { FormikTestComponent } from './formik';
+import { fireEvent, render, wait } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
 export const noop = () => {};
@@ -24,14 +23,6 @@ interface Values {
   name: string;
   users: ValuesUser[];
 }
-
-interface OwnProps {
-  initialValues: Values;
-  injectedProp?: boolean;
-}
-
-type SubmitCallback = (e?: React.FormEvent<any> | undefined) => void;
-
 const Formik = withFormikReimagined<
   {
     initialValues: Values;
@@ -46,7 +37,7 @@ function Form({
   errors,
   handleSubmit,
   handleChange,
-}: FormikReimaginedProps<any, Values> & { handleSubmit?: any }) {
+}: FormikReimaginedProps<Values> & { handleSubmit?: any }) {
   return (
     <form onSubmit={handleSubmit} data-testid="form">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
@@ -194,17 +185,14 @@ function renderFormikReimagined<V extends Values>(
       {(formikProps: any) =>
         (injected = formikProps) && (
           <Form
-            {...((formikProps as unknown) as FormikReimaginedProps<
-              any,
-              Values
-            >)}
+            {...((formikProps as unknown) as FormikReimaginedProps<Values>)}
           />
         )
       }
     </Formik>
   );
   return {
-    getProps(): FormikReimaginedProps<any, V> {
+    getProps(): FormikReimaginedProps<V> {
       return injected;
     },
     ...rest,
@@ -214,10 +202,7 @@ function renderFormikReimagined<V extends Values>(
           {(formikProps: any) =>
             (injected = formikProps) && (
               <Form
-                {...((formikProps as unknown) as FormikReimaginedProps<
-                  any,
-                  Values
-                >)}
+                {...((formikProps as unknown) as FormikReimaginedProps<Values>)}
               />
             )
           }
@@ -432,65 +417,6 @@ describe('<Formik>', () => {
       expect(() => {
         fireEvent.click(getByTestId('submit-button'));
       }).not.toThrow();
-    });
-
-    it('should trigger external handleSubmit on submitForm()', () => {
-      let myValues: Values = { name: 'jared', users: [] };
-      let myInjectedProp = false;
-      let submit: SubmitCallback = () => {};
-
-      const FormHandleSubmit: React.FC<InjectedFormikReimaginedProps<
-        OwnProps,
-        Values
-      >> = ({ values, errors, handleChange, submitForm }) => {
-        submit = submitForm;
-        return (
-          <form noValidate={true} autoComplete="off" data-testid="form">
-            <pre data-testid="values">{JSON.stringify(values)}</pre>
-            <pre data-testid="errors">
-              {JSON.stringify(Array.from(errors.entries()))}
-            </pre>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={values.name}
-              name="name"
-              data-testid="name-input"
-            />
-          </form>
-        );
-      };
-      const FormikHandleSubmit = withFormikReimagined<
-        OwnProps & FormikReimaginedSharedProps<FormikReimaginedHandlers>,
-        Values
-      >({
-        mapPropsToValues: props => props.initialValues,
-        handleSubmit: (values, formikHelpers) => {
-          myValues = values;
-          myInjectedProp = formikHelpers.props.injectedProp || false;
-        },
-      })(FormHandleSubmit);
-
-      const { getByTestId } = render(
-        <FormikHandleSubmit
-          initialValues={{ name: 'jared', users: [] }}
-          injectedProp={true}
-        />
-      );
-
-      fireEvent.change(getByTestId('name-input'), {
-        persist: noop,
-        target: {
-          name: 'name',
-          value: 'john',
-        },
-      });
-
-      submit();
-
-      // Assert
-      expect(myValues.name).toBe('john');
-      expect(myInjectedProp).toBe(true);
     });
   });
 });
