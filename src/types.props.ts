@@ -3,6 +3,7 @@ import {
   FormikReimaginedHandlers,
   FormikReimaginedHelpers,
   FormikReimaginedErrors,
+  FormikReimaginedPropHelpers,
 } from './types';
 import { ArrayHelpers } from './types.array';
 
@@ -33,7 +34,7 @@ export interface FormikReimaginedSharedProps<T> {
 export type InjectedFormikReimaginedProps<Props, Values> = Props &
   FormikReimaginedProps<Values>;
 
-export interface FormikReimaginedCallbacks<Values> {
+export interface FormikReimaginedCallbacks<Props, Values> {
   /**
    * Callback whenever state changes, second parameter are errors if any
    */
@@ -48,7 +49,8 @@ export interface FormikReimaginedCallbacks<Values> {
    */
   onSubmit?(
     values: Values,
-    formikHelpers: FormikReimaginedHelpers<Values>
+    formikHelpers: FormikReimaginedHelpers<Values> &
+      FormikReimaginedPropHelpers<Props>
   ): void;
 }
 

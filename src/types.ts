@@ -24,6 +24,15 @@ export interface FormikReimaginedHelpers<Values> {
   setTouched(field: string): void;
   /** Set all values */
   setValues(values: Values): void;
+  // props: Props;
+}
+
+/**
+ * Used to inject outer props together with FormikReimaginedHelpers
+ */
+export interface FormikReimaginedPropHelpers<Props> {
+  /** Outer props */
+  props: Props;
 }
 
 /**
@@ -34,6 +43,8 @@ export interface FormikReimaginedHandlers {
   handleChange(e: React.ChangeEvent<any>): void;
   /** Form submit handler */
   handleSubmit(e?: React.FormEvent<HTMLFormElement>): void;
+  /** Submit form */
+  submitForm(e?: React.FormEvent<HTMLFormElement>): void;
 }
 
 /**

@@ -15,20 +15,15 @@ const isEmptyChildren = (children: any): boolean =>
 
 export function FormikTestComponent<
   Values extends FormikReimaginedValues = FormikReimaginedValues
->(props: FormikReimaginedProps<Values> & FormikReimaginedCallbacks<Values>) {
+>(
+  props: FormikReimaginedProps<Values> & FormikReimaginedCallbacks<any, Values>
+) {
   const { component, children, ...oprops } = props as any;
 
   const injectedformikProps: FormikReimaginedHelpers<Values> &
     FormikReimaginedHandlers &
     FormikReimaginedState<Values> = {
-    setFieldValue: props.setFieldValue,
-    setValues: props.setValues,
-    handleChange: props.handleChange,
-    handleSubmit: props.handleSubmit,
-    setTouched: props.setTouched,
-    values: props.values,
-    errors: props.errors,
-    touched: props.touched,
+    ...props,
   };
   const formikbag = { ...oprops, ...injectedformikProps };
   return component
