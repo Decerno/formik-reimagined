@@ -42,7 +42,6 @@ const renderWithFormik = (options?: any, props?: any) => {
 
   const FormikForm = withFormikReimagined<{}, Values>({
     mapPropsToValues: () => InitialValues,
-    handleSubmit: () => {},
     ...options,
   })(props => (injected = props) && <Form {...props} />);
 
@@ -81,12 +80,12 @@ describe('withFormik()', () => {
     expect(getProps().my).toEqual('prop');
   });
 
-  it('should trigger external handleSubmit on submitForm()', () => {
+  it('should trigger onSubmit on submitForm()', () => {
     let myValues: Values = { name: 'jared' };
     let myInjectedProp = false;
     let submit: SubmitCallback = () => {};
 
-    const FormHandleSubmit: React.FC<InjectedFormikReimaginedProps<
+    const FormOnSubmit: React.FC<InjectedFormikReimaginedProps<
       OwnProps,
       Values
     >> = ({ values, errors, handleChange, submitForm }) => {
@@ -107,18 +106,18 @@ describe('withFormik()', () => {
         </form>
       );
     };
-    const FormikHandleSubmit = withFormikReimagined<OwnProps, Values>({
+    const FormikOnSubmit = withFormikReimagined<OwnProps, Values>({
       mapPropsToValues: props => props.initialValues,
-      handleSubmit: (values, formikHelpers) => {
-        myValues = values;
-        myInjectedProp = formikHelpers.props.injectedProp || false;
-      },
-    })(FormHandleSubmit);
+    })(FormOnSubmit);
 
     const { getByTestId } = render(
-      <FormikHandleSubmit
+      <FormikOnSubmit
         initialValues={{ name: 'jared' }}
         injectedProp={true}
+        onSubmit={(values, formikHelpers) => {
+          myValues = values;
+          myInjectedProp = formikHelpers.props.injectedProp || false;
+        }}
       />
     );
 

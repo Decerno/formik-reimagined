@@ -48,7 +48,6 @@ export function withFormikReimagined<
   },
   validate,
   validationSchema,
-  handleSubmit,
 }: WithFormikReimaginedConfig<
   OuterProps,
   Values
@@ -167,29 +166,9 @@ export function withFormikReimagined<
                 props: outerProps,
               });
             }
-            if (handleSubmit) {
-              handleSubmit(state.values, {
-                setFieldValue,
-                setValues,
-                setTouched,
-                props: outerProps,
-              });
-            }
           }
         },
         [onSubmit, state, setFieldValue, setTouched, setValues, outerProps]
-      );
-      const handleSubmitEvent = React.useCallback(
-        (e?: React.FormEvent<HTMLFormElement>) => {
-          if (e && e.preventDefault && isFunction(e.preventDefault)) {
-            e.preventDefault();
-          }
-          if (e && e.stopPropagation && isFunction(e.stopPropagation)) {
-            e.stopPropagation();
-          }
-          submitForm(e);
-        },
-        [submitForm]
       );
       const injectedformikProps: FormikReimaginedHelpers<Values> &
         FormikReimaginedHandlers &
@@ -198,7 +177,6 @@ export function withFormikReimagined<
         setValues,
         setTouched,
         handleChange,
-        handleSubmit: handleSubmitEvent,
         submitForm,
         values: state.values,
         errors: state.errors,

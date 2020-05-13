@@ -41,8 +41,6 @@ export interface FormikReimaginedPropHelpers<Props> {
 export interface FormikReimaginedHandlers {
   /** Classic React change handler, keyed by input name */
   handleChange(e: React.ChangeEvent<any>): void;
-  /** Form submit handler */
-  handleSubmit(e?: React.FormEvent<HTMLFormElement>): void;
   /** Submit form */
   submitForm(e?: React.FormEvent<HTMLFormElement>): void;
 }

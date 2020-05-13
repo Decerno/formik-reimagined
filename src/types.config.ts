@@ -1,10 +1,5 @@
 import { ObjectSchema } from 'yup';
-import {
-  FormikReimaginedErrors,
-  FormikReimaginedHelpers,
-  FormikReimaginedValues,
-  FormikReimaginedPropHelpers,
-} from './types';
+import { FormikReimaginedErrors, FormikReimaginedValues } from './types';
 
 /**
  * Formik configuration options.
@@ -24,15 +19,6 @@ export interface FormikReimaginedConfig<
    * Validation function. Must return an error object where that object keys map to corresponding value.
    */
   validate?: (values: Values, field?: string) => FormikReimaginedErrors;
-
-  /**
-   * Submit event handler for external components
-   */
-  handleSubmit?: (
-    values: Values,
-    formikHelpers: FormikReimaginedHelpers<Values> &
-      FormikReimaginedPropHelpers<Props>
-  ) => void;
 }
 
 /**

@@ -32,14 +32,9 @@ const Formik = withFormikReimagined<
   mapPropsToValues: props => props.initialValues,
 })(FormikTestComponent);
 
-function Form({
-  values,
-  errors,
-  handleSubmit,
-  handleChange,
-}: FormikReimaginedProps<Values> & { handleSubmit?: any }) {
+function Form({ values, errors, handleChange }: FormikReimaginedProps<Values>) {
   return (
-    <form onSubmit={handleSubmit} data-testid="form">
+    <form data-testid="form">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
       <pre data-testid="errors">
         {JSON.stringify(Array.from(errors.entries()))}
@@ -359,64 +354,6 @@ describe('<Formik>', () => {
     await wait(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '4']]);
-    });
-  });
-  describe('handleSubmit', () => {
-    it('should call preventDefault()', () => {
-      const preventDefault = jest.fn();
-      const FormPreventDefault = (
-        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
-          {({ handleSubmit }) => (
-            <button
-              data-testid="submit-button"
-              onClick={() => handleSubmit({ preventDefault } as any)}
-            />
-          )}
-        </Formik>
-      );
-
-      const { getByTestId } = render(FormPreventDefault);
-      fireEvent.click(getByTestId('submit-button'));
-
-      expect(preventDefault).toHaveBeenCalled();
-    });
-
-    it('should not error if called without an event', () => {
-      const FormNoEvent = (
-        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
-          {({ handleSubmit }) => (
-            <button
-              data-testid="submit-button"
-              onClick={() =>
-                handleSubmit(undefined as any /* undefined event */)
-              }
-            />
-          )}
-        </Formik>
-      );
-      const { getByTestId } = render(FormNoEvent);
-
-      expect(() => {
-        fireEvent.click(getByTestId('submit-button'));
-      }).not.toThrow();
-    });
-
-    it('should not error if called without preventDefault property', () => {
-      const FormNoPreventDefault = (
-        <Formik initialValues={{ name: 'jared', users: [] }} onSubmit={noop}>
-          {({ handleSubmit }) => (
-            <button
-              data-testid="submit-button"
-              onClick={() => handleSubmit({} as any /* undefined event */)}
-            />
-          )}
-        </Formik>
-      );
-      const { getByTestId } = render(FormNoPreventDefault);
-
-      expect(() => {
-        fireEvent.click(getByTestId('submit-button'));
-      }).not.toThrow();
     });
   });
 });
