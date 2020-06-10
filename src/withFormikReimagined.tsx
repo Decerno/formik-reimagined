@@ -19,6 +19,7 @@ import {
   FormikReimaginedHelpers,
   FormikReimaginedState,
   FormikReimaginedValues,
+  FormikReimaginedTouched,
 } from './types';
 import { WithFormikReimaginedConfig } from './types.config';
 import {
@@ -88,7 +89,7 @@ export function withFormikReimagined<
             : new Map(),
         touched: {},
       });
-      const { onChange, onError, onSubmit } = props;
+      const { onChange, onError, onSubmit, onTouched } = props;
       const { children, ...outerProps } = props as any;
 
       React.useEffect(() => {
@@ -113,6 +114,12 @@ export function withFormikReimagined<
           onError(yieldErrorsOrUndefined<Values>(state));
         }
       }, [state, onError]);
+
+      React.useEffect(() => {
+        if (onTouched) {
+          onTouched(state.touched as FormikReimaginedTouched);
+        }
+      }, [state.touched, onTouched]);
 
       const setFieldValue = React.useCallback(
         (field: string, value: any) => {

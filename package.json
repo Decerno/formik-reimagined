@@ -1,6 +1,6 @@
 {
   "name": "@wallymathieu/formik-reimagined",
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-beta-2",
   "description": "Formik reimagined code based in large parts on Formik",
   "keywords": [
     "formik",
@@ -19,7 +19,7 @@
     "yup": "^0.28.0"
   },
   "scripts": {
-    "test": "jest",
+    "test": "tsc --noEmit && jest",
     "test:watch": "npm run test -- --watchAll",
     "prebuild": "rimraf dist",
     "build": "tsc",

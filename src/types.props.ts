@@ -4,6 +4,7 @@ import {
   FormikReimaginedHelpers,
   FormikReimaginedErrors,
   FormikReimaginedPropHelpers,
+  FormikReimaginedTouched,
 } from './types';
 import { ArrayHelpers } from './types.array';
 
@@ -43,6 +44,10 @@ export interface FormikReimaginedCallbacks<Props, Values> {
    * Callback whenever error values changes
    */
   onError?(errors: FormikReimaginedErrors | undefined): void;
+  /**
+   * Callback whenever touched values changes
+   */
+  onTouched?(errors: FormikReimaginedTouched | undefined): void;
 
   /**
    * Submission handler
