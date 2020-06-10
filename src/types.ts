@@ -52,6 +52,13 @@ export interface FormikReimaginedValues {
   [field: string]: any;
 }
 
+/**
+ * Toched fields, true means the value have been touched by user input, untouched fields are not included
+ */
+export interface FormikReimaginedTouched {
+  [field: string]: true;
+}
+
 export type ComponentClassOrStatelessComponent<P> =
   | React.ComponentClass<P>
   | React.StatelessComponent<P>;
