@@ -112,4 +112,41 @@ describe('<SetValues>', () => {
     expect(touched).toEqual({ value1: true, value2: true });
     expect(touched).toEqual(onTouchedValue);
   });
+  it('should reset touched if value is touched for the very first time and then resetted to pristine', async () => {
+    let onTouchedValue: FormikReimaginedTouched | undefined;
+    const { getByTestId } = render(
+      <Formik
+        initialValues={InitialValues}
+        onTouched={touched => (onTouchedValue = touched)}
+      />
+    );
+
+    fireEvent.change(getByTestId('value1-input'), {
+      persist: noop,
+      target: {
+        name: 'value1',
+        value: '1',
+      },
+    });
+
+    const values = JSON.parse(getByTestId('values').innerHTML);
+    expect(values).toEqual({ value1: '1', value2: '' });
+    const touched = JSON.parse(getByTestId('touched').innerHTML);
+    expect(touched).toEqual({ value1: true });
+    expect(touched).toEqual(onTouchedValue);
+
+    fireEvent.change(getByTestId('value1-input'), {
+      persist: noop,
+      target: {
+        name: 'value1',
+        value: '',
+      },
+    });
+
+    const values2 = JSON.parse(getByTestId('values').innerHTML);
+    expect(values2).toEqual({ value1: '', value2: '' });
+    const touched2 = JSON.parse(getByTestId('touched').innerHTML);
+    expect(touched2).toEqual({});
+    expect(touched2).toEqual(onTouchedValue);
+  });
 });
