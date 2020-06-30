@@ -211,13 +211,9 @@ describe('<Formik>', () => {
     const { getProps } = renderFormikReimagined();
     const props = getProps();
 
-    //expect(props.isSubmitting).toBe(false);
-    //expect(props.touched).toEqual({});
+    expect(props.touched).toEqual({});
     expect(props.values).toEqual(InitialValues);
     expect(props.errors).toEqual(new Map());
-    //expect(props.dirty).toBe(false);
-    //expect(props.isValid).toBe(true);
-    //expect(props.submitCount).toBe(0);
   });
 
   describe('handleChange', () => {
@@ -236,6 +232,7 @@ describe('<Formik>', () => {
       });
 
       expect(getProps().values.name).toEqual('ian');
+      expect(getProps().touched).toEqual({ name: true });
     });
 
     it('updates values via `name` instead of `id` attribute when both are present', () => {
@@ -254,6 +251,7 @@ describe('<Formik>', () => {
       });
 
       expect(getProps().values.name).toEqual('ian');
+      expect(getProps().touched).toEqual({ name: true });
     });
 
     it('runs validations by default', async () => {

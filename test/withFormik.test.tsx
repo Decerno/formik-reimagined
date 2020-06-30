@@ -4,6 +4,7 @@ import {
   withFormikReimagined,
   FormikReimaginedProps,
   InjectedFormikReimaginedProps,
+  FormikReimaginedTouched,
 } from '../src';
 import { render, fireEvent } from '@testing-library/react';
 import { noop } from './Formik.test';
@@ -134,5 +135,48 @@ describe('withFormik()', () => {
     // Assert
     expect(myValues.name).toBe('john');
     expect(myInjectedProp).toBe(true);
+  });
+
+  it('should trigger onTouched on handleChange()', () => {
+    let myTouched: FormikReimaginedTouched = {};
+
+    const FormOnSubmit: React.FC<InjectedFormikReimaginedProps<
+      OwnProps,
+      Values
+    >> = ({ values, touched, handleChange }) => {
+      return (
+        <form noValidate={true} autoComplete="off" data-testid="form">
+          <pre data-testid="touched">{JSON.stringify(touched)}</pre>
+          <input
+            type="text"
+            onChange={handleChange}
+            value={values.name}
+            name="name"
+            data-testid="name-input"
+          />
+        </form>
+      );
+    };
+    const FormikOnTouched = withFormikReimagined<OwnProps, Values>({
+      mapPropsToValues: props => props.initialValues,
+    })(FormOnSubmit);
+
+    const { getByTestId } = render(
+      <FormikOnTouched
+        initialValues={{ name: 'jared' }}
+        onTouched={(touched: FormikReimaginedTouched) => (myTouched = touched)}
+      />
+    );
+
+    fireEvent.change(getByTestId('name-input'), {
+      persist: noop,
+      target: {
+        name: 'name',
+        value: 'john',
+      },
+    });
+
+    // Assert
+    expect(myTouched).toEqual({ name: true });
   });
 });

@@ -1,7 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import isFunction from 'lodash.isfunction';
-import { FieldArray, withFormikReimagined, ArrayHelpers } from '../src';
+import {
+  FieldArray,
+  withFormikReimagined,
+  ArrayHelpers,
+  FormikReimaginedTouched,
+} from '../src';
 import { FormikTestComponent } from './formik';
 import { act } from 'react-dom/test-utils';
 interface Values {
@@ -78,9 +83,14 @@ describe('<FieldArray />', () => {
   describe('props.push()', () => {
     it('should add a value to the end of the field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -100,8 +110,10 @@ describe('<FieldArray />', () => {
         arrayHelpers.push('jared');
       });
 
-      const expected = ['jared', 'andrea', 'brent', 'jared'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['jared', 'andrea', 'brent', 'jared'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
 
     it('dispatches onChange', () => {
@@ -137,6 +149,7 @@ describe('<FieldArray />', () => {
 
     it('should add multiple values to the end of the field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let addFriendsFn: any;
       const AddFriendsButton = (arrayProps: any) => {
         const addFriends = () => {
@@ -152,7 +165,11 @@ describe('<FieldArray />', () => {
       };
 
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return <FieldArray name="friends" render={AddFriendsButton} />;
@@ -163,7 +180,7 @@ describe('<FieldArray />', () => {
       act(() => {
         addFriendsFn();
       });
-      const expected = [
+      const expectedValues = [
         'jared',
         'andrea',
         'brent',
@@ -172,16 +189,23 @@ describe('<FieldArray />', () => {
         'george',
         'ringo',
       ];
-      expect(formikBag.values.friends).toEqual(expected);
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 
   describe('props.swap()', () => {
     it('should swap two values in field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -200,17 +224,24 @@ describe('<FieldArray />', () => {
       act(() => {
         arrayHelpers.swap(0, 2);
       });
-      const expected = ['brent', 'andrea', 'jared'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['brent', 'andrea', 'jared'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 
   describe('props.insert()', () => {
     it('should insert a value at given index of field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -229,17 +260,24 @@ describe('<FieldArray />', () => {
       act(() => {
         arrayHelpers.insert(1, 'brian');
       });
-      const expected = ['jared', 'brian', 'andrea', 'brent'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['jared', 'brian', 'andrea', 'brent'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 
   describe('props.replace()', () => {
     it('should replace a value at given index of field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -258,17 +296,24 @@ describe('<FieldArray />', () => {
       act(() => {
         arrayHelpers.replace(1, 'brian');
       });
-      const expected = ['jared', 'brian', 'brent'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['jared', 'brian', 'brent'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 
   describe('props.unshift()', () => {
     it('should add a value to start of field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -287,17 +332,24 @@ describe('<FieldArray />', () => {
       act(() => {
         arrayHelpers.unshift('brian');
       });
-      const expected = ['brian', 'jared', 'andrea', 'brent'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['brian', 'jared', 'andrea', 'brent'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 
   describe('props.remove()', () => {
     it('should remove a value at given index of field array', () => {
       let formikBag: any;
+      let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
       ReactDOM.render(
-        <TestForm>
+        <TestForm
+          onTouched={(touched: FormikReimaginedTouched) =>
+            (formikTouched = touched)
+          }
+        >
           {(props: any) => {
             formikBag = props;
             return (
@@ -316,8 +368,10 @@ describe('<FieldArray />', () => {
       act(() => {
         arrayHelpers.remove(1);
       });
-      const expected = ['jared', 'brent'];
-      expect(formikBag.values.friends).toEqual(expected);
+      const expectedValues = ['jared', 'brent'];
+      expect(formikBag.values.friends).toEqual(expectedValues);
+      const expectedTouched = { friends: true };
+      expect(formikTouched).toEqual(expectedTouched);
     });
   });
 });
