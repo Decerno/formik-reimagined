@@ -2,6 +2,8 @@
  * Dumbed down version of Formik state tree
  */
 export interface FormikReimaginedState<Values> {
+  /** Initial Values */
+  initialValues: Values;
   /** Values */
   values: Values;
   /** map of field names to specific error for that field */

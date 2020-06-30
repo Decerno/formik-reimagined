@@ -59,132 +59,132 @@ export function formikReimaginedReducer<Values>(
   msg: Message
 ) {
   switch (msg.type) {
-    case 'SET_ERRORS':
+    case 'SET_ERRORS': {
       return {
         ...state,
         errors: aggregate([msg.payload, state.errors]),
         errorsSet: true,
       };
-    case 'SET_TOUCHED':
+    }
+    case 'SET_TOUCHED': {
       return {
         ...state,
         touched: { ...state.touched, [msg.payload.field]: true },
       };
-    case 'SET_FIELD_VALUE':
-      return {
-        ...state,
-        values: R.set(
-          R.lensProp(msg.payload.field),
-          msg.payload.value,
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'SET_VALUES':
-      return {
-        ...state,
-        values: msg.payload,
-        touched: { ...state.touched, ...(fieldsWithBooleanTrue(msg.payload)) },
-      };
-    case 'FLIP_CB':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          value =>
-            getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'PUSH_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          arrayLike => [...arrayLike, msg.payload.value],
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'SWAP_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'MOVE_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
-          state.values
-        ),
-      };
-    case 'INSERT_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'REPLACE_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'UNSHIFT_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          array =>
-            array ? [msg.payload.value, ...array] : [msg.payload.value],
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
-    case 'REMOVE_A':
-      return {
-        ...state,
-        values: R.over(
-          R.lensProp(msg.payload.field),
-          array => {
-            const copy = array ? copyArray(array) : [];
-            copy.splice(msg.payload.index, 1);
-            return copy;
-          },
-          state.values
-        ),
-        touched: { ...state.touched, [msg.payload.field]: true },
-      };
+    }
+    case 'SET_FIELD_VALUE': {
+      const values: any = R.set(
+        R.lensProp(msg.payload.field),
+        msg.payload.value,
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'SET_VALUES': {
+      return setValuesAndTouched(state, { ...state.values, ...msg.payload });
+    }
+    case 'FLIP_CB': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        value =>
+          getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'PUSH_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        arrayLike => [...arrayLike, msg.payload.value],
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'SWAP_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'MOVE_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'INSERT_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'REPLACE_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'UNSHIFT_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        array => (array ? [msg.payload.value, ...array] : [msg.payload.value]),
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
+    case 'REMOVE_A': {
+      const values: any = R.over(
+        R.lensProp(msg.payload.field),
+        array => {
+          const copy = array ? copyArray(array) : [];
+          copy.splice(msg.payload.index, 1);
+          return copy;
+        },
+        state.values
+      );
+      return setValuesAndTouched(state, values);
+    }
     default:
       return state;
   }
 }
+
 /**
- * You get a new object with all the property values set to true.
+ * Returns state with replaced values and touched
+ * touched is a new object with all the changed property values compared to initial values set to true.
  *
  * For instance:
- * `{ "a":1, "b":2 }`
+ * initalValues: `{ "a":1, "b":2 }`
+ * values: `{ "a":10, "b":2 }`
  * becomes
- * `{ "a":true, "b":true}`
-*/
-function fieldsWithBooleanTrue(payload: any) {
-  return Object.keys(payload).reduce(((prev, c) => { prev[c] = true; return prev; }), {} as any);
+ * `{ "a":true }`
+ */
+function setValuesAndTouched<Values>(
+  state: FormikReimaginedState<Values>,
+  values: Values
+): FormikReimaginedState<Values> {
+  const touched: { [field: string]: boolean } = Object.keys(values).reduce(
+    (prev, c) => {
+      if ((values as any)[c] !== (state.initialValues as any)[c]) {
+        prev[c] = true;
+      }
+      return prev;
+    },
+    {} as any
+  );
+  return {
+    ...state,
+    touched,
+    values,
+  };
 }
 
 /** */

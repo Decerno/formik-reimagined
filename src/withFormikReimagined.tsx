@@ -82,6 +82,7 @@ export function withFormikReimagined<
       const [state, dispatch] = React.useReducer<
         React.Reducer<FormikReimaginedState<Values>, Message>
       >(reducer, {
+        initialValues,
         values: initialValues,
         errors:
           validationSchema != null && !isFunction(validationSchema)
@@ -185,6 +186,7 @@ export function withFormikReimagined<
         setTouched,
         handleChange,
         submitForm,
+        initialValues,
         values: state.values,
         errors: state.errors,
         touched: state.touched,
