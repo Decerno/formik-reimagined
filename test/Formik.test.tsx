@@ -32,10 +32,16 @@ const Formik = withFormikReimagined<
   mapPropsToValues: props => props.initialValues,
 })(FormikTestComponent);
 
-function Form({ values, errors, handleChange }: FormikReimaginedProps<Values>) {
+function Form({
+  values,
+  touched,
+  errors,
+  handleChange,
+}: FormikReimaginedProps<Values>) {
   return (
     <form data-testid="form">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
+      <pre data-testid="touched">{JSON.stringify(touched)}</pre>
       <pre data-testid="errors">
         {JSON.stringify(Array.from(errors.entries()))}
       </pre>
@@ -352,6 +358,29 @@ describe('<Formik>', () => {
     await wait(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '4']]);
+    });
+  });
+  it('sets touched on array when complex values are updated', async () => {
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithPropsValidation initialValues={initialValues} />
+    );
+
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '',
+      },
+    });
+
+    rerender(<FormWithPropsValidation initialValues={initialValues} />);
+    await wait(() => {
+      const touched = JSON.parse(getByTestId('touched').innerHTML);
+      expect(touched).toEqual({ users: true });
     });
   });
 });
