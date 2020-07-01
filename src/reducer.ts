@@ -173,7 +173,11 @@ function setValuesAndTouched<Values>(
 ): FormikReimaginedState<Values> {
   const touched: { [field: string]: boolean } = Object.keys(values).reduce(
     (prev, c) => {
-      if ((values as any)[c] !== (state.initialValues as any)[c]) {
+      const valueEquals =
+        (values as any)[c] === (state.initialValues as any)[c] ||
+        JSON.stringify((values as any)[c]) ===
+          JSON.stringify((state.initialValues as any)[c]);
+      if (!valueEquals) {
         prev[c] = true;
       }
       return prev;
