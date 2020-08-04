@@ -61,7 +61,7 @@
     "rimraf": "^2.6.2",
     "ts-jest": "^26.1.4",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.3",
+    "typescript": "^3.9.7",
     "yup": "^0.28.0"
   },
   "repository": {
