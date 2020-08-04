@@ -20,13 +20,12 @@ export type FormikReimaginedErrors = Map<string, string>;
  * Dumbed down version of Formik state helpers
  */
 export interface FormikReimaginedHelpers<Values> {
-  /** Set value of form field directly */
-  setFieldValue(field: string, value: any): void;
+  /** Set value of form field directly, use resetInitialValues = true to reset touched and initialValues */
+  setFieldValue(field: string, value: any, resetInitialValues?: boolean): void;
   /** Set field as touched */
   setTouched(field: string): void;
-  /** Set all values */
-  setValues(values: Values): void;
-  // props: Props;
+  /** Set all values, use resetInitialValues = true to reset touched and initialValues */
+  setValues(values: Values, resetInitialValues?: boolean): void;
 }
 
 /**

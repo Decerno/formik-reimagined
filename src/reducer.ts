@@ -6,9 +6,15 @@ import { ObjectSchema } from 'yup';
 
 export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
-  | { type: 'SET_FIELD_VALUE'; payload: { field: string; value?: any } }
+  | {
+      type: 'SET_FIELD_VALUE';
+      payload: { field: string; value?: any; resetInitialValues?: boolean };
+    }
   | { type: 'SET_TOUCHED'; payload: { field: string } }
-  | { type: 'SET_VALUES'; payload: any }
+  | {
+      type: 'SET_VALUES';
+      payload: { values: any; resetInitialValues?: boolean };
+    }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -78,10 +84,21 @@ export function formikReimaginedReducer<Values>(
         msg.payload.value,
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(
+        state,
+        values,
+        msg.payload.resetInitialValues || false
+      );
     }
     case 'SET_VALUES': {
-      return setValuesAndTouched(state, { ...state.values, ...msg.payload });
+      return setValuesAndTouched(
+        state,
+        {
+          ...state.values,
+          ...msg.payload.values,
+        },
+        msg.payload.resetInitialValues || false
+      );
     }
     case 'FLIP_CB': {
       const values: any = R.over(
@@ -90,7 +107,7 @@ export function formikReimaginedReducer<Values>(
           getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'PUSH_A': {
       const values: any = R.over(
@@ -98,7 +115,7 @@ export function formikReimaginedReducer<Values>(
         arrayLike => [...arrayLike, msg.payload.value],
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'SWAP_A': {
       const values: any = R.over(
@@ -106,7 +123,7 @@ export function formikReimaginedReducer<Values>(
         arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'MOVE_A': {
       const values: any = R.over(
@@ -114,7 +131,7 @@ export function formikReimaginedReducer<Values>(
         arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'INSERT_A': {
       const values: any = R.over(
@@ -122,7 +139,7 @@ export function formikReimaginedReducer<Values>(
         arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'REPLACE_A': {
       const values: any = R.over(
@@ -130,7 +147,7 @@ export function formikReimaginedReducer<Values>(
         arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'UNSHIFT_A': {
       const values: any = R.over(
@@ -138,7 +155,7 @@ export function formikReimaginedReducer<Values>(
         array => (array ? [msg.payload.value, ...array] : [msg.payload.value]),
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     case 'REMOVE_A': {
       const values: any = R.over(
@@ -150,7 +167,7 @@ export function formikReimaginedReducer<Values>(
         },
         state.values
       );
-      return setValuesAndTouched(state, values);
+      return setValuesAndTouched(state, values, false);
     }
     default:
       return state;
@@ -169,25 +186,27 @@ export function formikReimaginedReducer<Values>(
  */
 function setValuesAndTouched<Values>(
   state: FormikReimaginedState<Values>,
-  values: Values
+  values: Values,
+  resetInitialValues: boolean
 ): FormikReimaginedState<Values> {
-  const touched: { [field: string]: boolean } = Object.keys(values).reduce(
-    (prev, c) => {
-      const valueEquals =
-        (values as any)[c] === (state.initialValues as any)[c] ||
-        JSON.stringify((values as any)[c]) ===
-          JSON.stringify((state.initialValues as any)[c]);
-      if (!valueEquals) {
-        prev[c] = true;
-      }
-      return prev;
-    },
-    {} as any
-  );
+  const initialValues = resetInitialValues ? values : state.initialValues;
+  const touched: { [field: string]: boolean } = resetInitialValues
+    ? {}
+    : Object.keys(values).reduce((prev, c) => {
+        const valueEquals =
+          (values as any)[c] === (initialValues as any)[c] ||
+          JSON.stringify((values as any)[c]) ===
+            JSON.stringify((initialValues as any)[c]);
+        if (!valueEquals) {
+          prev[c] = true;
+        }
+        return prev;
+      }, {} as any);
   return {
     ...state,
     touched,
     values,
+    initialValues,
   };
 }
 

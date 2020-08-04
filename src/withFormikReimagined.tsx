@@ -123,22 +123,23 @@ export function withFormikReimagined<
       }, [state.touched, onTouched]);
 
       const setFieldValue = React.useCallback(
-        (field: string, value: any) => {
+        (field: string, value: any, resetInitialValues?: boolean) => {
           dispatch({
             type: 'SET_FIELD_VALUE',
             payload: {
               field,
               value,
+              resetInitialValues,
             },
           });
         },
         [dispatch]
       );
       const setValues = React.useCallback(
-        (values: Values) => {
+        (values: Values, resetInitialValues?: boolean) => {
           dispatch({
             type: 'SET_VALUES',
-            payload: values,
+            payload: { values, resetInitialValues },
           });
         },
         [dispatch]
