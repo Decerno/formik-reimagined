@@ -24,7 +24,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "format": "prettier --trailing-comma es5 --single-quote --write 'src/**/*' 'test/**/*' 'README.md'"
+    "format": "prettier --trailing-comma es5 --single-quote --write \"src/**/*\" \"test/**/*\" \"README.md\""
   },
   "dependencies": {
     "ramda": "^0.26.1"
