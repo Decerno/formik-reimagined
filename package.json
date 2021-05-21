@@ -1,5 +1,5 @@
 {
-  "name": "@wallymathieu/formik-reimagined",
+  "name": "@decerno/formik-reimagined",
   "version": "1.0.0-beta-5",
   "description": "Formik reimagined code based in large parts on Formik",
   "keywords": [
@@ -66,14 +66,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wallymathieu/formik-reimagined.git"
+    "url": "git+https://github.com/Decerno/formik-reimagined.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wallymathieu/formik-reimagined/issues"
+    "url": "https://github.com/Decerno/formik-reimagined/issues"
   },
-  "homepage": "https://github.com/wallymathieu/formik-reimagined#readme",
+  "homepage": "https://github.com/Decerno/formik-reimagined#readme",
   "prettier": {
     "trailingComma": "es5",
     "singleQuote": true,
