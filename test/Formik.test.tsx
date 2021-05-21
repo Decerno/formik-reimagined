@@ -23,6 +23,13 @@ interface Values {
   name: string;
   users: ValuesUser[];
 }
+interface ComplexValue {
+  str: string;
+  num?: number;
+}
+interface ComplexValues {
+  complex: ComplexValue;
+}
 const Formik = withFormikReimagined<
   {
     initialValues: Values;
@@ -32,10 +39,16 @@ const Formik = withFormikReimagined<
   mapPropsToValues: props => props.initialValues,
 })(FormikTestComponent);
 
-function Form({ values, errors, handleChange }: FormikReimaginedProps<Values>) {
+function Form({
+  values,
+  touched,
+  errors,
+  handleChange,
+}: FormikReimaginedProps<Values>) {
   return (
     <form data-testid="form">
       <pre data-testid="values">{JSON.stringify(values)}</pre>
+      <pre data-testid="touched">{JSON.stringify(touched)}</pre>
       <pre data-testid="errors">
         {JSON.stringify(Array.from(errors.entries()))}
       </pre>
@@ -113,7 +126,51 @@ const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
   ),
 });
 const InitialValues = { name: 'jared', users: [] };
-
+function ComplexForm({
+  values,
+  touched,
+  errors,
+  setFieldValue,
+}: FormikReimaginedProps<ComplexValues>) {
+  const handleComplexChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const numValue = parseInt(event.currentTarget.value, 10);
+      const newValue: ComplexValue = {
+        str: event.currentTarget.value,
+        num: isNaN(numValue) ? undefined : numValue,
+      };
+      setFieldValue('complex', newValue);
+    },
+    [setFieldValue]
+  );
+  return (
+    <form data-testid="form">
+      <pre data-testid="values">{JSON.stringify(values)}</pre>
+      <pre data-testid="touched">{JSON.stringify(touched)}</pre>
+      <pre data-testid="errors">
+        {JSON.stringify(Array.from(errors.entries()))}
+      </pre>
+      <input
+        type="text"
+        onChange={handleComplexChange}
+        value={values.complex.str}
+        name="complex"
+        data-testid="complex-input"
+      />
+      <button type="submit" data-testid="submit-button">
+        Submit
+      </button>
+    </form>
+  );
+}
+const FormWithComplexValues = withFormikReimagined<
+  {
+    initialValues: ComplexValues;
+  },
+  ComplexValues
+>({
+  mapPropsToValues: props => props.initialValues,
+})(ComplexForm);
 let countOfFormWithCountingValidation = 0;
 const FormWithCountingValidation = withFormikReimagined<
   {
@@ -211,13 +268,9 @@ describe('<Formik>', () => {
     const { getProps } = renderFormikReimagined();
     const props = getProps();
 
-    //expect(props.isSubmitting).toBe(false);
-    //expect(props.touched).toEqual({});
+    expect(props.touched).toEqual({});
     expect(props.values).toEqual(InitialValues);
     expect(props.errors).toEqual(new Map());
-    //expect(props.dirty).toBe(false);
-    //expect(props.isValid).toBe(true);
-    //expect(props.submitCount).toBe(0);
   });
 
   describe('handleChange', () => {
@@ -236,6 +289,7 @@ describe('<Formik>', () => {
       });
 
       expect(getProps().values.name).toEqual('ian');
+      expect(getProps().touched).toEqual({ name: true });
     });
 
     it('updates values via `name` instead of `id` attribute when both are present', () => {
@@ -254,6 +308,7 @@ describe('<Formik>', () => {
       });
 
       expect(getProps().values.name).toEqual('ian');
+      expect(getProps().touched).toEqual({ name: true });
     });
 
     it('runs validations by default', async () => {
@@ -354,6 +409,118 @@ describe('<Formik>', () => {
     await wait(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '4']]);
+    });
+  });
+  it('sets touched on array when complex values are updated', async () => {
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithPropsValidation initialValues={initialValues} />
+    );
+
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '',
+      },
+    });
+
+    rerender(<FormWithPropsValidation initialValues={initialValues} />);
+    await wait(() => {
+      const touched = JSON.parse(getByTestId('touched').innerHTML);
+      expect(touched).toEqual({ users: true });
+    });
+  });
+  it('removes touched on array when complex values are changed back to initial', async () => {
+    const initialValues = {
+      name: '',
+      users: [{ firstName: '1', lastName: '2' }],
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithPropsValidation initialValues={initialValues} />
+    );
+
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '',
+      },
+    });
+    rerender(<FormWithPropsValidation initialValues={initialValues} />);
+
+    fireEvent.change(getByTestId('lastName-input'), {
+      persist: noop,
+      target: {
+        name: 'lastName',
+        value: '2',
+      },
+    });
+    rerender(<FormWithPropsValidation initialValues={initialValues} />);
+
+    await wait(() => {
+      const touched = JSON.parse(getByTestId('touched').innerHTML);
+      expect(touched).toEqual({});
+    });
+  });
+  it('can update complex values', async () => {
+    const initialValues: ComplexValues = {
+      complex: { str: '', num: undefined },
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithComplexValues initialValues={initialValues} />
+    );
+
+    fireEvent.change(getByTestId('complex-input'), {
+      persist: noop,
+      target: {
+        name: 'complex',
+        value: '100',
+      },
+    });
+    rerender(<FormWithComplexValues initialValues={initialValues} />);
+
+    await wait(() => {
+      const values = JSON.parse(getByTestId('values').innerHTML);
+      expect(values).toEqual({ complex: { str: '100', num: 100 } });
+      const touched = JSON.parse(getByTestId('touched').innerHTML);
+      expect(touched).toEqual({ complex: true });
+    });
+  });
+  it('removes touched when complex value is changed back to initial', async () => {
+    const initialValues: ComplexValues = {
+      complex: { str: '', num: undefined },
+    };
+    const { rerender, getByTestId } = render(
+      <FormWithComplexValues initialValues={initialValues} />
+    );
+
+    fireEvent.change(getByTestId('complex-input'), {
+      persist: noop,
+      target: {
+        name: 'complex',
+        value: '100',
+      },
+    });
+    rerender(<FormWithComplexValues initialValues={initialValues} />);
+
+    fireEvent.change(getByTestId('complex-input'), {
+      persist: noop,
+      target: {
+        name: 'complex',
+        value: '',
+      },
+    });
+    rerender(<FormWithComplexValues initialValues={initialValues} />);
+
+    await wait(() => {
+      const values = JSON.parse(getByTestId('values').innerHTML);
+      expect(values).toEqual(initialValues);
+      const touched = JSON.parse(getByTestId('touched').innerHTML);
+      expect(touched).toEqual({});
     });
   });
 });

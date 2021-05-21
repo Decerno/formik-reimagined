@@ -47,7 +47,7 @@ export interface FormikReimaginedCallbacks<Props, Values> {
   /**
    * Callback whenever touched values changes
    */
-  onTouched?(errors: FormikReimaginedTouched | undefined): void;
+  onTouched?(touched: FormikReimaginedTouched | undefined): void;
 
   /**
    * Submission handler

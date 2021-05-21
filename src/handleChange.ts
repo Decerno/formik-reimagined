@@ -18,7 +18,7 @@ export function executeChangeMsg(
   let parsed;
   // If we can, persist the event
   // @see https://reactjs.org/docs/events.html#event-pooling
-  if ((event as React.ChangeEvent<any>).persist) {
+  if ((event as any).persist) {
     (event as React.ChangeEvent<any>).persist();
   }
   const {

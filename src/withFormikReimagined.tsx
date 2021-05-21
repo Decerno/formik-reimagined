@@ -82,6 +82,7 @@ export function withFormikReimagined<
       const [state, dispatch] = React.useReducer<
         React.Reducer<FormikReimaginedState<Values>, Message>
       >(reducer, {
+        initialValues,
         values: initialValues,
         errors:
           validationSchema != null && !isFunction(validationSchema)
@@ -122,22 +123,23 @@ export function withFormikReimagined<
       }, [state.touched, onTouched]);
 
       const setFieldValue = React.useCallback(
-        (field: string, value: any) => {
+        (field: string, value: any, resetInitialValues?: boolean) => {
           dispatch({
             type: 'SET_FIELD_VALUE',
             payload: {
               field,
               value,
+              resetInitialValues,
             },
           });
         },
         [dispatch]
       );
       const setValues = React.useCallback(
-        (values: Values) => {
+        (values: Values, resetInitialValues?: boolean) => {
           dispatch({
             type: 'SET_VALUES',
-            payload: values,
+            payload: { values, resetInitialValues },
           });
         },
         [dispatch]
@@ -185,6 +187,7 @@ export function withFormikReimagined<
         setTouched,
         handleChange,
         submitForm,
+        initialValues,
         values: state.values,
         errors: state.errors,
         touched: state.touched,

@@ -6,6 +6,7 @@
     "paths": {
       "formik-reimagined": ["src/"]
     },
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "skipLibCheck": true
   }
 }
