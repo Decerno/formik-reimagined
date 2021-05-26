@@ -80,13 +80,16 @@ function Form({ values, errors }: FormikReimaginedProps<Values>) {
 const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
   rows: Yup.array()
     .required()
+    .defined()
     .of(
       Yup.object().shape({
         description: Yup.string().required('required'),
         done: Yup.boolean(),
       })
+      .defined()
     ),
-});
+})
+.defined();
 
 const InitialValues: Values = { rows: [{ description: '', done: false }] };
 

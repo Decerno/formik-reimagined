@@ -117,14 +117,14 @@ function Form({
   );
 }
 const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
-  name: Yup.string(),
+  name: Yup.string().defined(),
   users: Yup.array().of(
     Yup.object({
       lastName: Yup.string().required('required'),
       firstName: Yup.string(),
-    })
-  ),
-});
+    }).defined()
+  ).defined(),
+}).defined();
 const InitialValues = { name: 'jared', users: [] };
 function ComplexForm({
   values,
