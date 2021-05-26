@@ -28,5 +28,5 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Publish
-      run: npm publish --access=public --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
+      run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
 
