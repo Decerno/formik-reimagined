@@ -10,8 +10,7 @@ In order to get around these issues we decided to make a Formik fork compatible 
 
 ## Current subset of Formik
 
-- `arrayUtils`
-- `FieldArray`
+- `FieldArray` : note that the return values are removed, instead the helper methods send events to the internal reducer
 - `withFormik` -> `withFormikReimagined`
 - `Formik` -> `FormikReimagined`
 
