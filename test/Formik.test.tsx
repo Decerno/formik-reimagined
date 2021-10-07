@@ -9,8 +9,8 @@ import {
   withFormikReimagined,
   FormikReimaginedSharedProps,
   FormikReimaginedHandlers,
+  FormikReimagined
 } from '../src';
-import { FormikTestComponent } from './formik';
 import { fireEvent, render, wait } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
@@ -37,7 +37,7 @@ const Formik = withFormikReimagined<
   Values
 >({
   mapPropsToValues: props => props.initialValues,
-})(FormikTestComponent);
+})(FormikReimagined);
 
 function Form({
   values,

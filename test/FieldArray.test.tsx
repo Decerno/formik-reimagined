@@ -7,7 +7,7 @@ import {
   ArrayHelpers,
   FormikReimaginedTouched,
 } from '../src';
-import { FormikTestComponent } from './formik';
+import { FormikReimagined as FormikTestComponent } from '../src/formik';
 import { act } from 'react-dom/test-utils';
 interface Values {
   friends: string[];

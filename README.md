@@ -8,6 +8,13 @@ We have used Formik to render a huge form with hundreds of fields in many subcom
 
 In order to get around these issues we decided to make a Formik fork compatible with the parts of the Formik API that is relevant in the application.
 
+## Current subset of Formik
+
+- `arrayUtils`
+- `FieldArray`
+- `withFormik` -> `withFormikReimagined`
+- `Formik` -> `FormikReimagined`
+
 ## Lessons learned
 
 Some of the lessons learned from this fork can be moved over to Formik with some minor breaking changes to the procedural API.
