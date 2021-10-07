@@ -55,6 +55,7 @@
     "jest": "^26.2.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.isfunction": "^3.0.9",
     "prettier": "^1.19.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
