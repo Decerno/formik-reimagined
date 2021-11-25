@@ -6,8 +6,8 @@ import {
   withFormikReimagined,
   ArrayHelpers,
   FormikReimaginedTouched,
+  FormikReimagined
 } from '../src';
-import { FormikTestComponent } from './formik';
 import { act } from 'react-dom/test-utils';
 interface Values {
   friends: string[];
@@ -24,7 +24,7 @@ const Formik = withFormikReimagined<
   Values
 >({
   mapPropsToValues: props => props.initialValues,
-})(FormikTestComponent);
+})(FormikReimagined);
 
 describe('<FieldArray />', () => {
   const node = document.createElement('div');

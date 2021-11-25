@@ -5,7 +5,7 @@ import {
   FormikReimaginedState,
   FormikReimaginedProps,
   FormikReimaginedCallbacks,
-} from '../src';
+} from '.';
 import React from 'react';
 import isFunction from 'lodash.isfunction';
 
@@ -13,7 +13,7 @@ import isFunction from 'lodash.isfunction';
 const isEmptyChildren = (children: any): boolean =>
   React.Children.count(children) === 0;
 
-export function FormikTestComponent<
+export function FormikReimagined<
   Values extends FormikReimaginedValues = FormikReimaginedValues
 >(
   props: FormikReimaginedProps<Values> & FormikReimaginedCallbacks<any, Values>

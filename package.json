@@ -15,6 +15,7 @@
     "dist"
   ],
   "peerDependencies": {
+    "lodash.isfunction": "^3.0.9",
     "react": "^16.9.0",
     "yup": "^0.29.0"
   },

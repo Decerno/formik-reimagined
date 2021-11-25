@@ -6,3 +6,4 @@ export * from './types.config';
 export * from './types.props';
 export * from './withFormikReimagined';
 export * from './FormikContext';
+export * from './formik';
