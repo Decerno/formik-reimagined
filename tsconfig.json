@@ -7,7 +7,6 @@
       "formik-reimagined": ["src/"]
     },
     "outDir": "./dist",
-    "skipLibCheck": true,
-    "ignoreDeprecations": "6.0"
+    "skipLibCheck": true
   }
 }
