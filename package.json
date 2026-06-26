@@ -16,7 +16,7 @@
   ],
   "peerDependencies": {
     "lodash.isfunction": "^3.0.9",
-    "react": "^16.9.0 || ^17.0.0 || ^18.0.0",
+    "react": "^19.0.0",
     "yup": "^0.29.0"
   },
   "scripts": {
@@ -27,18 +27,16 @@
     "prepublishOnly": "npm run build",
     "format": "prettier --trailing-comma es5 --single-quote --write \"src/**/*\" \"test/**/*\" \"README.md\""
   },
-  "dependencies": {},
-  "optionalDependencies": {},
   "overrides": {
     "minimatch": "^10.2.5",
     "js-yaml": "^4.2.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^16.3.2",
     "@types/jest": "^29.5.14",
     "@types/lodash.isfunction": "^3.0.6",
-    "@types/react": "^16.14.62",
-    "@types/react-dom": "^16.9.25",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
@@ -55,8 +53,8 @@
     "lodash.isequal": "^4.5.0",
     "lodash.isfunction": "^3.0.9",
     "prettier": "^3.5.3",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "rimraf": "^5.0.10",
     "ts-jest": "^29.3.4",
     "tslib": "^2.8.1",
