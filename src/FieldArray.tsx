@@ -3,7 +3,6 @@ import {
   FormikReimaginedStateContext,
   FormikReimaginedUpdateContext,
 } from './FormikContext';
-import * as R from 'ramda';
 import { Message } from './reducer';
 import { ArrayHelpers } from './types.array';
 import { FieldArrayAllProps } from './types.props';
@@ -122,7 +121,7 @@ export function FieldArray<P, Value>({
   const rawState = React.useContext(FormikReimaginedStateContext);
   const dispatch = React.useContext(FormikReimaginedUpdateContext);
 
-  const state: any[] = R.view(R.lensProp(name as any), rawState.values);
+  const state: any[] = (rawState.values as any)[name];
   if (state === undefined) {
     throw new Error(
       `Missing state value for state named '${name}' in nested '${JSON.stringify(
