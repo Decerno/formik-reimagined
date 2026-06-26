@@ -7,6 +7,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build:
 
@@ -23,10 +27,6 @@ jobs:
     - run: npm test
       env:
         CI: true
-    - name: Create .npmrc
-      run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Publish
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
@@ -36,7 +36,7 @@ jobs:
         if [[ "$VERSION" == *"-"* ]]; then
           PRERELEASE_PART="${VERSION#*-}"
           PRERELEASE_TAG="${PRERELEASE_PART%%[.-]*}"
-          npm publish --tag "$PRERELEASE_TAG"
+          npm publish --provenance --tag "$PRERELEASE_TAG"
         else
-          npm publish
+          npm publish --provenance
         fi
