@@ -21,6 +21,7 @@
   },
   "scripts": {
     "test": "tsc --noEmit && jest",
+    "test:performance": "tsc --noEmit && jest --runInBand --testMatch \"**/*.perf.ts?(x)\"",
     "test:watch": "npm run test -- --watchAll",
     "prebuild": "rimraf dist",
     "build": "tsc",
