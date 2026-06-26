@@ -28,6 +28,15 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Publish
+      env:
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
       run: |
-        npm version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version --allow-same-version
-        npm publish
+        VERSION="$RELEASE_TAG"
+        npm version "$VERSION" --no-git-tag-version --allow-same-version
+        if [[ "$VERSION" == *"-"* ]]; then
+          PRERELEASE_PART="${VERSION#*-}"
+          PRERELEASE_TAG="${PRERELEASE_PART%%[.-]*}"
+          npm publish --tag "$PRERELEASE_TAG"
+        else
+          npm publish
+        fi
