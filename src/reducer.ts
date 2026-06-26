@@ -59,7 +59,7 @@ function getValueForCheckbox(
   return currentValue.slice(0, index).concat(currentValue.slice(index + 1));
 }
 // State reducer
-export function formikReimaginedReducer<Values>(
+export function formikReimaginedReducer<Values extends object>(
   state: FormikReimaginedState<Values>,
   msg: Message
 ) {
