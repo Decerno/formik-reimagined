@@ -44,7 +44,7 @@ const renderWithFormik = (options?: any, props?: any) => {
   const FormikForm = withFormikReimagined<{}, Values>({
     mapPropsToValues: () => InitialValues,
     ...options,
-  })(props => (injected = props) && <Form {...props} />);
+  })((props) => (injected = props) && <Form {...(props as any)} />);
 
   return {
     getProps() {
@@ -86,10 +86,9 @@ describe('withFormik()', () => {
     let myInjectedProp = false;
     let submit: SubmitCallback = () => {};
 
-    const FormOnSubmit: React.FC<InjectedFormikReimaginedProps<
-      OwnProps,
-      Values
-    >> = ({ values, errors, handleChange, submitForm }) => {
+    const FormOnSubmit: React.FC<
+      InjectedFormikReimaginedProps<OwnProps, Values>
+    > = ({ values, errors, handleChange, submitForm }) => {
       submit = submitForm;
       return (
         <form noValidate={true} autoComplete="off" data-testid="form">
@@ -108,7 +107,7 @@ describe('withFormik()', () => {
       );
     };
     const FormikOnSubmit = withFormikReimagined<OwnProps, Values>({
-      mapPropsToValues: props => props.initialValues,
+      mapPropsToValues: (props) => props.initialValues,
     })(FormOnSubmit);
 
     const { getByTestId } = render(
@@ -140,10 +139,9 @@ describe('withFormik()', () => {
   it('should trigger onTouched on handleChange()', () => {
     let myTouched: FormikReimaginedTouched = {};
 
-    const FormOnSubmit: React.FC<InjectedFormikReimaginedProps<
-      OwnProps,
-      Values
-    >> = ({ values, touched, handleChange }) => {
+    const FormOnSubmit: React.FC<
+      InjectedFormikReimaginedProps<OwnProps, Values>
+    > = ({ values, touched, handleChange }) => {
       return (
         <form noValidate={true} autoComplete="off" data-testid="form">
           <pre data-testid="touched">{JSON.stringify(touched)}</pre>
@@ -158,7 +156,7 @@ describe('withFormik()', () => {
       );
     };
     const FormikOnTouched = withFormikReimagined<OwnProps, Values>({
-      mapPropsToValues: props => props.initialValues,
+      mapPropsToValues: (props) => props.initialValues,
     })(FormOnSubmit);
 
     const { getByTestId } = render(

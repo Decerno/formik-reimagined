@@ -62,7 +62,7 @@ export interface FormikReimaginedTouched {
 
 export type ComponentClassOrStatelessComponent<P> =
   | React.ComponentClass<P>
-  | React.StatelessComponent<P>;
+  | React.FunctionComponent<P>;
 
 export interface FormikReimaginedComponentDecorator<TOwnProps, TMergedProps> {
   (
