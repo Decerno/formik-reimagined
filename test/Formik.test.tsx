@@ -11,7 +11,7 @@ import {
   FormikReimaginedHandlers,
   FormikReimagined
 } from '../src';
-import { fireEvent, render, wait } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 
 // tslint:disable-next-line:no-empty
 export const noop = () => {};
@@ -347,7 +347,7 @@ describe('<Formik>', () => {
     });
     rerender(<FormWithTwoValidations initialValues={initialValues} />);
 
-    await wait(() => {
+    await waitFor(() => {
       const values = JSON.parse(getByTestId('values').innerHTML);
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       const rowerrors = JSON.parse(getByTestId('rowerrors0').innerHTML);
@@ -380,7 +380,7 @@ describe('<Formik>', () => {
     });
 
     rerender(<FormWithPropsValidation initialValues={initialValues} />);
-    await wait(() => {
+    await waitFor(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['users[0].lastName', 'required']]);
     });
@@ -394,7 +394,7 @@ describe('<Formik>', () => {
       <FormWithPropsValidationAndCount initialValues={initialValues} />
     );
 
-    await wait(() => {
+    await waitFor(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '2']]);
     });
@@ -406,7 +406,7 @@ describe('<Formik>', () => {
       },
     });
     rerender(<FormWithPropsValidationAndCount initialValues={initialValues} />);
-    await wait(() => {
+    await waitFor(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
       expect(errors).toEqual([['count', '4']]);
     });
@@ -429,7 +429,7 @@ describe('<Formik>', () => {
     });
 
     rerender(<FormWithPropsValidation initialValues={initialValues} />);
-    await wait(() => {
+    await waitFor(() => {
       const touched = JSON.parse(getByTestId('touched').innerHTML);
       expect(touched).toEqual({ users: true });
     });
@@ -461,7 +461,7 @@ describe('<Formik>', () => {
     });
     rerender(<FormWithPropsValidation initialValues={initialValues} />);
 
-    await wait(() => {
+    await waitFor(() => {
       const touched = JSON.parse(getByTestId('touched').innerHTML);
       expect(touched).toEqual({});
     });
@@ -483,7 +483,7 @@ describe('<Formik>', () => {
     });
     rerender(<FormWithComplexValues initialValues={initialValues} />);
 
-    await wait(() => {
+    await waitFor(() => {
       const values = JSON.parse(getByTestId('values').innerHTML);
       expect(values).toEqual({ complex: { str: '100', num: 100 } });
       const touched = JSON.parse(getByTestId('touched').innerHTML);
@@ -516,7 +516,7 @@ describe('<Formik>', () => {
     });
     rerender(<FormWithComplexValues initialValues={initialValues} />);
 
-    await wait(() => {
+    await waitFor(() => {
       const values = JSON.parse(getByTestId('values').innerHTML);
       expect(values).toEqual(initialValues);
       const touched = JSON.parse(getByTestId('touched').innerHTML);

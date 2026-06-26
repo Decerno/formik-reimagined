@@ -1,5 +1,4 @@
 import { FormikReimaginedState, FormikReimaginedErrors } from './types';
-import * as R from 'ramda';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
 import { ObjectSchema } from 'yup';
@@ -79,11 +78,10 @@ export function formikReimaginedReducer<Values>(
       };
     }
     case 'SET_FIELD_VALUE': {
-      const values: any = R.set(
-        R.lensProp(msg.payload.field),
-        msg.payload.value,
-        state.values
-      );
+      const values: any = {
+        ...(state.values as any),
+        [msg.payload.field]: msg.payload.value,
+      };
       return setValuesAndTouched(
         state,
         values,
@@ -101,72 +99,90 @@ export function formikReimaginedReducer<Values>(
       );
     }
     case 'FLIP_CB': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        value =>
-          getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: getValueForCheckbox(
+          (state.values as any)[field],
+          msg.payload.checked,
+          msg.payload.value
+        ),
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'PUSH_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => [...arrayLike, msg.payload.value],
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: [...(state.values as any)[field], msg.payload.value],
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'SWAP_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: swap(
+          (state.values as any)[field],
+          msg.payload.indexA,
+          msg.payload.indexB
+        ),
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'MOVE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: move(
+          (state.values as any)[field],
+          msg.payload.from,
+          msg.payload.to
+        ),
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'INSERT_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: insert(
+          (state.values as any)[field],
+          msg.payload.index,
+          msg.payload.value
+        ),
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'REPLACE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
-        state.values
-      );
+      const field = msg.payload.field;
+      const values: any = {
+        ...(state.values as any),
+        [field]: replace(
+          (state.values as any)[field],
+          msg.payload.index,
+          msg.payload.value
+        ),
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'UNSHIFT_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        array => (array ? [msg.payload.value, ...array] : [msg.payload.value]),
-        state.values
-      );
+      const field = msg.payload.field;
+      const currentArray = (state.values as any)[field];
+      const values: any = {
+        ...(state.values as any),
+        [field]: currentArray
+          ? [msg.payload.value, ...currentArray]
+          : [msg.payload.value],
+      };
       return setValuesAndTouched(state, values, false);
     }
     case 'REMOVE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        array => {
-          const copy = array ? copyArray(array) : [];
-          copy.splice(msg.payload.index, 1);
-          return copy;
-        },
-        state.values
-      );
+      const field = msg.payload.field;
+      const currentArray = (state.values as any)[field];
+      const copy = currentArray ? copyArray(currentArray) : [];
+      copy.splice(msg.payload.index, 1);
+      const values: any = { ...(state.values as any), [field]: copy };
       return setValuesAndTouched(state, values, false);
     }
     default:
@@ -184,7 +200,7 @@ export function formikReimaginedReducer<Values>(
  * becomes
  * `{ "a":true }`
  */
-function setValuesAndTouched<Values>(
+function setValuesAndTouched<Values extends object>(
   state: FormikReimaginedState<Values>,
   values: Values,
   resetInitialValues: boolean

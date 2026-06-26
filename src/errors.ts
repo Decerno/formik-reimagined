@@ -59,7 +59,7 @@ export function runValidationSchema<Values extends object>(
     // resolve them into Formik errors. We can sniff if something is a Yup error
     // by checking error.name.
     // @see https://github.com/jquense/yup#validationerrorerrors-string--arraystring-value-any-path-string
-    if (err.name === 'ValidationError') {
+    if (err instanceof ValidationError) {
       return yupToFormErrors(err);
     } else {
       // We throw any other errors
