@@ -29,5 +29,11 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Publish
       run: |
-        npm version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version --allow-same-version
-        npm publish
+        VERSION=${GITHUB_REF#"refs/tags/"}
+        npm version $VERSION --no-git-tag-version --allow-same-version
+        if [[ "$VERSION" == *"-"* ]]; then
+          PRERELEASE_TAG=$(echo $VERSION | sed 's/^v//' | cut -d'-' -f2)
+          npm publish --tag $PRERELEASE_TAG
+        else
+          npm publish
+        fi
