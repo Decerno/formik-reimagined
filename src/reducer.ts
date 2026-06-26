@@ -79,8 +79,8 @@ export function formikReimaginedReducer<Values>(
       };
     }
     case 'SET_FIELD_VALUE': {
-      const values: any = R.set(
-        R.lensProp(msg.payload.field),
+      const values: any = (R.set as any)(
+        (R.lensProp as any)(msg.payload.field),
         msg.payload.value,
         state.values
       );
@@ -101,66 +101,66 @@ export function formikReimaginedReducer<Values>(
       );
     }
     case 'FLIP_CB': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        value =>
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (value: any) =>
           getValueForCheckbox(value, msg.payload.checked, msg.payload.value),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'PUSH_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => [...arrayLike, msg.payload.value],
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (arrayLike: any) => [...arrayLike, msg.payload.value],
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'SWAP_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (arrayLike: any) => swap(arrayLike, msg.payload.indexA, msg.payload.indexB),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'MOVE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => move(arrayLike, msg.payload.from, msg.payload.to),
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (arrayLike: any) => move(arrayLike, msg.payload.from, msg.payload.to),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'INSERT_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => insert(arrayLike, msg.payload.index, msg.payload.value),
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (arrayLike: any) => insert(arrayLike, msg.payload.index, msg.payload.value),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'REPLACE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        arrayLike => replace(arrayLike, msg.payload.index, msg.payload.value),
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (arrayLike: any) => replace(arrayLike, msg.payload.index, msg.payload.value),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'UNSHIFT_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        array => (array ? [msg.payload.value, ...array] : [msg.payload.value]),
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (array: any) => (array ? [msg.payload.value, ...array] : [msg.payload.value]),
         state.values
       );
       return setValuesAndTouched(state, values, false);
     }
     case 'REMOVE_A': {
-      const values: any = R.over(
-        R.lensProp(msg.payload.field),
-        array => {
+      const values: any = (R.over as any)(
+        (R.lensProp as any)(msg.payload.field),
+        (array: any) => {
           const copy = array ? copyArray(array) : [];
           copy.splice(msg.payload.index, 1);
           return copy;
@@ -184,7 +184,7 @@ export function formikReimaginedReducer<Values>(
  * becomes
  * `{ "a":true }`
  */
-function setValuesAndTouched<Values>(
+function setValuesAndTouched<Values extends object>(
   state: FormikReimaginedState<Values>,
   values: Values,
   resetInitialValues: boolean
