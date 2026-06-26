@@ -32,7 +32,7 @@ import {
  */
 export function withFormikReimagined<
   OuterProps extends object,
-  Values extends FormikReimaginedValues
+  Values extends FormikReimaginedValues,
 >({
   mapPropsToValues = (vanillaProps: OuterProps): Values => {
     let val: Values = {} as Values;
@@ -69,19 +69,19 @@ export function withFormikReimagined<
     return function CWrapped(
       props: OuterProps & FormikReimaginedCallbacks<OuterProps, Values>
     ): React.FunctionComponentElement<OuterProps> {
-      const reducer =
-        validate == null && validationSchema == null
-          ? formikReimaginedReducer
-          : formikReimaginedErrorReducer(
-              validationSchema != null && !isFunction(validationSchema)
-                ? validationSchema
-                : undefined,
-              validate
-            );
+      const reducer: React.Reducer<
+        FormikReimaginedState<Values>,
+        Message
+      > = validate == null && validationSchema == null
+        ? formikReimaginedReducer
+        : formikReimaginedErrorReducer(
+            validationSchema != null && !isFunction(validationSchema)
+              ? validationSchema
+              : undefined,
+            validate
+          );
       const initialValues = mapPropsToValues(props);
-      const [state, dispatch] = React.useReducer<
-        React.Reducer<FormikReimaginedState<Values>, Message>
-      >(reducer, {
+      const [state, dispatch] = React.useReducer(reducer, {
         initialValues,
         values: initialValues,
         errors:

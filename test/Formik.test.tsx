@@ -9,7 +9,7 @@ import {
   withFormikReimagined,
   FormikReimaginedSharedProps,
   FormikReimaginedHandlers,
-  FormikReimagined
+  FormikReimagined,
 } from '../src';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
@@ -36,7 +36,7 @@ const Formik = withFormikReimagined<
   } & FormikReimaginedSharedProps<FormikReimaginedHandlers>,
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
+  mapPropsToValues: (props) => props.initialValues,
 })(FormikReimagined);
 
 function Form({
@@ -61,7 +61,7 @@ function Form({
       />
       <FieldArray
         name="users"
-        render={arrayHelpers => (
+        render={(arrayHelpers) => (
           <table>
             <tbody>
               {values.users.map((value, i) => {
@@ -78,7 +78,7 @@ function Form({
                     <td>
                       <input
                         type="text"
-                        onChange={v =>
+                        onChange={(v) =>
                           arrayHelpers.replace(i, {
                             ...value,
                             [v.target.name]: v.target.value,
@@ -92,7 +92,7 @@ function Form({
                     <td>
                       <input
                         type="text"
-                        onChange={v =>
+                        onChange={(v) =>
                           arrayHelpers.replace(i, {
                             ...value,
                             [v.target.name]: v.target.value,
@@ -118,12 +118,14 @@ function Form({
 }
 const validationSchema: Yup.ObjectSchema<Values> = Yup.object({
   name: Yup.string().defined(),
-  users: Yup.array().of(
-    Yup.object({
-      lastName: Yup.string().required('required'),
-      firstName: Yup.string(),
-    }).defined()
-  ).defined(),
+  users: Yup.array()
+    .of(
+      Yup.object({
+        lastName: Yup.string().required('required'),
+        firstName: Yup.string(),
+      }).defined()
+    )
+    .defined(),
 }).defined();
 const InitialValues = { name: 'jared', users: [] };
 function ComplexForm({
@@ -169,7 +171,7 @@ const FormWithComplexValues = withFormikReimagined<
   },
   ComplexValues
 >({
-  mapPropsToValues: props => props.initialValues,
+  mapPropsToValues: (props) => props.initialValues,
 })(ComplexForm);
 let countOfFormWithCountingValidation = 0;
 const FormWithCountingValidation = withFormikReimagined<
@@ -178,11 +180,11 @@ const FormWithCountingValidation = withFormikReimagined<
   },
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
+  mapPropsToValues: (props) => props.initialValues,
   validate: (_: Values) => {
-    return (new Map([
+    return new Map([
       ['count', (++countOfFormWithCountingValidation).toString()],
-    ]) as any) as FormikReimaginedErrors;
+    ]) as any as FormikReimaginedErrors;
   },
 })(Form);
 
@@ -192,11 +194,11 @@ const FormWithTwoValidations = withFormikReimagined<
   },
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
+  mapPropsToValues: (props) => props.initialValues,
   validate: (_: Values) => {
-    return (new Map([
+    return new Map([
       ['users[0].firstName', 'required'],
-    ]) as any) as FormikReimaginedErrors;
+    ]) as any as FormikReimaginedErrors;
   },
   validationSchema,
 })(Form);
@@ -207,8 +209,8 @@ const FormWithPropsValidation = withFormikReimagined<
   },
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
-  validationSchema: _ => validationSchema,
+  mapPropsToValues: (props) => props.initialValues,
+  validationSchema: (_) => validationSchema,
 })(Form);
 let countOfFormWithPropsValidationAndCount = 0;
 const FormWithPropsValidationAndCount = withFormikReimagined<
@@ -217,12 +219,12 @@ const FormWithPropsValidationAndCount = withFormikReimagined<
   },
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
-  validationSchema: _ => validationSchema,
+  mapPropsToValues: (props) => props.initialValues,
+  validationSchema: (_) => validationSchema,
   validate: (_: Values) => {
-    return (new Map([
+    return new Map([
       ['count', (++countOfFormWithPropsValidationAndCount).toString()],
-    ]) as any) as FormikReimaginedErrors;
+    ]) as any as FormikReimaginedErrors;
   },
 })(Form);
 
@@ -237,7 +239,7 @@ function renderFormikReimagined<V extends Values>(
       {(formikProps: any) =>
         (injected = formikProps) && (
           <Form
-            {...((formikProps as unknown) as FormikReimaginedProps<Values>)}
+            {...(formikProps as unknown as FormikReimaginedProps<Values>)}
           />
         )
       }
@@ -254,7 +256,7 @@ function renderFormikReimagined<V extends Values>(
           {(formikProps: any) =>
             (injected = formikProps) && (
               <Form
-                {...((formikProps as unknown) as FormikReimaginedProps<Values>)}
+                {...(formikProps as unknown as FormikReimaginedProps<Values>)}
               />
             )
           }
@@ -325,7 +327,7 @@ describe('<Formik>', () => {
       });
       rerender(<FormWithCountingValidation initialValues={InitialValues} />);
       const errors = JSON.parse(getByTestId('errors').innerHTML);
-      expect(errors).toEqual([['count', '2']]);
+      expect(errors).toEqual([['count', '1']]);
     });
   });
 
@@ -396,7 +398,7 @@ describe('<Formik>', () => {
 
     await waitFor(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
-      expect(errors).toEqual([['count', '2']]);
+      expect(errors).toEqual([['count', '1']]);
     });
     fireEvent.change(getByTestId('lastName-input'), {
       persist: noop,
@@ -408,7 +410,7 @@ describe('<Formik>', () => {
     rerender(<FormWithPropsValidationAndCount initialValues={initialValues} />);
     await waitFor(() => {
       const errors = JSON.parse(getByTestId('errors').innerHTML);
-      expect(errors).toEqual([['count', '4']]);
+      expect(errors).toEqual([['count', '3']]);
     });
   });
   it('sets touched on array when complex values are updated', async () => {

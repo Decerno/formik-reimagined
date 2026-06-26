@@ -27,6 +27,8 @@
     "prepublishOnly": "npm run build",
     "format": "prettier --trailing-comma es5 --single-quote --write \"src/**/*\" \"test/**/*\" \"README.md\""
   },
+  "dependencies": {},
+  "optionalDependencies": {},
   "overrides": {
     "minimatch": "^10.2.5",
     "js-yaml": "^4.2.0"

@@ -1,20 +1,23 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { act } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import isFunction from 'lodash.isfunction';
 import {
   FieldArray,
   withFormikReimagined,
   ArrayHelpers,
   FormikReimaginedTouched,
-  FormikReimagined
+  FormikReimagined,
 } from '../src';
-import { act } from 'react-dom/test-utils';
+
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+
 interface Values {
   friends: string[];
 }
 const initialValues = { friends: ['jared', 'andrea', 'brent'] };
 
-const TestForm: React.SFC<any> = p => (
+const TestForm: React.FC<any> = (p) => (
   <Formik initialValues={{ friends: initialValues.friends }} {...p} />
 );
 const Formik = withFormikReimagined<
@@ -23,15 +26,28 @@ const Formik = withFormikReimagined<
   },
   Values
 >({
-  mapPropsToValues: props => props.initialValues,
+  mapPropsToValues: (props) => props.initialValues,
 })(FormikReimagined);
 
 describe('<FieldArray />', () => {
   const node = document.createElement('div');
+  let root: Root;
+
+  beforeEach(() => {
+    root = createRoot(node);
+  });
 
   afterEach(() => {
-    ReactDOM.unmountComponentAtNode(node);
+    act(() => {
+      root.unmount();
+    });
   });
+
+  function render(element: React.ReactNode) {
+    act(() => {
+      root.render(element);
+    });
+  }
 
   it('renders component with array helpers as props', () => {
     const TestComponent = (arrayProps: any) => {
@@ -39,44 +55,41 @@ describe('<FieldArray />', () => {
       return null;
     };
 
-    ReactDOM.render(
+    render(
       <TestForm>
         {() => <FieldArray name="friends" component={TestComponent} />}
-      </TestForm>,
-      node
+      </TestForm>
     );
   });
 
   it('renders with render callback with array helpers as props', () => {
-    ReactDOM.render(
+    render(
       <TestForm>
         {() => (
           <FieldArray
             name="friends"
-            render={arrayProps => {
+            render={(arrayProps) => {
               expect(isFunction(arrayProps.push)).toBeTruthy();
               return null;
             }}
           />
         )}
-      </TestForm>,
-      node
+      </TestForm>
     );
   });
 
   it('renders with "children as a function" with array helpers as props', () => {
-    ReactDOM.render(
+    render(
       <TestForm>
         {() => (
           <FieldArray name="friends">
-            {arrayProps => {
+            {(arrayProps) => {
               expect(isFunction(arrayProps.push)).toBeTruthy();
               return null;
             }}
           </FieldArray>
         )}
-      </TestForm>,
-      node
+      </TestForm>
     );
   });
 
@@ -85,7 +98,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -96,15 +109,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.push('jared');
@@ -119,7 +131,7 @@ describe('<FieldArray />', () => {
     it('dispatches onChange', () => {
       let values: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onChange={(value: any) => {
             values = value;
@@ -129,15 +141,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.push('jared');
@@ -164,7 +175,7 @@ describe('<FieldArray />', () => {
         return <button type="button" onClick={addFriends} />;
       };
 
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -174,8 +185,7 @@ describe('<FieldArray />', () => {
             formikBag = props;
             return <FieldArray name="friends" render={AddFriendsButton} />;
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         addFriendsFn();
@@ -200,7 +210,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -211,15 +221,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.swap(0, 2);
@@ -236,7 +245,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -247,15 +256,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.insert(1, 'brian');
@@ -272,7 +280,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -283,15 +291,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.replace(1, 'brian');
@@ -308,7 +315,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -319,15 +326,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.unshift('brian');
@@ -344,7 +350,7 @@ describe('<FieldArray />', () => {
       let formikBag: any;
       let formikTouched: any;
       let arrayHelpers: ArrayHelpers<any>;
-      ReactDOM.render(
+      render(
         <TestForm
           onTouched={(touched: FormikReimaginedTouched) =>
             (formikTouched = touched)
@@ -355,15 +361,14 @@ describe('<FieldArray />', () => {
             return (
               <FieldArray
                 name="friends"
-                render={arrayProps => {
+                render={(arrayProps) => {
                   arrayHelpers = arrayProps;
                   return null;
                 }}
               />
             );
           }}
-        </TestForm>,
-        node
+        </TestForm>
       );
       act(() => {
         arrayHelpers.remove(1);
