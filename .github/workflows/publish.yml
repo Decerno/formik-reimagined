@@ -36,7 +36,7 @@ jobs:
         if [[ "$VERSION" == *"-"* ]]; then
           PRERELEASE_PART="${VERSION#*-}"
           PRERELEASE_TAG="${PRERELEASE_PART%%[.-]*}"
-          npm publish --provenance --tag "$PRERELEASE_TAG"
+          npm publish --provenance --access public --tag "$PRERELEASE_TAG"
         else
-          npm publish --provenance
+          npm publish --provenance --access public
         fi
