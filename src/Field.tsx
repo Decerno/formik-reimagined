@@ -21,8 +21,7 @@ import {
 } from './FormikContext';
 import { executeChangeMsg } from './handleChange';
 import { Message } from './reducer';
-import { FormikReimaginedSharedProps } from './types.props';
-import { FieldAllProps, FieldRenderProps } from './types.props';
+import { FieldAllProps, FieldRenderProps, FormikReimaginedSharedProps } from './types.props';
 
 /** @private Does a React component have exactly 0 children? */
 const isEmptyChildren = (children: any): boolean =>
