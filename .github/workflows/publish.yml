@@ -24,6 +24,8 @@ jobs:
         node-version: 24.x
         registry-url: https://registry.npmjs.org
     - run: npm ci
+    # Trusted Publishing (OIDC) requires npm >= 11.5.1
+    - run: npm install -g npm@latest
     - run: npm run build --if-present
     - run: npm test
       env:
@@ -31,7 +33,6 @@ jobs:
     - name: Publish
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         VERSION="$RELEASE_TAG"
         npm version "$VERSION" --no-git-tag-version --allow-same-version
