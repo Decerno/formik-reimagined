@@ -31,7 +31,6 @@ jobs:
     - name: Publish
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         VERSION="$RELEASE_TAG"
         npm version "$VERSION" --no-git-tag-version --allow-same-version
