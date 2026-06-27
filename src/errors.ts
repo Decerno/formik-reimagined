@@ -85,3 +85,54 @@ export function runValidateHandler<Values>(
     return maybeErrors;
   }
 }
+
+/**
+ * Async-aware variant of {@link runValidateHandler}. Supports `validate`
+ * functions that return either a `Map` synchronously or a `Promise<Map>`.
+ */
+export async function runValidateHandlerAsync<Values>(
+  validate: {
+    (values: any, field?: string):
+      | FormikReimaginedErrors
+      | Promise<FormikReimaginedErrors>;
+  },
+  values: Values,
+  field?: string
+): Promise<FormikReimaginedErrors> {
+  const maybeErrors = await (validate as any)(values, field);
+  if (maybeErrors == null) {
+    return new Map();
+  }
+  return maybeErrors;
+}
+
+/**
+ * Async-aware variant of {@link runValidationSchema}. Uses Yup's async
+ * `validate`/`validateAt` so that schemas containing async tests are honored.
+ */
+export async function runValidationSchemaAsync<Values extends object>(
+  validationSchema: ObjectSchema<Values>,
+  values: Values,
+  field?: string
+): Promise<FormikReimaginedErrors> {
+  const schema: any = isFunction(validationSchema)
+    ? (validationSchema as any)(field)
+    : validationSchema;
+  try {
+    if (field && schema.validateAt) {
+      await schema.validateAt(field, values, { abortEarly: false });
+    } else {
+      await schema.validate(values, { abortEarly: false });
+    }
+    return new Map();
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      return yupToFormErrors(err);
+    }
+    console.warn(
+      `Warning: An unhandled error was caught during validation`,
+      err
+    );
+    throw new Error('Validation error error...');
+  }
+}

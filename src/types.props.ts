@@ -2,6 +2,8 @@ import {
   FormikReimaginedState,
   FormikReimaginedHandlers,
   FormikReimaginedHelpers,
+  FormikReimaginedAdditionalHelpers,
+  FormikReimaginedComputedProps,
   FormikReimaginedErrors,
   FormikReimaginedPropHelpers,
   FormikReimaginedTouched,
@@ -55,8 +57,9 @@ export interface FormikReimaginedCallbacks<Props, Values> {
   onSubmit?(
     values: Values,
     formikHelpers: FormikReimaginedHelpers<Values> &
+      FormikReimaginedAdditionalHelpers<Values> &
       FormikReimaginedPropHelpers<Props>
-  ): void;
+  ): void | Promise<any>;
 }
 
 /**
@@ -65,6 +68,8 @@ export interface FormikReimaginedCallbacks<Props, Values> {
  */
 export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
   FormikReimaginedHelpers<Values> &
+  FormikReimaginedAdditionalHelpers<Values> &
+  FormikReimaginedComputedProps &
   FormikReimaginedHandlers;
 /**
  * Render properties of field array. Accessible through render and children.

@@ -6,15 +6,26 @@ import { ObjectSchema } from 'yup';
 
 export type BaseMessage =
   | { type: 'SET_ERRORS'; payload: FormikReimaginedErrors }
+  | { type: 'REPLACE_ERRORS'; payload: FormikReimaginedErrors }
+  | { type: 'SET_FIELD_ERROR'; payload: { field: string; message?: string } }
   | {
       type: 'SET_FIELD_VALUE';
       payload: { field: string; value?: any; resetInitialValues?: boolean };
     }
   | { type: 'SET_TOUCHED'; payload: { field: string } }
   | {
+      type: 'SET_FIELD_TOUCHED';
+      payload: { field: string; touched: boolean };
+    }
+  | {
       type: 'SET_VALUES';
       payload: { values: any; resetInitialValues?: boolean };
     }
+  | { type: 'SET_STATUS'; payload: { status?: any } }
+  | { type: 'SET_SUBMITTING'; payload: { isSubmitting: boolean } }
+  | { type: 'SET_VALIDATING'; payload: { isValidating: boolean } }
+  | { type: 'SUBMIT_ATTEMPT' }
+  | { type: 'RESET_FORM'; payload: { values: any } }
   | { type: 'PUSH_A'; payload: { field: string; value?: any } }
   | {
       type: 'SWAP_A';
@@ -27,6 +38,7 @@ export type BaseMessage =
       payload: { field: string; index: number; value?: any };
     }
   | { type: 'UNSHIFT_A'; payload: { field: string; value?: any } }
+  | { type: 'POP_A'; payload: { field: string } }
   | { type: 'REMOVE_A'; payload: { field: string; index: number } }
   | {
       type: 'FLIP_CB';
@@ -72,11 +84,71 @@ export function formikReimaginedReducer<Values extends object>(
         errorsSet: true,
       };
     }
+    case 'REPLACE_ERRORS': {
+      return {
+        ...state,
+        errors: new Map(msg.payload),
+        errorsSet: true,
+      };
+    }
     case 'SET_TOUCHED': {
       return {
         ...state,
         touched: { ...state.touched, [msg.payload.field]: true },
       };
+    }
+    case 'SET_FIELD_TOUCHED': {
+      const touched = { ...state.touched };
+      if (msg.payload.touched) {
+        touched[msg.payload.field] = true;
+      } else {
+        delete touched[msg.payload.field];
+      }
+      return {
+        ...state,
+        touched,
+      };
+    }
+    case 'SET_FIELD_ERROR': {
+      const errors = new Map(state.errors);
+      if (msg.payload.message === undefined) {
+        errors.delete(msg.payload.field);
+      } else {
+        errors.set(msg.payload.field, msg.payload.message);
+      }
+      return {
+        ...state,
+        errors,
+        errorsSet: true,
+      };
+    }
+    case 'SET_STATUS': {
+      return {
+        ...state,
+        status: msg.payload.status,
+      };
+    }
+    case 'SET_SUBMITTING': {
+      return {
+        ...state,
+        isSubmitting: msg.payload.isSubmitting,
+      };
+    }
+    case 'SET_VALIDATING': {
+      return {
+        ...state,
+        isValidating: msg.payload.isValidating,
+      };
+    }
+    case 'SUBMIT_ATTEMPT': {
+      return {
+        ...state,
+        submitCount: (state.submitCount || 0) + 1,
+        isSubmitting: true,
+      };
+    }
+    case 'RESET_FORM': {
+      return setValuesAndTouched(state, msg.payload.values, true);
     }
     case 'SET_FIELD_VALUE': {
       const values: any = setIn(
@@ -187,6 +259,14 @@ export function formikReimaginedReducer<Values extends object>(
       const values: any = { ...(state.values as any), [field]: copy };
       return setValuesAndTouched(state, values, false);
     }
+    case 'POP_A': {
+      const field = msg.payload.field;
+      const currentArray = (state.values as any)[field];
+      const copy = currentArray ? copyArray(currentArray) : [];
+      copy.pop();
+      const values: any = { ...(state.values as any), [field]: copy };
+      return setValuesAndTouched(state, values, false);
+    }
     default:
       return state;
   }
@@ -247,8 +327,26 @@ export function formikReimaginedErrorReducer<Values extends object>(
     state: FormikReimaginedState<Values>,
     msg: Message
   ) {
+    // Newly introduced meta / explicit-error messages must not trigger a full
+    // re-validation: doing so would either clobber explicitly set errors or
+    // waste work on submit/status/touched-only changes. Original message types
+    // (SET_ERRORS, SET_TOUCHED, value/array updates) keep their behavior.
+    const skipRevalidation =
+      msg.type === 'REPLACE_ERRORS' ||
+      msg.type === 'SET_FIELD_ERROR' ||
+      msg.type === 'SET_STATUS' ||
+      msg.type === 'SET_SUBMITTING' ||
+      msg.type === 'SET_VALIDATING' ||
+      msg.type === 'SUBMIT_ATTEMPT' ||
+      msg.type === 'SET_FIELD_TOUCHED';
+
     const nextState =
       msg.type === 'SET_ERRORS' ? state : formikReimaginedReducer(state, msg);
+
+    if (skipRevalidation) {
+      return formikReimaginedReducer(state, msg);
+    }
+
     const errors: FormikReimaginedErrors[] = [];
     if (validationSchema) {
       errors.push(runValidationSchema(validationSchema, nextState.values));
