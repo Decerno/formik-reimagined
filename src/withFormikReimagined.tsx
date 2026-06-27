@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   FormikReimaginedStateContext,
   FormikReimaginedUpdateContext,
+  FormikReimaginedBagContext,
 } from './FormikContext';
 import { useFormikReimagined } from './useFormikReimagined';
 import {
@@ -77,9 +78,11 @@ export function withFormikReimagined<
       return (
         <FormikReimaginedStateContext.Provider value={state}>
           <FormikReimaginedUpdateContext.Provider value={dispatch}>
-            <Component {...outerProps} {...(injectedformikProps as any)}>
-              {children}
-            </Component>
+            <FormikReimaginedBagContext.Provider value={injectedformikProps}>
+              <Component {...outerProps} {...(injectedformikProps as any)}>
+                {children}
+              </Component>
+            </FormikReimaginedBagContext.Provider>
           </FormikReimaginedUpdateContext.Provider>
         </FormikReimaginedStateContext.Provider>
       );
