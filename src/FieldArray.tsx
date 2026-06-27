@@ -24,14 +24,21 @@ export class FieldArrayHelper<Value>
   push = (value: Value) =>
     this.dispatch({ type: 'PUSH_A', payload: { field: this.name, value } });
 
+  handlePush = (value: Value) => () => this.push(value);
+
   swap = (indexA: number, indexB: number) =>
     this.dispatch({
       type: 'SWAP_A',
       payload: { field: this.name, indexA, indexB },
     });
 
+  handleSwap = (indexA: number, indexB: number) => () =>
+    this.swap(indexA, indexB);
+
   move = (from: number, to: number) =>
     this.dispatch({ type: 'MOVE_A', payload: { field: this.name, from, to } });
+
+  handleMove = (from: number, to: number) => () => this.move(from, to);
 
   insert = (index: number, value: Value) =>
     this.dispatch({
@@ -39,17 +46,32 @@ export class FieldArrayHelper<Value>
       payload: { field: this.name, index, value },
     });
 
+  handleInsert = (index: number, value: Value) => () =>
+    this.insert(index, value);
+
   replace = (index: number, value: Value) =>
     this.dispatch({
       type: 'REPLACE_A',
       payload: { field: this.name, index, value },
     });
 
+  handleReplace = (index: number, value: Value) => () =>
+    this.replace(index, value);
+
   unshift = (value: Value) =>
     this.dispatch({ type: 'UNSHIFT_A', payload: { field: this.name, value } });
 
+  handleUnshift = (value: Value) => () => this.unshift(value);
+
   remove = (index: number) =>
     this.dispatch({ type: 'REMOVE_A', payload: { field: this.name, index } });
+
+  handleRemove = (index: number) => () => this.remove(index);
+
+  pop = () =>
+    this.dispatch({ type: 'POP_A', payload: { field: this.name } });
+
+  handlePop = () => () => this.pop();
 }
 
 /** @private Does a React component have exactly 0 children? */
@@ -93,9 +115,10 @@ export function FieldArrayState<P, Value>(
     },
     [errors]
   );
-  const fprops: ArrayHelpers<Value> = {
+  const fprops: ArrayHelpers<Value> & { name: string } = {
     errors: getErrors,
     ...arrayHelpers,
+    name: props.name,
   };
 
   return component
