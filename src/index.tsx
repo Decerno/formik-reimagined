@@ -1,4 +1,5 @@
 export * from './FieldArray';
+export * from './Field';
 export * from './types';
 export * from './errors';
 export * from './types.array';

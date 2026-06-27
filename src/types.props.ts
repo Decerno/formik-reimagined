@@ -72,3 +72,34 @@ export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
 export type FieldArrayAllProps<Value> = FormikReimaginedSharedProps<
   ArrayHelpers<Value>
 >;
+
+/**
+ * Prop bag injected into a `Field` / `FastField` render prop (or component).
+ *
+ * Note: this is a slight alteration of Formik's field API. Validation stays
+ * centralized in the reducer / validation-schema model used by this fork, so
+ * there is no per-field `validate` function and no isolated per-field form state.
+ */
+export interface FieldRenderProps<Value = any> {
+  /** Name of the field */
+  name: string;
+  /** Current value of the field */
+  value: Value;
+  /** Validation error for the field, if any */
+  error: string | undefined;
+  /** Whether the field has been touched */
+  touched: boolean;
+  /** Classic React change handler, keyed by input name */
+  onChange(e: React.ChangeEvent<any>): void;
+  /** Imperatively set the field's value */
+  setValue(value: Value): void;
+}
+
+/**
+ * Render properties of a field. Accessible through component, render and children.
+ **/
+export type FieldAllProps<Value> = FormikReimaginedSharedProps<
+  FieldRenderProps<Value>
+> & {
+  readonly name: string;
+};
