@@ -8,7 +8,7 @@ import {
   FormikReimaginedPropHelpers,
   FormikReimaginedTouched,
 } from './types';
-import { ArrayHelpers } from './types.array';
+import { FieldArrayRenderProps } from './types.array';
 
 /**
  */
@@ -75,5 +75,5 @@ export type FormikReimaginedProps<Values> = FormikReimaginedState<Values> &
  * Render properties of field array. Accessible through render and children.
  **/
 export type FieldArrayAllProps<Value> = FormikReimaginedSharedProps<
-  ArrayHelpers<Value>
+  FieldArrayRenderProps<Value>
 >;

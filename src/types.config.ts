@@ -16,9 +16,16 @@ export interface FormikReimaginedConfig<
     | { (props: Props): ObjectSchema<Values> };
 
   /**
-   * Validation function. Must return an error object where that object keys map to corresponding value.
+   * Validation function. Must return an error object (a `Map`) where keys map
+   * to the corresponding field path. May also return a `Promise` of such a
+   * `Map`; async results are only applied through the imperative
+   * `validateForm`/`validateField` helpers (the reactive reducer path ignores
+   * pending promises to stay synchronous).
    */
-  validate?: (values: Values, field?: string) => FormikReimaginedErrors;
+  validate?: (
+    values: Values,
+    field?: string
+  ) => FormikReimaginedErrors | Promise<FormikReimaginedErrors>;
 }
 
 /**

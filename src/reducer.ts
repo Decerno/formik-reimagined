@@ -320,7 +320,11 @@ function aggregate<T, V>(maps: Map<T, V>[]) {
 export function formikReimaginedErrorReducer<Values extends object>(
   validationSchema: ObjectSchema<Values> | undefined,
   validate:
-    | { (values: Values, field?: string): FormikReimaginedErrors }
+    | {
+        (values: Values, field?: string):
+          | FormikReimaginedErrors
+          | Promise<FormikReimaginedErrors>;
+      }
     | undefined
 ) {
   return function formikReimaginedErrorReducer(

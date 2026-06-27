@@ -73,7 +73,11 @@ export function runValidationSchema<Values extends object>(
 }
 
 export function runValidateHandler<Values>(
-  validate: { (values: any, field?: string): FormikReimaginedErrors },
+  validate: {
+    (values: any, field?: string):
+      | FormikReimaginedErrors
+      | Promise<FormikReimaginedErrors>;
+  },
   values: Values,
   field?: string
 ): FormikReimaginedErrors {
@@ -81,9 +85,14 @@ export function runValidateHandler<Values>(
   if (maybeErrors == null) {
     // use loose null check here on purpose
     return new Map();
-  } else {
-    return maybeErrors;
   }
+  // Async validate functions return a thenable; the reactive reducer path
+  // cannot await, so we ignore pending promises here. Use validateForm() to
+  // obtain async validation results.
+  if (typeof (maybeErrors as any).then === 'function') {
+    return new Map();
+  }
+  return maybeErrors;
 }
 
 /**

@@ -14,5 +14,6 @@ export * from './Field';
 export * from './ErrorMessage';
 export * from './Form';
 export * from './connect';
+export * from './aliases';
 export * from './FormikContext';
 export * from './formik';
