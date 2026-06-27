@@ -22,6 +22,7 @@ jobs:
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: 24.x
+        registry-url: https://registry.npmjs.org
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
@@ -30,6 +31,7 @@ jobs:
     - name: Publish
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         VERSION="$RELEASE_TAG"
         npm version "$VERSION" --no-git-tag-version --allow-same-version
