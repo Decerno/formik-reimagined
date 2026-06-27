@@ -1,6 +1,7 @@
 import { FormikReimaginedState, FormikReimaginedErrors } from './types';
 import { swap, move, insert, replace, copyArray } from './arrayUtils';
 import { runValidationSchema, runValidateHandler } from './errors';
+import { setIn } from './pathUtils';
 import { ObjectSchema } from 'yup';
 
 export type BaseMessage =
@@ -78,10 +79,11 @@ export function formikReimaginedReducer<Values extends object>(
       };
     }
     case 'SET_FIELD_VALUE': {
-      const values: any = {
-        ...(state.values as any),
-        [msg.payload.field]: msg.payload.value,
-      };
+      const values: any = setIn(
+        state.values as any,
+        msg.payload.field,
+        msg.payload.value
+      );
       return setValuesAndTouched(
         state,
         values,
