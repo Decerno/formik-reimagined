@@ -41,6 +41,32 @@ features are intentionally dropped:
 - No nested-path (`a.b[0].c`) `name` handling — `name` maps directly to a top
   level key of the form values.
 
+## Attribution
+
+This library is a fork that is, in large parts, based on
+[Formik](https://github.com/formium/formik) by Jared Palmer, which is
+distributed under the MIT License. Several modules intentionally mirror or
+adapt Formik's public source code:
+
+- `src/handleChange.ts` and `src/reducer.ts` — the change-event handling
+  (`executeChangeMsg` / `getSelectedValues`) and the `getValueForCheckbox`
+  logic are adapted from Formik's `Formik.tsx` / `handleChange` implementation.
+- `src/arrayUtils.ts` and `src/FieldArray.tsx` — the array helpers and the
+  `component` / `render` / `children` rendering convention are adapted from
+  Formik's `FieldArray.tsx`.
+- `src/Field.tsx` — `Field` and `FastField` reuse Formik's
+  `component` / `render` / `children` rendering convention and the
+  `isEmptyChildren` helper, and `FastField`'s slice-based memoization is
+  adapted from Formik's `FastField` `shouldComponentUpdate` optimization.
+- `src/errors.ts` — `yupToFormErrors` mirrors Formik's Yup error mapping.
+
+The APIs have been altered for this fork (see the sections above), but the
+above modules retain enough structural similarity to Formik that attribution is
+warranted. Formik's MIT license terms are compatible with this project's MIT
+license; see the upstream
+[Formik LICENSE](https://github.com/formium/formik/blob/master/LICENSE) for the
+full text.
+
 ## Lessons learned
 
 Some of the lessons learned from this fork can be moved over to Formik with some minor breaking changes to the procedural API.

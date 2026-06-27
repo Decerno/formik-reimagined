@@ -1,3 +1,19 @@
+/**
+ * Attribution: portions of this file are adapted from Formik (MIT License,
+ * Copyright (c) 2020 Jared Palmer), https://github.com/formium/formik.
+ *
+ * Similarities to Formik's public code:
+ * - The `isEmptyChildren` helper and the `component` / `render` / `children`
+ *   rendering convention in `renderField` mirror Formik's `Field` / `FieldArray`
+ *   (see `formik/src/Field.tsx` and `formik/src/FieldArray.tsx`). The same
+ *   pattern is already used in this repository's `FieldArray.tsx` and
+ *   `formik.ts`.
+ * - `FastField`'s memo boundary that re-renders only when the field's own slice
+ *   changes is adapted from Formik's `FastField` `shouldComponentUpdate`
+ *   optimization (see `formik/src/FastField.tsx`).
+ *
+ * See the "Attribution" section of the README for details.
+ */
 import * as React from 'react';
 import {
   FormikReimaginedStateContext,
